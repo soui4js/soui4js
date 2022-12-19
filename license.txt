@@ -1,0 +1,16 @@
+soui4js License
+soui4js是soui4的quickjs版本，将soui4的功能通过quickjs导出，方便使用js代码编写在客户端运行的高性能UI框架。
+soui4js个人用户免费(商用收费），公司收费，收费方式请联系作者。
+使用soui4js请遵守以下协议：
+1 soui4js依托soui4, 所有通过代码贡献方式获得soui3授权的用户自动获得soui4js永久授权。
+2 所有2023年1月1日前购买soui3+授权的用户自动获得soui4js永久授权。
+4 拥有免费授权的个人为公司开发商业化产品，同样可以免费获得授权。
+5 通过任意方式取得soui4js的授权的产品在发布前都应该联系作者获得授权，作者负责将产品信息记录到products.md这个文件里，用户可以查看这个文件以确认自己的产品是否已经获得授权。
+6 https://github.com/setoutsoft/soui4js.git是soui4js的唯一指定代码仓库，https://gitee.com/setoutsoft/soui4js.git是备份仓库，products.md以github为准。
+7 未经授权擅自在商用项目中使用SOUI3+, 发现后将记录到product.md的未授权项目列表，后面即使购买授权，也只能是从最新版本中删除数据，历史记录将永久存在，由此造成的影响由用户自己承担。
+8 本协议最终解释权归作者所有。
+
+修改历史：
+1.0 2022.12.19
+
+启程软件

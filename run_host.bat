@@ -1,0 +1,1 @@
+start .\bin\soui4js-host.exe .\bin
