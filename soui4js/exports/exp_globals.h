@@ -344,6 +344,14 @@ BOOL MkPath(const std::string& path,const std::string &root) {
 	return bRet;
 }
 
+BOOL IsX64() {
+#ifdef _WIN64
+	return TRUE;
+#else
+	return FALSE;
+#endif
+}
+
 void Exp_Global(qjsbind::Module* module)
 {
 	module->ExportFunc("log", &Slog);
@@ -371,4 +379,5 @@ void Exp_Global(qjsbind::Module* module)
 	module->ExportFunc("IsRunAsAdmin", &IsRunAsAdmin);
 	module->ExportFunc("RunAsAdmin", &RunAsAdmin);
 	module->ExportFunc("MkPath", &MkPath);
+	module->ExportFunc("IsX64", &IsX64);
 }
