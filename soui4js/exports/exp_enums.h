@@ -8,6 +8,7 @@ using namespace SOUI;
 
 #define SEnumInt(x) module->ExportEnumInt32(#x, x)
 #define SEnumUint(x) module->ExportEnumUint32(#x, x)
+#define SEnumUint64(x) module->ExportEnumUint64(#x, x)
 
 void Exp_SEnum(qjsbind::Module* module){
 //soui events
@@ -91,9 +92,9 @@ SEnumInt(EVT_SELECTMENU);
 SEnumInt(EVT_POPMENU);
 SEnumInt(EVT_EXTERNAL_BEGIN);
 
-SEnumUint(STVI_ROOT);
-SEnumUint(STVI_FIRST);
-SEnumUint(STVI_LAST);
+SEnumUint64(STVI_ROOT);
+SEnumUint64(STVI_FIRST);
+SEnumUint64(STVI_LAST);
 
 SEnumUint(TVC_COLLAPSE);
 SEnumUint(TVC_EXPAND);

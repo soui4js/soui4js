@@ -46,7 +46,7 @@ public:
 			}
 		}
 
-		modernDlg = new CShellFileDialog(bSave,strName.c_str(),flag,strExt.c_str(), &filters[0],filters.size());
+		modernDlg = new CShellFileDialog(bSave,strName.c_str(),flag,strExt.c_str(), &filters[0], (UINT)filters.size());
 		if (!modernDlg->IsNull())
 		{
 			if (!defaultFolder.IsEmpty()) {
@@ -64,7 +64,7 @@ public:
 					FreeLibrary(hShell);
 				}
 			}
-			return modernDlg->DoModal(hOwner);
+			return (int)modernDlg->DoModal(hOwner);
 		}
 		else {
 			delete modernDlg;
@@ -86,7 +86,7 @@ public:
 			SStringW strFilter2 = S_CW2T(strFilter);
 			oldDlg = new CFileDialog(bSave, strExt2.c_str(), strName2.c_str(), flag, strFilter2.c_str());
 			//if (!defaultFolder.empty());
-			return oldDlg->DoModal(hOwner);
+			return (int)oldDlg->DoModal(hOwner);
 		}
 	}
 

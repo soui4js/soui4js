@@ -129,7 +129,7 @@ Context::Context(JSContext* context)
 	, log_func_(NULL)
 	, is_attach_(true)
 {
-	Init();
+	if(context_)Init();
 }
 
 Context::~Context() {

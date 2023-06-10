@@ -45,10 +45,6 @@ namespace qjsbind {
 			return *this;
 		}
 
-		operator JSValue() const {
-			return value_;
-		}
-
 		int tag() {
 			return JS_VALUE_GET_TAG(value_);
 		}
@@ -183,7 +179,7 @@ namespace qjsbind {
 			else
 			{
 				assert(false);
-				return *(T*)(void*)ToULong();
+				return *(T*)(void*)ToInt64();
 			}
 		}
 
@@ -196,6 +192,10 @@ namespace qjsbind {
 				assert(false);
 				return false;
 			}
+		}
+
+		operator uint64_t() const {
+			return ToUint64();
 		}
 
 		template<typename T>
@@ -212,7 +212,11 @@ namespace qjsbind {
 			}
 			else
 			{
-				return (T*)(void*)ToULong();
+#ifdef _WIN64
+				return (T*)(void*)ToInt64();
+#else
+				return (T*)(void*)ToUint32();
+#endif
 			}
 		}
 
@@ -230,12 +234,14 @@ namespace qjsbind {
 			return value;
 		}
 
+		uint64_t ToUint64() const {
+			int64_t value = 0;
+			JS_ToInt64(context_, &value, value_);
+			return (uint64_t)value;
+		}
+
 		operator long() const {
-#ifdef _WIN64
-			return ToInt64();
-#else
 			return ToInt32();
-#endif
 		}
 		operator int64_t() const {
 			return ToInt64();
@@ -542,7 +548,7 @@ namespace qjsbind {
 		}
 
 		bool operator ==(const Value& src) const {
-			return context_ == src.context_ && value_ == src.value_;
+			return context_ == src.context_ && memcmp(&value_, &src.value_,sizeof(JSValue))==0;
 		}
 
 		bool SetProperty(const char* key, const Value& value) {

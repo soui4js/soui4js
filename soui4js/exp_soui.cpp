@@ -65,6 +65,7 @@ using namespace qjsbind;
 
 namespace SOUI {
 
+
 	BOOL ExportSoui(qjsbind::Context* context) {
 		qjsbind::Module* module = context->NewModule("soui4");
 		Exp_Global(module);
@@ -119,6 +120,7 @@ namespace SOUI {
 		Exp_FileOpenDlg(module);
 		Exp_SRegKey(module);
 		Exp_SValueAnimator(module);
+
 		return TRUE;
 	}
 

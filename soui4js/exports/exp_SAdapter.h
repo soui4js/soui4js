@@ -8,8 +8,9 @@ SNSBEGIN
 
 class SLvAdapter : public SAdapterBase , public JsThisOwner
 {
+	int tag;
 public:
-	SLvAdapter() {}
+	SLvAdapter():tag(100) {}
 
 	void notifyDataSetChanged()
 	{
@@ -406,8 +407,8 @@ void Exp_SAdapter(qjsbind::Module* module) {
 		jsCls.Init<SLvAdapter::Mark>();
 		jsCls.AddCtor<constructor<SLvAdapter>>(TRUE);
 		jsCls.AddFunc( "notifyDataSetChanged", &SLvAdapter::notifyDataSetChanged);
+		jsCls.AddFunc("notifyItemDataChanged", &SLvAdapter::notifyItemDataChanged);
 		jsCls.AddFunc( "notifyDataSetInvalidated", &SLvAdapter::notifyDataSetInvalidated);
-		jsCls.AddFunc( "notifyItemDataChanged", &SLvAdapter::notifyItemDataChanged);
 		jsCls.AddGetSet("cbHandler", &SLvAdapter::m_cbHandler);
 		jsCls.AddGetSet("onGetView", &SLvAdapter::m_funGetView);
 		jsCls.AddGetSet("onGetItemViewType", &SLvAdapter::m_funGetItemViewType);
@@ -416,7 +417,7 @@ void Exp_SAdapter(qjsbind::Module* module) {
 		jsCls.AddGetSet("onInitByTemplate", &SLvAdapter::m_funInitByTemplate);
 	}
 	{
-		JsClass<SMcLvAdapter> jsCls = module->ExportClass<SMcLvAdapter>("QjsMcAdapter");
+		JsClass<SMcLvAdapter> jsCls = module->ExportClass<SMcLvAdapter>("SMcLvAdapter");
 		jsCls.Init<SMcLvAdapter::Mark>();
 		jsCls.AddCtor<constructor<SMcLvAdapter>>(TRUE);
 		jsCls.AddFunc( "notifyDataSetChanged", &SMcLvAdapter::notifyDataSetChanged);

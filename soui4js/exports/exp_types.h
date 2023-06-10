@@ -164,7 +164,7 @@ namespace qjsbind {
 		if (len > 3)
 			return 0;
 		wchar_t ret;
-		MultiByteToWideChar(CP_UTF8, 0, str, len, &ret, 1);
+		MultiByteToWideChar(CP_UTF8, 0, str, (int)len, &ret, 1);
 		return ret;
 	}
 
@@ -176,7 +176,7 @@ namespace qjsbind {
 	template<>
 	WeakValue::operator SStringA() const {
 		std::string str = ToStdString();
-		return SStringA(str.c_str(), str.length());
+		return SStringA(str.c_str(), (int)str.length());
 	}
 
 	template<>

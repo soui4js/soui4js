@@ -289,7 +289,7 @@ namespace qjsbind {
 	}
 
 	inline Value Context::NewCFunction(JSCFunction* func, const char* name, size_t length) {
-		return Value(context_, JS_NewCFunction(context_, func, name, length));
+		return Value(context_, JS_NewCFunction(context_, func, name, (int)length));
 	}
 
 
@@ -299,7 +299,7 @@ namespace qjsbind {
 
 	inline Value Context::Eval(const char* input, int input_len,
 		const char* filename, int flags) {
-		if (input_len <= 0) input_len = strlen(input);
+		if (input_len <= 0) input_len = (int)strlen(input);
 		return Value(context_, JS_Eval(context_, input, input_len, filename,
 			flags));
 	}
@@ -307,7 +307,7 @@ namespace qjsbind {
 
 	inline Value Context::Compile(const char* input, int input_len,
 		const char* filename) {
-		if (input_len <= 0) input_len = strlen(input);
+		if (input_len <= 0) input_len = (int)strlen(input);
 		return Value(context_, JS_Eval(context_, input, input_len, filename,
 			JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_STRICT | JS_EVAL_FLAG_COMPILE_ONLY));
 	}

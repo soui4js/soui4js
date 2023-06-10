@@ -72,7 +72,7 @@ LPARAM SGetItemIndex(IWindow* pItem) {
 int SMessageBoxA(HWND hOwner, LPCSTR pszText, LPCSTR pszTitle, UINT uType) {
 	SStringT strText = S_CA2T(pszText,CP_UTF8);
 	SStringT strTitle = S_CA2T(pszTitle, CP_UTF8);
-	return SMessageBox(hOwner, strText, strTitle, uType);
+	return (int)SMessageBox(hOwner, strText, strTitle, uType);
 }
 
 namespace SOUI {

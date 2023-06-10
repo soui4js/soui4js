@@ -726,6 +726,7 @@ namespace qjsbind {
 #include "jsnewvalue.h"
 
 namespace qjsbind {
+#ifndef _WIN64
 	//10 params
 	template<typename T, typename Ret,
 		typename T1,
@@ -1441,11 +1442,6 @@ namespace qjsbind {
 		(pThis->*fun)();
 		return undefined_value;
 	}
-
-	template<typename T>
-	Value MemFunC(T* pThis, Context& context, void(T::* fun)(ArgList &), ArgList& arg_list) {
-		(pThis->*fun)(arg_list);
-		return undefined_value;
-	}
+#endif
 }
 

@@ -88,6 +88,11 @@ public:
 		return Export(name, data);
 	}
 
+	bool ExportEnumUint64(const char* name, uint64_t value) {
+		JSValue data = JS_NewInt64(context_, value);
+		return Export(name, data);
+	}
+
 	Value GetImportMeta();
 
 	JSModuleDef* module() {

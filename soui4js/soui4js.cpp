@@ -15,7 +15,7 @@ using namespace SOUI;
 
 void Slog(const char* szLog);
 extern "C" void js_printer(const char* szLog, int len) {
-    if (len < 0) len = strlen(szLog);
+    if (len < 0) len = (int)strlen(szLog);
     SOUI::SStringW str = SOUI::S_CA2W(SOUI::SStringA(szLog, len), CP_UTF8);
     if (str.GetLength() > SOUI::Log::MAX_LOGLEN) {
         int pos = 0;
@@ -121,7 +121,7 @@ namespace SOUI
             fclose(f);
             return FALSE;
         }
-        int nReaded=fread(buf, 1, len, f);
+        int nReaded= (int)fread(buf, 1, len, f);
         buf[nReaded] = 0;
         fclose(f);
         Value val;
@@ -142,7 +142,7 @@ namespace SOUI
 
     void Soui4Js::executeScriptBuffer( const char* buff, size_t sz )
     {
-        m_context->Eval(buff, sz, "<eval>");
+        m_context->Eval(buff, (int)sz, "<eval>");
     }
 
     BOOL Soui4Js::executeScriptedEventHandler( LPCSTR handler_name, IEvtArgs *pArg)
