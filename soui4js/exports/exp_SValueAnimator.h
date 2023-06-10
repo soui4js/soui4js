@@ -42,13 +42,20 @@ public:
 			return 0.f;
 		return m_animator->getAnimatedFraction();
 	}
+
+	bool Start(ITimelineHandlersMgr* aniMgr) {
+		if (!m_animator)
+			return false;
+		m_animator->start(aniMgr);
+		return true;
+	}
 protected:
 	STDMETHOD_(void, onAnimationStart)(THIS_ IValueAnimator* pAnimator) {
 		if (!m_onAnimationStart.IsObject())
 			return;
 		qjsbind::Context& ctx = *m_onAnimationStart.context();
 		qjsbind::Value args[] = {
-			NewValue(ctx, pAnimator)
+			NewValue(ctx, this)
 		};
 		ctx.Call(GetJsThis(), m_onAnimationStart, ARRAYSIZE(args), args);
 	}
@@ -57,7 +64,7 @@ protected:
 			return;
 		qjsbind::Context& ctx = *m_onAnimationEnd.context();
 		qjsbind::Value args[] = {
-			NewValue(ctx, pAnimator)
+			NewValue(ctx, this)
 		};
 		ctx.Call(GetJsThis(), m_onAnimationEnd, ARRAYSIZE(args), args);
 
@@ -67,7 +74,7 @@ protected:
 			return;
 		qjsbind::Context& ctx = *m_onAnimationRepeat.context();
 		qjsbind::Value args[] = {
-			NewValue(ctx, pAnimator)
+			NewValue(ctx, this)
 		};
 		ctx.Call(GetJsThis(), m_onAnimationRepeat, ARRAYSIZE(args), args);
 	}
@@ -77,7 +84,7 @@ protected:
 			return;
 		qjsbind::Context& ctx = *m_onAnimationUpdate.context();
 		qjsbind::Value args[] = {
-			NewValue(ctx, pAnimator)
+			NewValue(ctx, this)
 		};
 		ctx.Call(GetJsThis(), m_onAnimationUpdate, ARRAYSIZE(args), args);
 	}
@@ -121,4 +128,5 @@ void Exp_SValueAnimator(qjsbind::Module* module) {
 	jsCls.AddFunc("GetIValueAnimator", &JsValueAnimator::GetIValueAnimator);
 	jsCls.AddFunc("GetAniType", &JsValueAnimator::GetAniType);
 	jsCls.AddFunc("GetFraction", &JsValueAnimator::GetFraction);
+	jsCls.AddFunc("Start", &JsValueAnimator::Start);
 }

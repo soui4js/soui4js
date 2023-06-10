@@ -3,6 +3,7 @@ import * as os from "os";
 import * as std from "std";
 
 var g_workDir="";
+const g_isX64=soui4.IsX64();
 
 class AppLvAdapter extends soui4.SLvAdapter{
 	constructor(mainDlg){
@@ -73,14 +74,27 @@ class AppLvAdapter extends soui4.SLvAdapter{
 				if(!attrName.IsEmpty()){
 					alias = attrName.Value();
 				}
-				let url = xmlApp.Attribute("url",false).Value();
-				let ver = xmlApp.Attribute("ver",false).Value();
-				let icon = xmlApp.Attribute("icon",false).Value();
-				let md5 = xmlApp.Attribute("md5",false).Value();
-				let desc = xmlApp.Attribute("desc",false).Value();
-				let size = xmlApp.Attribute("size",false).Value();
-				let appInfo = {"name":name,"alias":alias,"url":url,"ver":ver,"icon":icon,"md5":md5,"desc":desc,"img":null,"size":size};
-				this.appList.push(appInfo);
+				let attrPlatform = xmlApp.Attribute("platform",false);
+				let bValidPlatform = true;
+				if(!attrPlatform.IsEmpty()){
+					let strPlatform = attrPlatform.Value();
+					if(g_isX64 && strPlatform.indexOf("x64")==-1)
+						bValidPlatform = false;
+					else if(!g_isX64 && strPlatform.indexOf("x86")==-1)
+						bValidPlatform = false;
+				}
+				if(bValidPlatform){
+					let url = xmlApp.Attribute("url",false).Value();
+					let ver = xmlApp.Attribute("ver",false).Value();
+					let icon = xmlApp.Attribute("icon",false).Value();
+					let md5 = xmlApp.Attribute("md5",false).Value();
+					let desc = xmlApp.Attribute("desc",false).Value();
+					let size = xmlApp.Attribute("size",false).Value();
+					let appInfo = {"name":name,"alias":alias,"url":url,"ver":ver,"icon":icon,"md5":md5,"desc":desc,"img":null,"size":size};
+					this.appList.push(appInfo);
+				}else{
+					console.log("disable app",name,"for isX64",g_isX64);
+				}
 				xmlApp = xmlApp.NextSibling();
 			}
 			this.notifyDataSetChanged();

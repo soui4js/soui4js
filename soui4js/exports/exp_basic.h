@@ -24,6 +24,21 @@ void Exp_Basic(qjsbind::Module* module) {
 		JsClass<CRect> jsCls = module->ExportClass<CRect>("CRect");
 		jsCls.Init(JsClass<RECT>::class_id());
 		jsCls.AddCtor<qjsbind::constructor<CRect, int, int,int,int>>();
+		jsCls.AddCtor<qjsbind::constructor<CRect, RECT>>();
+		jsCls.AddFunc("CenterPoint", &CRect::CenterPoint);
+		jsCls.AddFunc("Width", &CRect::Width);
+		jsCls.AddFunc("Height", &CRect::Height);
+		jsCls.AddFunc("PtInRect", &CRect::PtInRect);
+		jsCls.AddFunc("IsRectEmpty", &CRect::IsRectEmpty);
+		jsCls.AddFunc("InflateRect", (void (CRect::*)(int,int,int,int))&CRect::InflateRect);
+		jsCls.AddFunc("DeflateRect", (void (CRect::*)(int, int, int, int)) & CRect::DeflateRect);
+		jsCls.AddFunc("OffsetRect", (void (CRect::*)(int, int)) &CRect::OffsetRect);
+		jsCls.AddFunc("MoveToXY", (void (CRect::*)(int, int)) & CRect::MoveToXY);
+		jsCls.AddFunc("MoveToX",  & CRect::MoveToX);
+		jsCls.AddFunc("MoveToY",  & CRect::MoveToY);
+		jsCls.AddFunc("IntersectRect", &CRect::IntersectRect);
+		jsCls.AddFunc("UnionRect", &CRect::UnionRect);
+		jsCls.AddFunc("SubtractRect", &CRect::SubtractRect);
 	}
 	//SIZE
 	{
@@ -35,6 +50,7 @@ void Exp_Basic(qjsbind::Module* module) {
 	{
 		JsClass<CSize> jsCls = module->ExportClass<CSize>("CSize");
 		jsCls.Init(JsClass<SIZE>::class_id());
+		jsCls.AddCtor<qjsbind::constructor<CSize, int, int>>();
 		jsCls.AddCtor<qjsbind::constructor<CSize, int, int>>();
 	}
 	{

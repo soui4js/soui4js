@@ -28,6 +28,7 @@ void Exp_IValueAnimator(qjsbind::Module* module)
 	jsCls.AddFunc("getTotalDuration", &IValueAnimator::getTotalDuration);
 	jsCls.AddFunc("setCurrentPlayTime", &IValueAnimator::setCurrentPlayTime);
 	jsCls.AddFunc("setCurrentFraction", &IValueAnimator::setCurrentFraction);
+	jsCls.AddFunc("getAnimatedFraction", &IValueAnimator::getAnimatedFraction);
 	jsCls.AddFunc("getCurrentPlayTime", &IValueAnimator::getCurrentPlayTime);
 	jsCls.AddFunc("getStartDelay", &IValueAnimator::getStartDelay);
 	jsCls.AddFunc("setStartDelay", &IValueAnimator::setStartDelay);

@@ -14,15 +14,31 @@ Value IWindow_GetWindowText(Context* ctx, IWindow* _this, ArgList& args) {
 	return ctx->NewString(strU8.c_str(), strU8.GetLength());
 }
 
-RECT IWindow_GetWindowRect(Context* ctx, IWindow* _this, ArgList& args) {
-	RECT rc;
+CRect IWindow_GetWindowRect(Context* ctx, IWindow* _this, ArgList& args) {
+	CRect rc;
 	_this->GetWindowRect(&rc);
 	return rc;
 }
 
-RECT IWindow_GetClientRect(Context* ctx, IWindow* _this, ArgList& args) {
-	RECT rc;
+CRect IWindow_GetClientRect(Context* ctx, IWindow* _this, ArgList& args) {
+	CRect rc;
 	_this->GetClientRect(&rc);
+	return rc;
+}
+
+SIZE IWindow_GetDesiredSize(Context* ctx, IWindow* _this, ArgList& args) {
+	SIZE ret = { 0,0 };
+	int nWid = -1, nHei = -1;
+	if (args.size() >= 1) nWid = args[0];
+	if (args.size() >= 2) nHei = args[2];
+
+	_this->GetDesiredSize(&ret, nWid, nHei);
+	return ret;
+}
+
+CRect IWindow_GetChildrenLayoutRect(Context* ctx, IWindow* _this, ArgList& args) {
+	CRect rc = { 0 };
+	_this->GetChildrenLayoutRect(&rc);
 	return rc;
 }
 
@@ -121,8 +137,7 @@ void Exp_IWindow(qjsbind::Module* module)
 	jsCls.AddFunc("DestroyAllChildren", &IWindow::DestroyAllChildren);
 	jsCls.AddFunc("Destroy", &IWindow::Destroy);
 	jsCls.AddFunc("GetNextLayoutIChild", &IWindow::GetNextLayoutIChild);
-	jsCls.AddFunc("GetChildrenLayoutRect", &IWindow::GetChildrenLayoutRect);
-	jsCls.AddFunc("GetDesiredSize", &IWindow::GetDesiredSize);
+	jsCls.AddCFunc("GetChildrenLayoutRect", &IWindow_GetChildrenLayoutRect);
 	jsCls.AddFunc("GetBkgndColor", &IWindow::GetBkgndColor);
 	jsCls.AddFunc("SetWindowText", &IWindow::SetWindowTextA);
 	jsCls.AddCFunc("GetWindowText", &IWindow_GetWindowText);
@@ -150,6 +165,7 @@ void Exp_IWindow(qjsbind::Module* module)
 	jsCls.AddFunc("GetContainer", &IWindow::GetContainer);
 	jsCls.AddFunc("RegisterDragDrop", &IWindow::RegisterDragDrop);
 	jsCls.AddFunc("UnregisterDragDrop", &IWindow::UnregisterDragDrop);
+	jsCls.AddCFunc("GetDesiredSize", &IWindow_GetDesiredSize);
 
 	DEF_CAST_IOBJ2(module, IWindow,SWindow);
 }

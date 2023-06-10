@@ -45,6 +45,10 @@ namespace qjsbind {
 			return *this;
 		}
 
+		operator JSValue() const {
+			return value_;
+		}
+
 		int tag() {
 			return JS_VALUE_GET_TAG(value_);
 		}
@@ -194,10 +198,13 @@ namespace qjsbind {
 			}
 		}
 
+		//todo: x86下，由于uint64_t和JSValue类型相同，会导致程序定义冲突。
+		//uint64_t如果要在函数的参数中使用，只能是在64位下。
+#ifdef _WIN64
 		operator uint64_t() const {
 			return ToUint64();
 		}
-
+#endif
 		template<typename T>
 		operator T*() {
 			if (IsObject()) {

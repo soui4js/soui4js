@@ -8,9 +8,8 @@ SNSBEGIN
 
 class SLvAdapter : public SAdapterBase , public JsThisOwner
 {
-	int tag;
 public:
-	SLvAdapter():tag(100) {}
+	SLvAdapter() {}
 
 	void notifyDataSetChanged()
 	{
