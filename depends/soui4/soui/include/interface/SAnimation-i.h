@@ -118,7 +118,8 @@ typedef enum ZAdjustment
 #define INTERFACE IAnimation
 DECLARE_INTERFACE_(IAnimation, IObject)
 {
-	#include <interface/SobjectApi.h>
+	DEF_OBJ_BASE(IAnimation,Animation)
+#include <interface/SobjectApi.h>
 
     STDMETHOD_(IAnimation *, clone)(CTHIS) SCONST PURE;
 

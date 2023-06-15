@@ -51,7 +51,6 @@ using namespace qjsbind;
 #include "exports/exp_EvtHandlerProxy.h"
 #include "exports/exp_SEventArg.h"
 #include "exports/exp_SAdapter.h"
-#include "exports/exp_SWindow.h"
 #include "exports/exp_Sxml.h"
 #include "exports/exp_SMenu.h"
 #include "exports/exp_globals.h"
@@ -115,7 +114,6 @@ namespace SOUI {
 		Exp_SXml(module);
 		Exp_SMenu(module);
 		Exp_SMenuEx(module);
-		Exp_SWindow(module);
 		Exp_SZipExtractor(module);
 		Exp_FileOpenDlg(module);
 		Exp_SRegKey(module);

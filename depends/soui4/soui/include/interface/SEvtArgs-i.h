@@ -8,6 +8,7 @@ SNSBEGIN
 #define INTERFACE IEvtArgs
 DECLARE_INTERFACE_(IEvtArgs, IObject)
 {
+	DEF_OBJ_BASE(IEvtArgs,Event)
 #include <interface/SobjectApi.h>
 
     //-------------------------------------------------------------------------------------------

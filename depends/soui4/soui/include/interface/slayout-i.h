@@ -29,6 +29,7 @@ enum
 #define INTERFACE ILayoutParam
 DECLARE_INTERFACE_(ILayoutParam, IObject)
 {
+	DEF_OBJ_BASE(ILayoutParam,LayoutParam)
 #include <interface/SobjectApi.h>
 
     //----------------------------------------------------------
@@ -107,6 +108,7 @@ DECLARE_INTERFACE_(ILayoutParam, IObject)
 #define INTERFACE ILayout
 DECLARE_INTERFACE_(ILayout, IObject)
 {
+DEF_OBJ_BASE(ILayout,Layout)
 #include <interface/SobjectApi.h>
     //------------------------------------------------------------------------
 

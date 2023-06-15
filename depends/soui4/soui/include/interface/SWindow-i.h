@@ -22,6 +22,7 @@ typedef BOOL (* FunSwndProc)(IWindow * pSwnd,UINT uMsg,WPARAM wp,LPARAM lp,LRESU
 #define INTERFACE IWindow
 DECLARE_INTERFACE_(IWindow, IObject)
 {
+	DEF_OBJ_BASE(IWindow,Window)
 #include <interface/SobjectApi.h>
 
     //////////////////////////////////////////////////////////////////////////

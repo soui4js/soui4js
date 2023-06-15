@@ -42,7 +42,7 @@ class AppLvAdapter extends soui4.SLvAdapter{
 	}
 
 	OnItemDblClick(e){
-		let pItem = soui4.toSWindow(e.Sender());
+		let pItem = soui4.toIWindow(e.Sender());
 		let pItemPanel = soui4.QiIItemPanel(pItem);
 		let iApp = pItemPanel.GetItemIndex();
 		pItemPanel.Release();

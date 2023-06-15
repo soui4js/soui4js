@@ -167,5 +167,5 @@ void Exp_IWindow(qjsbind::Module* module)
 	jsCls.AddFunc("UnregisterDragDrop", &IWindow::UnregisterDragDrop);
 	jsCls.AddCFunc("GetDesiredSize", &IWindow_GetDesiredSize);
 
-	DEF_CAST_IOBJ2(module, IWindow,SWindow);
+	DEF_CAST_IOBJ(module, IWindow);
 }

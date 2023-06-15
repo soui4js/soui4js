@@ -44,6 +44,7 @@ DECLARE_INTERFACE(IAnimatorListener)
 #define INTERFACE IValueAnimator
 DECLARE_INTERFACE_(IValueAnimator, IObject)
 {
+	DEF_OBJ_BASE(IValueAnimator,ValueAnimator)
 #include <interface/SobjectApi.h>
 
     /**
