@@ -30,6 +30,12 @@ namespace qjsbind {
 	}
 
 	template<>
+	inline Value NewValue(Context& context, WeakValue v)
+	{
+		return Value(v);
+	}
+
+	template<>
 	inline Value NewValue(Context& context, void* v)
 	{
 #ifdef _WIN64

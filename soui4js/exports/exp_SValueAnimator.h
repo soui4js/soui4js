@@ -12,6 +12,13 @@ class JsValueAnimator : public JsThisOwner , public IAnimatorListener , public I
 public:
 	JsValueAnimator() {}
 
+	~JsValueAnimator() {
+		if (m_animator) {
+			m_animator->removeListener(this);
+			m_animator->removeUpdateListener(this);
+		}
+	}
+
 	BOOL LoadAniamtor(LPCSTR resId) {
 		SStringT strId = S_CA2T(resId, CP_UTF8);
 		IValueAnimator* ani = SApplication::getSingleton().LoadValueAnimator(strId);
@@ -55,7 +62,7 @@ protected:
 			return;
 		qjsbind::Context& ctx = *m_onAnimationStart.context();
 		qjsbind::Value args[] = {
-			NewValue(ctx, this)
+			NewValue(ctx, JsThisOwner::GetJsThis())
 		};
 		ctx.Call(GetJsThis(), m_onAnimationStart, ARRAYSIZE(args), args);
 	}
@@ -64,7 +71,7 @@ protected:
 			return;
 		qjsbind::Context& ctx = *m_onAnimationEnd.context();
 		qjsbind::Value args[] = {
-			NewValue(ctx, this)
+			NewValue(ctx, JsThisOwner::GetJsThis())
 		};
 		ctx.Call(GetJsThis(), m_onAnimationEnd, ARRAYSIZE(args), args);
 
@@ -74,7 +81,7 @@ protected:
 			return;
 		qjsbind::Context& ctx = *m_onAnimationRepeat.context();
 		qjsbind::Value args[] = {
-			NewValue(ctx, this)
+			NewValue(ctx, JsThisOwner::GetJsThis())
 		};
 		ctx.Call(GetJsThis(), m_onAnimationRepeat, ARRAYSIZE(args), args);
 	}
@@ -84,7 +91,7 @@ protected:
 			return;
 		qjsbind::Context& ctx = *m_onAnimationUpdate.context();
 		qjsbind::Value args[] = {
-			NewValue(ctx, this)
+			NewValue(ctx, JsThisOwner::GetJsThis())
 		};
 		ctx.Call(GetJsThis(), m_onAnimationUpdate, ARRAYSIZE(args), args);
 	}
@@ -118,7 +125,7 @@ protected:
 void Exp_SValueAnimator(qjsbind::Module* module) {
 	JsClass<JsValueAnimator > jsCls = module->ExportClass<JsValueAnimator>("SValueAnimator");
 	jsCls.Init<JsValueAnimator::Mark>();
-	jsCls.AddCtor<constructor<JsValueAnimator>>();
+	jsCls.AddCtor<constructor<JsValueAnimator>>(TRUE);
 	jsCls.AddGetSet("cbHandler", &JsValueAnimator::m_cbHandler);
 	jsCls.AddGetSet("onAnimationStart", &JsValueAnimator::m_onAnimationStart);
 	jsCls.AddGetSet("onAnimationEnd", &JsValueAnimator::m_onAnimationEnd);

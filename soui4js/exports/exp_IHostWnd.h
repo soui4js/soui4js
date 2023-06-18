@@ -7,6 +7,7 @@ void Exp_IHostWnd(qjsbind::Module* module)
 	jsCls.Init(JsClass<INativeWnd>::class_id());
 	jsCls.AddFunc("CreateEx", &IHostWnd::CreateEx);
 	jsCls.AddFunc("Create", &IHostWnd::Create);
+	jsCls.AddFunc("InitFromXml", &IHostWnd::InitFromXml);
 	jsCls.AddFunc("SetLayoutId", &IHostWnd::SetLayoutId);
 	jsCls.AddFunc("GetIRoot", &IHostWnd::GetIRoot);
 	jsCls.AddFunc("FindIChildByID", &IHostWnd::FindIChildByID);
@@ -19,7 +20,7 @@ void Exp_IHostWnd(qjsbind::Module* module)
 	jsCls.AddFunc("SetPresenter", &IHostWnd::SetPresenter);
 	jsCls.AddFunc("GetMsgLoop", &IHostWnd::GetMsgLoop);
 	jsCls.AddFunc("EnableDragDrop", &IHostWnd::EnableDragDrop);
-
+	jsCls.AddFunc("ShowHostWnd", &IHostWnd::ShowHostWnd);
 }
 
 void Exp_IHostDialog(qjsbind::Module* module)

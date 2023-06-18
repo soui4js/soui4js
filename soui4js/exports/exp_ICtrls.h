@@ -29,7 +29,7 @@ void IDateTimePicker_SetTime(Context* ctx, IDateTimePicker* _this, ArgList& args
 		Value v = args[0];
 		WORD buf[6] = { 0 };
 		if (v.IsArray()) {
-			for (int i = 0; i < 6 && i < v.length(); i++) {
+			for (int i = 0; i < 6 && i < (int)v.length(); i++) {
 				buf[i] = v.GetProperty(i).ToInt32();
 			}
 		}

@@ -489,6 +489,7 @@ namespace qjsbind {
 
 	protected:
 		friend class ConstValue;
+		friend class Value;
 		JSContext* context_;
 		JSValue value_;
 	};
@@ -519,6 +520,11 @@ namespace qjsbind {
 		}
 
 		Value(const Value& value)
+			:WeakValue(value.context_, JS_DupValue(context_, value.value_))
+		{
+		}
+
+		Value(const WeakValue& value)
 			:WeakValue(value.context_, JS_DupValue(context_, value.value_))
 		{
 		}

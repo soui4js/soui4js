@@ -4,7 +4,7 @@ namespace qjsbind {
 	class JsProxy
 	{
 	public:
-		JsProxy(T* _pObj, bool _bOwner = false) :nRef(1), bOwner(_bOwner) {
+		JsProxy(T* _pObj, bool _bOwner = false) : bOwner(_bOwner) {
 			pObj = _pObj;
 		}
 
@@ -15,20 +15,11 @@ namespace qjsbind {
 		T* GetObj() {
 			return pObj;
 		}
-
-		long AddRef() {
-			return InterlockedIncrement(&nRef);
-		}
-		long Release() {
-			int nRet = InterlockedDecrement(&nRef);
-			if (nRet == 0) {
-				delete this;
-			}
-			return nRet;
+		bool IsOwner() const {
+			return bOwner;
 		}
 	private:
 		T* pObj;
 		bool bOwner;
-		volatile long nRef;
 	};
 }

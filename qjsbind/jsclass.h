@@ -109,13 +109,14 @@ namespace qjsbind {
 	void ObjFinalizer(JSRuntime* rt, JSValue val) {
 		JsProxy<T> * pThis;
 		if (GetSafeThis(val, &pThis)) {
-			pThis->Release();
+			delete pThis;
+			JS_SetOpaque(val, NULL);
 		}
 	}
 	template<class T, void Mark(T*, JS_MarkFunc*)>
 	void ObjMark(JSRuntime* rt, JSValueConst val, JS_MarkFunc* mark_func) {
 		JsProxy<T>* pThis;
-		if (Mark && GetSafeThis(val, &pThis)) {
+		if (Mark && GetSafeThis(val, &pThis) && pThis->IsOwner()) {
 			Mark(pThis->GetObj(), mark_func);
 		}
 	}

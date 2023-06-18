@@ -125,7 +125,7 @@ public:
 	{
 		return SHostWnd::DestroyWindow();
 	}
-	STDMETHOD_(BOOL, IsWindow)(THIS) OVERRIDE
+	STDMETHOD_(BOOL, IsWindow)(CTHIS) SCONST OVERRIDE
 	{
 		return SHostWnd::IsWindow();
 	}
@@ -313,6 +313,10 @@ public:
 		return SHostWnd::Create(hWndParent, x, y, nWidth, nHeight);
 	}
 
+	STDMETHOD_(BOOL, InitFromXml)(THIS_ IXmlNode *pNode) OVERRIDE{
+		return SHostWnd::InitFromXml(pNode);
+	}
+
 	STDMETHOD_(void, SetLayoutId)(THIS_ LPCTSTR pszLayoutId) OVERRIDE
 	{
 		SHostWnd::SetLayoutId(pszLayoutId);
@@ -369,6 +373,9 @@ public:
 
 	STDMETHOD_(void,EnableDragDrop)(THIS) OVERRIDE{
 		return SHostWnd::EnableDragDrop();
+	}
+	STDMETHOD_(void,ShowHostWnd)(THIS_ int uShowCmd,BOOL bWaitAniDone) OVERRIDE{
+		return SHostWnd::ShowHostWnd(uShowCmd,bWaitAniDone);
 	}
 
 };

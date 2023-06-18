@@ -59,8 +59,8 @@ namespace SOUI
         ~QjsMsgLoop() {
             CloseHandle(m_hEvt);
         }
-    protected:
-        BOOL OnWaitMessage() override{
+
+        BOOL WINAPI WaitMsg() override{
             HANDLE handles[64] = { 0 };
             int rws = 0, msgs = 0;
             uint32_t waitTime = INFINITE;
