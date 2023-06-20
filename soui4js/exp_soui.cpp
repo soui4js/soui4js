@@ -61,6 +61,7 @@ using namespace qjsbind;
 #include "exports/exp_SRegKey.h"
 #include "exports/exp_SValueAnimator.h"
 #include "exports/exp_IAttrStoarge.h"
+#include "exports/exp_SMatrix.h"
 
 namespace SOUI {
 
@@ -118,6 +119,7 @@ namespace SOUI {
 		Exp_FileOpenDlg(module);
 		Exp_SRegKey(module);
 		Exp_SValueAnimator(module);
+		Exp_SMatrix(module);
 
 		return TRUE;
 	}

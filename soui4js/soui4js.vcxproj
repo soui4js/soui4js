@@ -331,6 +331,7 @@
     <ClInclude Include="exports\exp_MsgHandlerProxy.h" />
     <ClInclude Include="exports\exp_SAdapter.h" />
     <ClInclude Include="exports\exp_SDropTarget.h" />
+    <ClInclude Include="exports\exp_SMatrix.h" />
     <ClInclude Include="exports\exp_SMenu.h" />
     <ClInclude Include="exports\exp_SRegKey.h" />
     <ClInclude Include="exports\exp_SString.h" />
