@@ -2,7 +2,6 @@
 #include <string>
 #include <stdint.h>
 #include "md5.h"
-//#include <quickjs.h>
 
 std::string MDPrint(unsigned char digest[16])
 {

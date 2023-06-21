@@ -7,8 +7,18 @@
 
 using namespace qjsbind;
 
+/*
+ 手动实现输入输出参数转换时使用下面形式
+ */
+//Value Test(qjsbind::Context *ctx, ArgList& args) {
+//	SLOGI2("test") << args.size();
+//	return undefined_value;
+//}
+
+
 void Exp_Utils(qjsbind::Module* module)
 {
+	//module->ExportFunc("Test", &Test);
 	module->ExportFunc("Md5", &Md5);
 	module->ExportFunc("FileMd5", &FileMd5);
 	module->ExportFunc("FileMd5Ex", &FileMd5Ex);

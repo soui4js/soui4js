@@ -195,6 +195,10 @@ namespace qjsbind {
 		return undefined_value;
 	}
 
+	inline Value CFun(Context& context, Value(*fun)(Context *ctx,ArgList&), ArgList& arg_list) {
+		return fun(&context,arg_list);
+	}
+
 	template< typename P1>
 	Value CFun(Context& context, void(*fun)(P1), ArgList& arg_list) {
 		fun((P1)arg_list[0]);
