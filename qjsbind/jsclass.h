@@ -185,11 +185,11 @@ namespace qjsbind {
 		}
 
 		template<T *CTor(ArgList &)=0>
-		void AddCtor(BOOL bSetThis=FALSE) {
+		void AddCtor(BOOL bSetThis=FALSE,const char *clsName=nullptr) {
 			JSCFunctionMagic* fun = &ObjConstructor<T, JsClass<T>, CTor>;
-			JSValue constructor = JS_NewCFunctionMagic(context_, fun, class_name_, 0, JS_CFUNC_constructor_magic, bSetThis ?1:0);
+			JSValue constructor = JS_NewCFunctionMagic(context_, fun, clsName ? clsName : class_name_, 0, JS_CFUNC_constructor_magic, bSetThis ?1:0);
 			JS_SetConstructor(context_, constructor, prototype_);
-			module_->Export(class_name_, constructor);
+			module_->Export(clsName? clsName:class_name_, constructor);
 		}
 
 		template<typename MemFunc>

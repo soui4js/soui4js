@@ -24,7 +24,7 @@ void Exp_Basic(qjsbind::Module* module) {
 		JsClass<CRect> jsCls = module->ExportClass<CRect>("CRect");
 		jsCls.Init(JsClass<RECT>::class_id());
 		jsCls.AddCtor<qjsbind::constructor<CRect, int, int,int,int>>();
-		jsCls.AddCtor<qjsbind::constructor<CRect, RECT>>();
+		jsCls.AddCtor<qjsbind::constructor<CRect, RECT>>(FALSE,"CRect2");
 		jsCls.AddFunc("CenterPoint", &CRect::CenterPoint);
 		jsCls.AddFunc("Width", &CRect::Width);
 		jsCls.AddFunc("Height", &CRect::Height);
@@ -51,7 +51,7 @@ void Exp_Basic(qjsbind::Module* module) {
 		JsClass<CSize> jsCls = module->ExportClass<CSize>("CSize");
 		jsCls.Init(JsClass<SIZE>::class_id());
 		jsCls.AddCtor<qjsbind::constructor<CSize, int, int>>();
-		jsCls.AddCtor<qjsbind::constructor<CSize, int, int>>();
+		jsCls.AddCtor<qjsbind::constructor<CSize, SIZE>>(FALSE, "CSize2");
 	}
 	{
 		JsClass<SYSTEMTIME> jsCls = module->ExportClass<SYSTEMTIME>("SYSTEMTIME");
