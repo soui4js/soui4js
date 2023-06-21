@@ -181,4 +181,11 @@ SEnumInt(MK_SHIFT);
 module->ExportEnumInt32("RepeatMode_Restart", RESTART);
 module->ExportEnumInt32("RepeatMode_Reverse", REVERSE);
 
+SEnumInt(GSW_FIRSTCHILD);
+SEnumInt(GSW_LASTCHILD);
+SEnumInt(GSW_PREVSIBLING);
+SEnumInt(GSW_NEXTSIBLING);
+SEnumInt(GSW_OWNER);
+SEnumInt(GSW_PARENT);
+
 }
