@@ -1,4 +1,5 @@
 <img align="center" width=600 src="./doc/snapshot.png" />
+
 # soui4js-host使用方法
 ## soui4js-host是一个使用soui4js的示例，你可以认为它是一个PC版的小程序，默认参数下soui4js-host从服务器下载一个小程序列表，双击列表中的js小程序，会自动下载程序包（js+xml资源包）并解压运行。
 ## 这里提供了3个bat程序，run_host.bat, run_host_x64.bat分别启动32位及64位版本的soui4js-host, 小程序列表中有一个直播播放器，由于没有编译64位的播放器内核，只在32位版本中可以看到。
