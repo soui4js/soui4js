@@ -303,9 +303,11 @@ int RunAsAdmin(LPCSTR szFolder, LPCSTR szJs,BOOL waitEnd) {
 	return nRet;
 }
 
-BOOL MkPath(const std::string& path,const std::string &root) {
-	SStringT strPath = S_CA2T(path.c_str(), CP_UTF8);
-	SStringT strRoot = S_CA2T(root.c_str(), CP_UTF8);
+BOOL MkPath(LPCSTR path, LPCSTR root) {
+	if (!path || !root)
+		return FALSE;
+	SStringT strPath = S_CA2T(path, CP_UTF8);
+	SStringT strRoot = S_CA2T(root, CP_UTF8);
 
 	SStringT strFullPath;
 	if (!strRoot.IsEmpty()) {
@@ -316,19 +318,16 @@ BOOL MkPath(const std::string& path,const std::string &root) {
 	strPath.ReplaceChar('/', '\\');
 
 	struct _stat64i32 st;
-	int ret = _tstat(strFullPath+strPath, &st);
+	int ret = _tstat(strFullPath + strPath, &st);
 	if (ret == 0 && st.st_mode & _S_IFDIR) {
 		return TRUE;
 	}
-
-	TCHAR szCurDir[MAX_PATH];
-	GetCurrentDirectory(MAX_PATH, szCurDir);
 
 	BOOL bRet = TRUE;
 	SStringTList subPaths;
 	SplitString(strPath, '\\', subPaths);
 	for (UINT i = 0; i < subPaths.GetCount(); i++) {
-		strFullPath += subPaths[i];
+		strFullPath += subPaths[i] + _T('\\');
 		struct _stat64i32 st;
 		int ret = _tstat(strFullPath, &st);
 		if (ret != 0 || (st.st_mode & _S_IFDIR) == 0) {
@@ -338,9 +337,7 @@ BOOL MkPath(const std::string& path,const std::string &root) {
 				break;
 			}
 		}
-		strFullPath += '\\';
 	}
-	SetCurrentDirectory(szCurDir);
 	return bRet;
 }
 
