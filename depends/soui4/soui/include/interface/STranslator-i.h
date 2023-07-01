@@ -11,7 +11,8 @@
  * Describe
  */
 
-#pragma once
+#ifndef __STRANSLATOR_I__H__
+#define __STRANSLATOR_I__H__
 
 #include <interface/obj-ref-i.h>
 #include <interface/sstring-i.h>
@@ -66,7 +67,7 @@ DECLARE_INTERFACE_(ITranslator, IObjRef)
      * Describe
      */
     STDMETHOD_(void, GetName)(CTHIS_ wchar_t szBuf[TR_MAX_NAME_LEN]) SCONST PURE;
-    STDMETHOD_(void, GetNameA)(CTHIS_ IStringA *str) SCONST PURE;
+    STDMETHOD_(void, GetNameA)(CTHIS_ IStringA * str) SCONST PURE;
 
     /**
      * @brief 比较翻译的Name
@@ -74,8 +75,8 @@ DECLARE_INTERFACE_(ITranslator, IObjRef)
      * @return TRUE--相同
      */
 
-    STDMETHOD_(BOOL, NameEqual)(CTHIS_ LPCWSTR pszName)SCONST  PURE;
-    STDMETHOD_(BOOL, NameEqualA)(CTHIS_ const IStringA * str)SCONST  PURE;
+    STDMETHOD_(BOOL, NameEqual)(CTHIS_ LPCWSTR pszName) SCONST PURE;
+    STDMETHOD_(BOOL, NameEqualA)(CTHIS_ const IStringA *str) SCONST PURE;
 
     /**
      * guid
@@ -84,7 +85,7 @@ DECLARE_INTERFACE_(ITranslator, IObjRef)
      *
      * Describe
      */
-    STDMETHOD_(GUID, guid)(CTHIS)SCONST  PURE;
+    STDMETHOD_(GUID, guid)(CTHIS) SCONST PURE;
     /**
      * tr
      * @brief    执行翻译的接口
@@ -131,12 +132,12 @@ DECLARE_INTERFACE_(ITranslatorMgr, IObjRef)
      */
     STDMETHOD_(void, OnFinalRelease)(THIS) PURE;
 
-	/**
+    /**
      * IsValid
-	 * @brief 判断是否有效
+     * @brief 判断是否有效
      * @return TRUE-有效
-	*/
-	STDMETHOD_(BOOL,IsValid)(CTHIS) SCONST PURE;
+     */
+    STDMETHOD_(BOOL, IsValid)(CTHIS) SCONST PURE;
     /**
      * SetLanguage
      * @brief    设置翻译模块当前接受的语言
@@ -155,7 +156,7 @@ DECLARE_INTERFACE_(ITranslatorMgr, IObjRef)
      * Describe
      */
     STDMETHOD_(void, GetLanguage)(CTHIS_ wchar_t szOut[TR_MAX_NAME_LEN]) SCONST PURE;
-    STDMETHOD_(void, GetLanguageA)(CTHIS_ IStringA *out) SCONST PURE;
+    STDMETHOD_(void, GetLanguageA)(CTHIS_ IStringA * out) SCONST PURE;
 
     /**
      * CreateTranslator
@@ -200,3 +201,4 @@ DECLARE_INTERFACE_(ITranslatorMgr, IObjRef)
 };
 
 SNSEND
+#endif // __STRANSLATOR_I__H__

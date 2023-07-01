@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2006 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,8 @@
  * other objects. See the {@link android.view.animation animation package
  * description file}.
  */
-#pragma once
+#ifndef __SANIMATION_I__H__
+#define __SANIMATION_I__H__
 
 #include <interface/sinterpolator-i.h>
 #include <interface/sobject-i.h>
@@ -118,7 +119,7 @@ typedef enum ZAdjustment
 #define INTERFACE IAnimation
 DECLARE_INTERFACE_(IAnimation, IObject)
 {
-	DEF_OBJ_BASE(IAnimation,Animation)
+    DEF_OBJ_BASE(IAnimation, Animation)
 #include <interface/SobjectApi.h>
 
     STDMETHOD_(IAnimation *, clone)(CTHIS) SCONST PURE;
@@ -396,7 +397,7 @@ DECLARE_INTERFACE_(IAnimation, IObject)
     STDMETHOD_(BOOL, hasAlpha)(CTHIS) SCONST PURE;
 
     STDMETHOD_(void, initialize)
-    (THIS_ int width, int height, int parentWidth, int parentHeight,int nScale) PURE;
+    (THIS_ int width, int height, int parentWidth, int parentHeight, int nScale) PURE;
 
     STDMETHOD_(void, setUserData)(THIS_ ULONG_PTR data) PURE;
 
@@ -404,3 +405,4 @@ DECLARE_INTERFACE_(IAnimation, IObject)
 };
 
 SNSEND
+#endif // __SANIMATION_I__H__

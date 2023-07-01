@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef __SSPINBUTTONCTRL__H__
+#define __SSPINBUTTONCTRL__H__
 #include <core/SWnd.h>
 #include <interface/SCtrl-i.h>
 
@@ -19,7 +20,7 @@ class SOUI_EXP SSpinButtonCtrl : public TWindowProxy<ISpinButtonCtrl> {
     STDMETHOD_(IWindow *, GetIBuddy)(THIS) SCONST OVERRIDE;
 
   protected:
-    STDMETHOD_(void, GetDesiredSize)(THIS_ SIZE *psz,int nParentWid, int nParentHei) OVERRIDE;
+    STDMETHOD_(void, GetDesiredSize)(THIS_ SIZE *psz, int nParentWid, int nParentHei) OVERRIDE;
     virtual BOOL NeedRedrawWhenStateChange() OVERRIDE
     {
         return TRUE;
@@ -81,3 +82,5 @@ class SOUI_EXP SSpinButtonCtrl : public TWindowProxy<ISpinButtonCtrl> {
     ActionButton m_iActionBtn;
 };
 SNSEND
+
+#endif // __SSPINBUTTONCTRL__H__

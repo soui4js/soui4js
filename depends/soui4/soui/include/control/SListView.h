@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef __SLISTVIEW__H__
+#define __SLISTVIEW__H__
 
 #include "core/SItemPanel.h"
 #include "interface/SAdapter-i.h"
@@ -35,7 +36,7 @@ class SOUI_EXP SListView
 
     SItemPanel *HitTest(CPoint &pt) const;
 
-	STDMETHOD_(void, GetDesiredSize)(THIS_ SIZE *psz,int nParentWid, int nParentHei) OVERRIDE;
+    STDMETHOD_(void, GetDesiredSize)(THIS_ SIZE *psz, int nParentWid, int nParentHei) OVERRIDE;
 
   protected:
     virtual void OnItemSetCapture(SOsrPanel *pItem, BOOL bCapture);
@@ -147,3 +148,4 @@ class SOUI_EXP SListView
     BOOL m_bVertical;
 };
 SNSEND
+#endif // __SLISTVIEW__H__

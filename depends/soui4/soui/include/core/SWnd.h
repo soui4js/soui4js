@@ -11,7 +11,8 @@
  * Describe    SOUI基础DUI窗口模块
  */
 
-#pragma once
+#ifndef __SWND__H__
+#define __SWND__H__
 #include <core/SWindowMgr.h>
 #include <interface/SwndContainer-i.h>
 #include <interface/slayout-i.h>
@@ -57,13 +58,7 @@ enum
     NormalEnable = 0,
     ParentEnable = 1
 }; //提供WM_ENABLE消息识别是父窗口可用还是直接操作当前窗口
-enum
-{
-    UM_SETSCALE = (WM_USER + 1000),
-    UM_SETLANGUAGE,
-    UM_SETCOLORIZE,
-    UM_UPDATEFONT,
-};
+
 // State Define
 enum WndState
 {
@@ -1273,3 +1268,4 @@ class SOUI_EXP SWindow
 };
 
 SNSEND
+#endif // __SWND__H__

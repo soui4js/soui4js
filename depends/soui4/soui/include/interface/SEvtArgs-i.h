@@ -1,4 +1,5 @@
-#pragma once
+ï»¿#ifndef __SEVTARGS_I__H__
+#define __SEVTARGS_I__H__
 
 #include <interface/sobject-i.h>
 
@@ -8,72 +9,72 @@ SNSBEGIN
 #define INTERFACE IEvtArgs
 DECLARE_INTERFACE_(IEvtArgs, IObject)
 {
-	DEF_OBJ_BASE(IEvtArgs,Event)
+    DEF_OBJ_BASE(IEvtArgs, Event)
 #include <interface/SobjectApi.h>
 
     //-------------------------------------------------------------------------------------------
 
     /**
-     * @brief »ñÈ¡ÊÂ¼ş·¢ËÍ¶ÔÏó
-     * @return IObject *--ÊÂ¼ş·¢ËÍ¶ÔÏó
+     * @brief è·å–äº‹ä»¶å‘é€å¯¹è±¡
+     * @return IObject *--äº‹ä»¶å‘é€å¯¹è±¡
      */
     STDMETHOD_(IObject *, Sender)(THIS) PURE;
 
     /**
-     * @brief »ñÈ¡ÊÂ¼ş·¢ËÍ¶ÔÏóID
-     * @return int--ÊÂ¼ş·¢ËÍ¶ÔÏóID
+     * @brief è·å–äº‹ä»¶å‘é€å¯¹è±¡ID
+     * @return int--äº‹ä»¶å‘é€å¯¹è±¡ID
      */
     STDMETHOD_(int, IdFrom)(CTHIS) SCONST PURE;
 
     /**
-     * @brief ÉèÖÃÊÂ¼şµÄ·¢ËÍ¶ÔÏóID
-     * @param id int--·¢ËÍ¶ÔÏóID
+     * @brief è®¾ç½®äº‹ä»¶çš„å‘é€å¯¹è±¡ID
+     * @param id int--å‘é€å¯¹è±¡ID
      * @return
      */
     STDMETHOD_(void, SetIdFrom)(THIS_ int id) PURE;
 
     /**
-     * @brief »ñÈ¡ÊÂ¼ş·¢ËÍ¶ÔÏóName
-     * @return LPCWSTR--ÊÂ¼ş·¢ËÍ¶ÔÏóName
+     * @brief è·å–äº‹ä»¶å‘é€å¯¹è±¡Name
+     * @return LPCWSTR--äº‹ä»¶å‘é€å¯¹è±¡Name
      */
     STDMETHOD_(LPCWSTR, NameFrom)(CTHIS) SCONST PURE;
 
     /**
-     * @brief ÉèÖÃÊÂ¼ş·¢ËÍ¶ÔÏóName
-     * @param name LPCWSTR--ÊÂ¼ş·¢ËÍ¶ÔÏóName
+     * @brief è®¾ç½®äº‹ä»¶å‘é€å¯¹è±¡Name
+     * @param name LPCWSTR--äº‹ä»¶å‘é€å¯¹è±¡Name
      * @return
      */
     STDMETHOD_(void, SetNameFrom)(THIS_ LPCWSTR name) PURE;
 
     /**
-     * @brief »ñÈ¡ÊÂ¼şÊÇ·ñĞèÒªÃ°Åİ´«µİ
-     * @return BOOL TRUE--Ã°Åİ´«µİ
+     * @brief è·å–äº‹ä»¶æ˜¯å¦éœ€è¦å†’æ³¡ä¼ é€’
+     * @return BOOL TRUE--å†’æ³¡ä¼ é€’
      */
     STDMETHOD_(BOOL, IsBubbleUp)(CTHIS) SCONST PURE;
 
     /**
-     * @brief ÉèÖÃÊÂ¼şµÄÃ°Åİ´«µİ
-     * @param bBubbleUp BOOL, FALSE--ÖĞÖ¹´«µİ
+     * @brief è®¾ç½®äº‹ä»¶çš„å†’æ³¡ä¼ é€’
+     * @param bBubbleUp BOOL, FALSE--ä¸­æ­¢ä¼ é€’
      * @return
      */
     STDMETHOD_(void, SetBubbleUp)(THIS_ BOOL bBubbleUp) PURE;
 
     /**
-     * @brief »ñÈ¡ÊÂ¼ş´¦Àí´ÎÊı
-     * @return UINT ÊÂ¼ş´¦Àí´ÎÊı
+     * @brief è·å–äº‹ä»¶å¤„ç†æ¬¡æ•°
+     * @return UINT äº‹ä»¶å¤„ç†æ¬¡æ•°
      */
     STDMETHOD_(UINT, HandleCount)(CTHIS) SCONST PURE;
 
     /**
-     * @brief Ôö¼ÓÊÂ¼ş´¦Àí¼ÆÊı
+     * @brief å¢åŠ äº‹ä»¶å¤„ç†è®¡æ•°
      * @return
      */
     STDMETHOD_(void, IncreaseHandleCount)(THIS) PURE;
 
     /**
-     * @brief »ñÈ¡ÊÂ¼ş¶ÔÏó¹ØÁªµÄÊı¾İ½á¹¹ÌåÖ¸Õë
-     * @return ÊÂ¼ş¶ÔÏó¹ØÁªµÄÊı¾İ½á¹¹ÌåÖ¸Õë
-     * @remark ²»Í¬ÊÂ¼ş¶ÔÏó°üº¬²»Í¬µÄÊı¾İ£¬»ñÈ¡Ö¸ÕëÔÙ×ª»»Îª½á¹¹ÌåÖ¸Õë¡£Ö÷Òª¸øC½Ó¿ÚÊ¹ÓÃ¡£
+     * @brief è·å–äº‹ä»¶å¯¹è±¡å…³è”çš„æ•°æ®ç»“æ„ä½“æŒ‡é’ˆ
+     * @return äº‹ä»¶å¯¹è±¡å…³è”çš„æ•°æ®ç»“æ„ä½“æŒ‡é’ˆ
+     * @remark ä¸åŒäº‹ä»¶å¯¹è±¡åŒ…å«ä¸åŒçš„æ•°æ®ï¼Œè·å–æŒ‡é’ˆå†è½¬æ¢ä¸ºç»“æ„ä½“æŒ‡é’ˆã€‚ä¸»è¦ç»™Cæ¥å£ä½¿ç”¨ã€‚
      */
     STDMETHOD_(LPVOID, Data)(THIS) PURE;
 };
@@ -88,55 +89,56 @@ DECLARE_INTERFACE_(IEvtArgs, IObject)
 #define INTERFACE IEvtSlot
 DECLARE_INTERFACE_(IEvtSlot, IObjRef)
 {
-    //!Ìí¼ÓÒıÓÃ
+    //!æ·»åŠ å¼•ç”¨
     /*!
      */
     STDMETHOD_(long, AddRef)(THIS) PURE;
 
-    //!ÊÍ·ÅÒıÓÃ
+    //!é‡Šæ”¾å¼•ç”¨
     /*!
      */
     STDMETHOD_(long, Release)(THIS) PURE;
 
-    //!ÊÍ·Å¶ÔÏó
+    //!é‡Šæ”¾å¯¹è±¡
     /*!
      */
     STDMETHOD_(void, OnFinalRelease)(THIS) PURE;
 
     /**
-     * @brief Ö´ĞĞÊÂ¼ş
-     * @param pArg IEvtArgs* ÊÂ¼ş¶ÔÏó
-     * @return BOOL TRUE--ÏìÓ¦ÁËÊÂ¼ş£¬ÊÂ¼ş¶ÔÏóÔö¼ÓÊ¹ÓÃ¼ÆÊı, FALSE--ÊÂ¼şÃ»ÓĞÏìÓ¦
+     * @brief æ‰§è¡Œäº‹ä»¶
+     * @param pArg IEvtArgs* äº‹ä»¶å¯¹è±¡
+     * @return BOOL TRUE--å“åº”äº†äº‹ä»¶ï¼Œäº‹ä»¶å¯¹è±¡å¢åŠ ä½¿ç”¨è®¡æ•°, FALSE--äº‹ä»¶æ²¡æœ‰å“åº”
      */
     STDMETHOD_(BOOL, Run)(THIS_ IEvtArgs * pArg) PURE;
 
     /**
-     * @brief cloneÒ»¸öÊÂ¼ş²Û
-     * @return IEvtSlot * clone³öÀ´µÄ¶ÔÏó
+     * @brief cloneä¸€ä¸ªäº‹ä»¶æ§½
+     * @return IEvtSlot * cloneå‡ºæ¥çš„å¯¹è±¡
      */
     STDMETHOD_(IEvtSlot *, Clone)(CTHIS) SCONST PURE;
 
     /**
-     * @brief ÅĞ¶ÏÁ½¸öIEvtSlotÊÇ·ñÏàµÈ
-     * @param sour IEvtSlot * ±È½ÏµÄIEvtSlot
+     * @brief åˆ¤æ–­ä¸¤ä¸ªIEvtSlotæ˜¯å¦ç›¸ç­‰
+     * @param sour IEvtSlot * æ¯”è¾ƒçš„IEvtSlot
      * @return
      */
     STDMETHOD_(BOOL, Equal)(CTHIS_ const IEvtSlot *sour) SCONST PURE;
 
     /**
-     * @brief »ñÈ¡IEvtSlotÀàĞÍ
-     * @return UINT IEvtSlotÀàĞÍ
+     * @brief è·å–IEvtSlotç±»å‹
+     * @return UINT IEvtSlotç±»å‹
      */
     STDMETHOD_(UINT, GetSlotType)(CTHIS) SCONST PURE;
 };
 
 /**
- * @brief ÊÂ¼ş´¦Àí»Øµ÷
- * @param pEvt IEvtArgs * ÊÂ¼ş¶ÔÏó
- * @param Ctx void * ÊÂ¼ş´¦ÀíÉÏÏÂÎÄ
- * @return BOOL TRUE--ÊÂ¼ş±»´¦Àí£¬Ôö¼Ó´¦Àí¼ÆÊı
+ * @brief äº‹ä»¶å¤„ç†å›è°ƒ
+ * @param pEvt IEvtArgs * äº‹ä»¶å¯¹è±¡
+ * @param Ctx void * äº‹ä»¶å¤„ç†ä¸Šä¸‹æ–‡
+ * @return BOOL TRUE--äº‹ä»¶è¢«å¤„ç†ï¼Œå¢åŠ å¤„ç†è®¡æ•°
  */
 typedef BOOL (*FunCallback)(IEvtArgs *pEvt, void *Ctx);
 
 #define EventArgs IEvtArgs
 SNSEND
+#endif // __SEVTARGS_I__H__

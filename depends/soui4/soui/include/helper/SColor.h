@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef __SCOLOR__H__
+#define __SCOLOR__H__
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -26,7 +27,8 @@ class SColor {
         r = GetRValue(cr);
         g = GetGValue(cr);
         b = GetBValue(cr);
-        a = alpha;
+        a = GetAValue(cr);
+        updateAlpha(alpha);
     }
 
     SColor(COLORREF cr)
@@ -62,13 +64,19 @@ class SColor {
         r = GetRValue(cr);
         g = GetGValue(cr);
         b = GetBValue(cr);
-        a = alpha;
+        a = GetAValue(cr);
+        updateAlpha(alpha);
     }
 
     void updateAlpha(BYTE alpha)
     {
         if (alpha != 0xFF)
-            a = (a * alpha) >> 8;
+        {
+            if (a == 0xFF)
+                a = alpha;
+            else
+                a = (a * alpha) / 0xFF;
+        }
     }
 
     DWORD b : 8;
@@ -76,3 +84,4 @@ class SColor {
     DWORD r : 8;
     DWORD a : 8;
 };
+#endif // __SCOLOR__H__

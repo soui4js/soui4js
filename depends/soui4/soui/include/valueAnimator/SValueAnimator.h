@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __SVALUEANIMATOR__H__
+#define __SVALUEANIMATOR__H__
 /*
  * Copyright (C) 2010 The Android Open Source Project
  *
@@ -58,7 +59,7 @@ SNSBEGIN
 class SOUI_EXP SValueAnimator
     : public TObjRefImpl<SObjectImpl<IValueAnimator>>
     , ITimelineHandler {
-		DEF_SOBJECT(SObjectImpl<IValueAnimator>,L"valueAnimator")
+    DEF_SOBJECT(SObjectImpl<IValueAnimator>, L"valueAnimator")
   protected:
     /**
      * The first time that the animation's animateFrame() method is called. This time is used to
@@ -417,7 +418,7 @@ class SOUI_EXP SValueAnimator
   public:
     STDMETHOD_(void, start)(THIS_ ITimelineHandlersMgr *pContainer) OVERRIDE;
 
-	STDMETHOD_(void, end)(THIS) OVERRIDE;
+    STDMETHOD_(void, end)(THIS) OVERRIDE;
 
     STDMETHOD_(BOOL, isRunning)(THIS) SCONST OVERRIDE;
     ;
@@ -434,13 +435,17 @@ class SOUI_EXP SValueAnimator
      */
     STDMETHOD_(void, reverse)(THIS) OVERRIDE;
 
+	STDMETHOD_(IValueAnimator *, clone)(THIS) SCONST OVERRIDE;
+
+	STDMETHOD_(void, copy)(THIS_ const IValueAnimator *pSrc) OVERRIDE;
+
+  private:
     /**
      * @hide
      */
     bool canReverse();
 
-  private:
-    /**
+	/**
      * Called internally to end an animation by removing it from the animations list. Must be
      * called on the UI thread.
      */
@@ -542,7 +547,6 @@ class SOUI_EXP SValueAnimator
     void addAnimationCallback();
 
   protected:
-    virtual void copy(const IValueAnimator *pSrc);
 
     STDMETHOD_(void, OnNextFrame)(THIS_) OVERRIDE;
 };
@@ -564,8 +568,18 @@ class TValueAnimator : public SValueAnimator {
         return mValue;
     }
 
-  protected:
+	void setRange(T from,T to){
+		mValueEvaluator.setRange(from,to);
+	}
 
+	STDMETHOD_(void, copy)(THIS_ const IValueAnimator *pSrc) OVERRIDE{
+		SValueAnimator::copy(pSrc);
+		const TValueAnimator *src = (const TValueAnimator*)pSrc;
+		mValue = src->mValue;
+		mValueEvaluator.copy(&src->mValueEvaluator);
+	}
+
+  protected:
     STDMETHOD_(void, onEvaluateValue)(THIS_ float fraction) OVERRIDE
     {
         mValue = mValueEvaluator.evaluate(fraction);
@@ -587,19 +601,10 @@ class TValueAnimator : public SValueAnimator {
 class SOUI_EXP SIntAnimator : public TValueAnimator<int> {
     DEF_SOBJECT(TValueAnimator<int>, L"IntAnimator")
   public:
-    SIntAnimator()
-        : TValueAnimator<int>(0, 100)
-    {
-    }
-
-    STDMETHOD_(IValueAnimator *, clone)(THIS) SCONST OVERRIDE
-    {
-        SIntAnimator *pRet = new SIntAnimator();
-        pRet->mValueEvaluator.mStart = mValueEvaluator.mStart;
-        pRet->mValueEvaluator.mEnd = mValueEvaluator.mEnd;
-        pRet->copy(this);
-        return pRet;
-    }
+	  SIntAnimator()
+		  : TValueAnimator<int>(0, 100)
+	  {
+	  }
 
   public:
     SOUI_ATTRS_BEGIN()
@@ -608,22 +613,49 @@ class SOUI_EXP SIntAnimator : public TValueAnimator<int> {
     SOUI_ATTRS_END()
 };
 
+class SOUI_EXP SSizeAnimator : public TValueAnimator<SIZE> {
+	DEF_SOBJECT(TValueAnimator<SIZE>, L"SizeAnimator")
+public:
+	SSizeAnimator():TValueAnimator<SIZE>(CSize(),CSize()){}
+
+public:
+	SOUI_ATTRS_BEGIN()
+		ATTR_SIZE(L"valueFrom", mValueEvaluator.mStart, FALSE)
+		ATTR_SIZE(L"valueTo", mValueEvaluator.mEnd, FALSE)
+	SOUI_ATTRS_END()
+};
+
+class SOUI_EXP SPointAnimator : public TValueAnimator<POINT> {
+	DEF_SOBJECT(TValueAnimator<POINT>, L"PointAnimator")
+public:
+	SPointAnimator():TValueAnimator<POINT>(CPoint(),CPoint()){}
+
+public:
+	SOUI_ATTRS_BEGIN()
+		ATTR_POINT(L"valueFrom", mValueEvaluator.mStart, FALSE)
+		ATTR_POINT(L"valueTo", mValueEvaluator.mEnd, FALSE)
+	SOUI_ATTRS_END()
+};
+
+class SOUI_EXP SRectAnimator : public TValueAnimator<RECT> {
+	DEF_SOBJECT(TValueAnimator<RECT>, L"RectAnimator")
+public:
+	SRectAnimator():TValueAnimator<RECT>(CRect(),CRect()){}
+
+public:
+	SOUI_ATTRS_BEGIN()
+		ATTR_RECT(L"valueFrom", mValueEvaluator.mStart, FALSE)
+		ATTR_RECT(L"valueTo", mValueEvaluator.mEnd, FALSE)
+	SOUI_ATTRS_END()
+};
+
 class SOUI_EXP SFloatAnimator : public TValueAnimator<float> {
     DEF_SOBJECT(TValueAnimator<float>, L"FloatAnimator")
   public:
-    SFloatAnimator()
-        : TValueAnimator<float>(0.f, 1.f)
-    {
-    }
-
-    STDMETHOD_(IValueAnimator *, clone)(THIS) SCONST OVERRIDE
-    {
-        SFloatAnimator *pRet = new SFloatAnimator();
-        pRet->mValueEvaluator.mStart = mValueEvaluator.mStart;
-        pRet->mValueEvaluator.mEnd = mValueEvaluator.mEnd;
-        pRet->copy(this);
-        return pRet;
-    }
+	  SFloatAnimator()
+		  : TValueAnimator<float>(0.f, 1.f)
+	  {
+	  }
 
   public:
     SOUI_ATTRS_BEGIN()
@@ -634,40 +666,15 @@ class SOUI_EXP SFloatAnimator : public TValueAnimator<float> {
 
 class SOUI_EXP SColorAnimator : public TValueAnimator<COLORREF> {
     DEF_SOBJECT(TValueAnimator<COLORREF>, L"ColorAnimator")
-
-  protected:
-    COLORREF mStart, mEnd;
-
   public:
-    SColorAnimator()
-        : TValueAnimator<COLORREF>(0, 0)
-        , mStart(0)
-        , mEnd(0)
-    {
-    }
-
-    STDMETHOD_(IValueAnimator *, clone)(THIS) SCONST OVERRIDE
-    {
-        SColorAnimator *pRet = new SColorAnimator();
-        pRet->mValueEvaluator.setStart(mStart);
-        pRet->mValueEvaluator.setEnd(mEnd);
-        pRet->copy(this);
-        return pRet;
-    }
+	  SColorAnimator()
+		  : TValueAnimator<COLORREF>(0, 0)
+	  {
+	  }
 
   protected:
-    HRESULT OnAttrFrom(const SStringW &strValue, BOOL bLoading)
-    {
-        mStart = GETCOLOR(strValue);
-        mValueEvaluator.setStart(mStart);
-        return S_FALSE;
-    }
-    HRESULT OnAttrTo(const SStringW &strValue, BOOL bLoading)
-    {
-        mEnd = GETCOLOR(strValue);
-        mValueEvaluator.setEnd(mEnd);
-        return S_FALSE;
-    }
+    HRESULT OnAttrFrom(const SStringW &strValue, BOOL bLoading);
+    HRESULT OnAttrTo(const SStringW &strValue, BOOL bLoading);
 
     SOUI_ATTRS_BEGIN()
         ATTR_CUSTOM(L"valueFrom", OnAttrFrom)
@@ -675,4 +682,33 @@ class SOUI_EXP SColorAnimator : public TValueAnimator<COLORREF> {
     SOUI_ATTRS_END()
 };
 
+
+class SOUI_EXP SAnimatorGroup :  public TObjRefImpl<IAnimatorGroup> ,public IAnimatorListener{
+public:
+	enum AniState{
+		idle,
+		started,
+		running,
+	};
+	SAnimatorGroup();
+
+	~SAnimatorGroup();
+
+	STDMETHOD_(BOOL,AddAnimator)(THIS_ IValueAnimator* ani) OVERRIDE;
+
+	STDMETHOD_(BOOL,RemoveAnimator)(THIS_ IValueAnimator* ani) OVERRIDE;
+
+	STDMETHOD_(void,SetListener)(THIS_ IAnimatorGroupListerer*listener) OVERRIDE;
+
+protected:
+	STDMETHOD_(void, onAnimationStart)(THIS_ IValueAnimator* pAnimator);
+	STDMETHOD_(void, onAnimationRepeat)(THIS_ IValueAnimator* pAnimator) {}
+	STDMETHOD_(void, onAnimationEnd)(THIS_ IValueAnimator* pAnimator);
+
+protected:
+	typedef SMap<IValueAnimator*, AniState> AnimatorStateMap;
+	AnimatorStateMap m_lstAnimator;
+	IAnimatorGroupListerer * m_listener;
+};
 SNSEND
+#endif // __SVALUEANIMATOR__H__

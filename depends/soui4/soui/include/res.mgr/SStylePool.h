@@ -11,7 +11,8 @@
  * Describe    管理Style
  */
 
-#pragma once
+#ifndef __SSTYLEPOOL__H__
+#define __SSTYLEPOOL__H__
 #include <core/SSingletonMap.h>
 #include <interface/obj-ref-i.h>
 #include <helper/obj-ref-impl.hpp>
@@ -54,7 +55,6 @@ class SOUI_EXP SStylePool
     SXmlDoc m_xmlDoc;
 };
 
-
 class SOUI_EXP STemplatePool
     : public SCmnMap<SStringW, SStringW>
     , public TObjRefImpl<IObjRef> {
@@ -72,3 +72,4 @@ class SOUI_EXP STemplatePool
 };
 
 SNSEND
+#endif // __SSTYLEPOOL__H__

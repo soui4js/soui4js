@@ -11,7 +11,8 @@
  * Describe    管理Skin Object
  */
 
-#pragma once
+#ifndef __SSKINPOOL__H__
+#define __SSKINPOOL__H__
 #include <core/SSingletonMap.h>
 #include <interface/Sskinobj-i.h>
 #include <helper/obj-ref-impl.hpp>
@@ -145,5 +146,5 @@ class SOUI_EXP SSkinPool
 #endif
 };
 
-
 SNSEND
+#endif // __SSKINPOOL__H__

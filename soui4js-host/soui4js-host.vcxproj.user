@@ -16,13 +16,12 @@
     <LocalDebuggerCommand>..\bin64\$(TargetFileName)</LocalDebuggerCommand>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments>D:\qjs\somine</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>D:\soxxl</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommand>..\bin\$(TargetFileName)</LocalDebuggerCommand>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommandArguments>
-    </LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>D:\soxxl</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommand>..\bin64\$(TargetFileName)</LocalDebuggerCommand>
   </PropertyGroup>

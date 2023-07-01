@@ -1,7 +1,8 @@
 ﻿/*
 SOUI窗口布局接口
 */
-#pragma once
+#ifndef __SLAYOUT_I__H__
+#define __SLAYOUT_I__H__
 
 #include <interface/sobject-i.h>
 
@@ -29,7 +30,7 @@ enum
 #define INTERFACE ILayoutParam
 DECLARE_INTERFACE_(ILayoutParam, IObject)
 {
-	DEF_OBJ_BASE(ILayoutParam,LayoutParam)
+    DEF_OBJ_BASE(ILayoutParam, LayoutParam)
 #include <interface/SobjectApi.h>
 
     //----------------------------------------------------------
@@ -108,7 +109,7 @@ DECLARE_INTERFACE_(ILayoutParam, IObject)
 #define INTERFACE ILayout
 DECLARE_INTERFACE_(ILayout, IObject)
 {
-DEF_OBJ_BASE(ILayout,Layout)
+    DEF_OBJ_BASE(ILayout, Layout)
 #include <interface/SobjectApi.h>
     //------------------------------------------------------------------------
 
@@ -144,3 +145,4 @@ DEF_OBJ_BASE(ILayout,Layout)
 };
 
 SNSEND
+#endif // __SLAYOUT_I__H__
