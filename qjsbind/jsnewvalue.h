@@ -26,7 +26,7 @@ namespace qjsbind {
 			SetSafeThis(obj, _v);
 			return obj;
 		}
-		return undefined_value;
+		return NewValue(context,(void*)v);
 	}
 
 	template<>
@@ -66,21 +66,13 @@ namespace qjsbind {
 	template<>
 	inline Value NewValue(Context& context, long v)
 	{
-#ifdef WIN64
-		return Value(context.context(), JS_NewInt64(context.context(), v));
-#else
 		return Value(context.context(), JS_NewInt32(context.context(), v));
-#endif
 	}
 
 	template<>
 	inline Value NewValue(Context& context, unsigned long v)
 	{
-#ifdef WIN64
-		return Value(context.context(), JS_NewBigUint64(context.context(), v));
-#else
 		return Value(context.context(), JS_NewUint32(context.context(), v));
-#endif
 	}
 
 	template<>

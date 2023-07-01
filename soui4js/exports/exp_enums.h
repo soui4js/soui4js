@@ -4,6 +4,8 @@
 #include <event/SEvents.h>
 #include <core/SDefine.h>
 #include "exp_SRegKey.h"
+#include "exp_SValueAnimator.h"
+
 using namespace SOUI;
 
 #define SEnumInt(x) module->ExportEnumInt32(#x, x)
@@ -33,6 +35,7 @@ SEnumInt(EVT_KEYDOWN);
 SEnumInt(EVT_MOUSE_HOVER);
 SEnumInt(EVT_MOUSE_LEAVE);
 SEnumInt(EVT_CMD);
+SEnumInt(EVT_MENU_CMD);
 SEnumInt(EVT_CTXMENU);
 SEnumInt(EVT_SCROLLVIEW_ORIGINCHANGED);
 SEnumInt(EVT_SCROLLVIEW_SIZECHANGED);
@@ -187,5 +190,24 @@ SEnumInt(GSW_PREVSIBLING);
 SEnumInt(GSW_NEXTSIBLING);
 SEnumInt(GSW_OWNER);
 SEnumInt(GSW_PARENT);
+
+
+SEnumInt(Ani_None);
+SEnumInt(Ani_Int);
+SEnumInt(Ani_Float);
+SEnumInt(Ani_Color);
+SEnumInt(Ani_Point);
+SEnumInt(Ani_Size);
+SEnumInt(Ani_Rect);
+SEnumInt(Ani_Unknown);
+
+SEnumInt(CP_UTF8);
+SEnumInt(CP_ACP);
+SEnumInt(CP_OEMCP);
+SEnumInt(CP_MACCP);
+
+SEnumInt(SBA_MOUSE_DOWN);
+SEnumInt(SBA_MOUSE_MOVING);
+SEnumInt(SBA_MOUSE_UP);
 
 }

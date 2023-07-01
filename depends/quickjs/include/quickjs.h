@@ -674,6 +674,9 @@ static inline JS_BOOL JS_IsObject(JSValueConst v)
 
 /* return -1 if exception (proxy case) or TRUE/FALSE */
 QJS_API int JS_IsArray(JSContext *ctx, JSValueConst val);
+QJS_API int JS_IsArrayBuffer(JSContext* ctx, JSValueConst val);
+QJS_API int JS_IsTypedArrayBuffer(JSContext* ctx, JSValueConst val);
+
 QJS_API JSClassID JS_GetClassID(JSValueConst v);
 QJS_API JSValue JS_Throw(JSContext *ctx, JSValue obj);
 QJS_API JSValue JS_GetException(JSContext *ctx);

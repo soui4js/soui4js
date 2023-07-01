@@ -18,4 +18,5 @@ void Exp_ISouiFactory(qjsbind::Module *module)
 	jsCls.AddFunc("CreateMenu", &ISouiFactory::CreateMenu);
 	jsCls.AddFunc("CreateMenuEx", &ISouiFactory::CreateMenuEx);
 	jsCls.AddFunc("CreateTimer", &ISouiFactory::CreateTimer);
+	jsCls.AddFunc("CreateAnimatorGroup", &ISouiFactory::CreateAnimatorGroup);
 }

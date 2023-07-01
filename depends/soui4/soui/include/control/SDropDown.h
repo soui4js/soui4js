@@ -14,7 +14,8 @@
  *             为了接收鼠标消息，我们在窗口显示后调用SetCapture来截获鼠标消息。SetCapture会有一个副作用，
  *             窗口中将收不到WM_SETCURSOR消息，因此在PreTranslateMessage函数中通过WM_MOUSEMOVE消息来模拟WM_SETCURSOR
  */
-#pragma once
+#ifndef __SDROPDOWN__H__
+#define __SDROPDOWN__H__
 #include "core/shostwnd.h"
 
 SNSBEGIN
@@ -63,7 +64,8 @@ struct ISDropDownOwner
 class SOUI_EXP SDropDownWnd
     : public SHostWnd
     , public IMsgFilter {
-	typedef SHostWnd __baseCls;
+    typedef SHostWnd __baseCls;
+
   public:
     /**
      * SDropDownWnd::SDropDownWnd
@@ -243,3 +245,4 @@ class SOUI_EXP SDropDownWnd
 };
 
 SNSEND
+#endif // __SDROPDOWN__H__

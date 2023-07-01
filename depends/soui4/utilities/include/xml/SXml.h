@@ -1,13 +1,15 @@
-#pragma once
+﻿#ifndef __SXML__H__
+#define __SXML__H__
 #include <utilities.h>
 #include <utilities-def.h>
 #include <interface/sxml-i.h>
 #include <helper/obj-ref-impl.hpp>
 #include <pugixml/pugixml.hpp>
+#include <souicoll.h>
 
 SNSBEGIN
 
-class UTILITIES_API SXmlAttr : public TObjRefImpl<IXmlAttr>
+class UTILITIES_API SXmlAttr : public IXmlAttr
 {
 	friend class SXmlNode;
 private:
@@ -86,7 +88,7 @@ public:
 	SXmlAttr previous_attribute() const;
 };
 
-class UTILITIES_API SXmlNode : public TObjRefImpl<IXmlNode>
+class UTILITIES_API SXmlNode : public IXmlNode
 {
 	friend class SXmlDoc;
 private:
@@ -165,7 +167,7 @@ public:
 	STDMETHOD_(BOOL, RemoveChild)(THIS_ const wchar_t* name) OVERRIDE{
 		return !!remove_child(name);
 	}
-	STDMETHOD_(BOOL, RemoveAllChilden)(THIS_ const wchar_t* name) OVERRIDE{
+	STDMETHOD_(BOOL, RemoveAllChilden)(THIS) OVERRIDE{
 		return !!remove_children();
 	}
 public:
@@ -283,9 +285,21 @@ public:
 
 class UTILITIES_API SXmlDoc : public TObjRefImpl<IXmlDoc>
 {
+	friend class SXmlAttr;
+	friend class SXmlNode;
 private:
 	pugi::xml_document *_doc;
 	mutable pugi::xml_parse_result _result;
+
+	typedef SMap<pugi::xml_attribute_struct *,SXmlAttr*> AttrMap;
+	AttrMap *m_attrMap;
+	typedef SMap<pugi::xml_node_struct *,SXmlNode*> NodeMap;
+	NodeMap *m_nodeMap;
+
+	IXmlAttr * toIXmlAttr(pugi::xml_attribute_struct *pAttr);
+	IXmlNode * toIXmlNode(pugi::xml_node_struct* pNode);
+
+	void clearMap();
 public:
 	SXmlDoc();
 	~SXmlDoc();
@@ -358,3 +372,5 @@ public:
 
 
 SNSEND
+
+#endif // __SXML__H__

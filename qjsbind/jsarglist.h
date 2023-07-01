@@ -53,6 +53,12 @@ namespace qjsbind {
 			}
 			return args_[idx];
 		}
+
+		Value* parg(size_t idx) {
+			if (idx >= size_)
+				return NULL;
+			return &args_[idx];
+		}
 	private:
 		QJS_DISALLOW_COPY_AND_ASSIGN(ArgList);
 		size_t size_;

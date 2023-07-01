@@ -3,7 +3,8 @@
 //     Version: 2012.12.16 - 1.1 - Create
 //////////////////////////////////////////////////////////////////////////
 
-#pragma once
+#ifndef __STREECTRL__H__
+#define __STREECTRL__H__
 #include "core/SPanel.h"
 #include "STree.h"
 
@@ -51,9 +52,9 @@ typedef struct tagTVITEM
     {
         nImage = -1;
         nSelectedImage = -1;
-        lParam = NULL;
+        lParam = 0;
 
-        hItem = NULL;
+        hItem = 0;
         bCollapsed = FALSE;
         bVisible = TRUE;
         bHasChildren = FALSE;
@@ -84,11 +85,12 @@ class SOUI_EXP STreeCtrl
   public:
     STDMETHOD_(HSTREEITEM, InsertItem)
     (THIS_ LPCTSTR lpszItem, int nImage, int nSelectedImage, LPARAM lParam, HSTREEITEM hParent = STVI_ROOT, HSTREEITEM hInsertAfter = STVI_LAST) OVERRIDE;
-	STDMETHOD_(HSTREEITEM, InsertItemA)
-		(THIS_ LPCSTR lpszItem, int nImage, int nSelectedImage, LPARAM lParam, HSTREEITEM hParent = STVI_ROOT, HSTREEITEM hInsertAfter = STVI_LAST) OVERRIDE{
-			SStringT str = S_CA2T(lpszItem,CP_UTF8);
-			return InsertItem(str,nImage,nSelectedImage,lParam,hParent,hInsertAfter);
-	}
+    STDMETHOD_(HSTREEITEM, InsertItemA)
+    (THIS_ LPCSTR lpszItem, int nImage, int nSelectedImage, LPARAM lParam, HSTREEITEM hParent = STVI_ROOT, HSTREEITEM hInsertAfter = STVI_LAST) OVERRIDE
+    {
+        SStringT str = S_CA2T(lpszItem, CP_UTF8);
+        return InsertItem(str, nImage, nSelectedImage, lParam, hParent, hInsertAfter);
+    }
 
     STDMETHOD_(BOOL, RemoveItem)(THIS_ HSTREEITEM hItem) OVERRIDE;
     STDMETHOD_(void, RemoveAllItems)(THIS) OVERRIDE;
@@ -109,19 +111,20 @@ class SOUI_EXP STreeCtrl
     STDMETHOD_(BOOL, SelectItem)(THIS_ HSTREEITEM hItem, BOOL bEnsureVisible = TRUE) OVERRIDE;
 
     STDMETHOD_(BOOL, GetItemText)(THIS_ HSTREEITEM hItem, IStringT *strText) SCONST OVERRIDE;
-	STDMETHOD_(BOOL, GetItemTextA)(THIS_ HSTREEITEM hItem, IStringA *strText) SCONST OVERRIDE{
-		SStringT strBuf;
-		BOOL bRet = GetItemText(hItem,&strBuf);
-		SStringA strBufA = S_CT2A(strBuf,CP_UTF8);
-		strText->Copy(&strBufA);
-		return bRet;
-	}
+    STDMETHOD_(BOOL, GetItemTextA)(THIS_ HSTREEITEM hItem, IStringA *strText) SCONST OVERRIDE
+    {
+        SStringT strBuf;
+        BOOL bRet = GetItemText(hItem, &strBuf);
+        SStringA strBufA = S_CT2A(strBuf, CP_UTF8);
+        strText->Copy(&strBufA);
+        return bRet;
+    }
     STDMETHOD_(BOOL, SetItemText)(THIS_ HSTREEITEM hItem, LPCTSTR lpszItem) OVERRIDE;
-	STDMETHOD_(BOOL, SetItemTextA)(THIS_ HSTREEITEM hItem, LPCSTR lpszItem) OVERRIDE
-	{
-		SStringT str = S_CA2T(lpszItem,CP_UTF8);
-		return SetItemText(hItem,str);
-	}
+    STDMETHOD_(BOOL, SetItemTextA)(THIS_ HSTREEITEM hItem, LPCSTR lpszItem) OVERRIDE
+    {
+        SStringT str = S_CA2T(lpszItem, CP_UTF8);
+        return SetItemText(hItem, str);
+    }
     STDMETHOD_(BOOL, GetItemImage)
     (THIS_ HSTREEITEM hItem, int *nImage, int *nSelectedImage) SCONST OVERRIDE;
     STDMETHOD_(BOOL, SetItemImage)(THIS_ HSTREEITEM hItem, int nImage, int nSelectedImage) OVERRIDE;
@@ -234,7 +237,7 @@ class SOUI_EXP STreeCtrl
         ATTR_BOOL(L"rightClickSel", m_bRightClickSel, TRUE)
         ATTR_SKIN(L"itemBkgndSkin", m_pItemBgSkin, TRUE)
         ATTR_SKIN(L"itemSelSkin", m_pItemSelSkin, TRUE)
-		ATTR_SKIN(L"lineSkin", m_pLineSkin, TRUE)
+        ATTR_SKIN(L"lineSkin", m_pLineSkin, TRUE)
         ATTR_SKIN(L"toggleSkin", m_pToggleSkin, TRUE)
         ATTR_SKIN(L"iconSkin", m_pIconSkin, TRUE)
         ATTR_SKIN(L"checkSkin", m_pCheckSkin, TRUE)
@@ -272,3 +275,5 @@ class SOUI_EXP STreeCtrl
 };
 
 SNSEND
+
+#endif // __STREECTRL__H__

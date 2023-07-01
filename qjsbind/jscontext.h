@@ -213,7 +213,6 @@ namespace qjsbind {
 		friend class Value;
 		friend class Module;
 
-		void Init();
 		std::unique_ptr<Module> GetModule(JSModuleDef* m);
 
 		JSContext* context_;

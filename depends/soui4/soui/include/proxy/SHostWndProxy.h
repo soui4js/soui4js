@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __SHOSTWNDPROXY__H__
+#define __SHOSTWNDPROXY__H__
 
 SNSBEGIN
 
@@ -377,7 +378,14 @@ public:
 	STDMETHOD_(void,ShowHostWnd)(THIS_ int uShowCmd,BOOL bWaitAniDone) OVERRIDE{
 		return SHostWnd::ShowHostWnd(uShowCmd,bWaitAniDone);
 	}
+	STDMETHOD_(void, EnablePrivateUiDef)(THIS_ BOOL bEnable) OVERRIDE{
+		return SHostWnd::EnablePrivateUiDef(bEnable);
+	}
+	STDMETHOD_(void, SetScale)(THIS_ int nScale,LPCRECT pDestRect){
+		return SHostWnd::SetScale(nScale,pDestRect);
+	}
 
 };
 
 SNSEND
+#endif // __SHOSTWNDPROXY__H__

@@ -1,4 +1,5 @@
-#pragma once
+ï»¿#ifndef __SXML_I__H__
+#define __SXML_I__H__
 
 #include <interface/obj-ref-i.h>
 #include <interface/sstring-i.h>
@@ -8,23 +9,8 @@ SNSBEGIN
 
 #undef INTERFACE
 #define INTERFACE IXmlAttr
-DECLARE_INTERFACE_(IXmlAttr,IObjRef)
+DECLARE_INTERFACE(IXmlAttr)
 {
-	//!Ìí¼ÓÒýÓÃ
-	/*!
-	*/
-	STDMETHOD_(long,AddRef) (THIS) PURE;
-
-	//!ÊÍ·ÅÒýÓÃ
-	/*!
-	*/
-	STDMETHOD_(long,Release) (THIS) PURE;
-
-	//!ÊÍ·Å¶ÔÏó
-	/*!
-	*/
-	STDMETHOD_(void,OnFinalRelease) (THIS) PURE;
-
 	STDMETHOD_(LPVOID,GetPrivPtr)(CTHIS) SCONST PURE;
 
 	// Check if attribute is empty
@@ -63,23 +49,8 @@ typedef enum _XmlNodeType
 
 #undef INTERFACE
 #define INTERFACE IXmlNode
-DECLARE_INTERFACE_(IXmlNode,IObjRef)
+DECLARE_INTERFACE(IXmlNode)
 {
-	//!Ìí¼ÓÒýÓÃ
-	/*!
-	*/
-	STDMETHOD_(long,AddRef) (THIS) PURE;
-
-	//!ÊÍ·ÅÒýÓÃ
-	/*!
-	*/
-	STDMETHOD_(long,Release) (THIS) PURE;
-
-	//!ÊÍ·Å¶ÔÏó
-	/*!
-	*/
-	STDMETHOD_(void,OnFinalRelease) (THIS) PURE;
-
 	STDMETHOD_(void,ToString)(CTHIS_ IStringW *out) SCONST PURE;
 
 	STDMETHOD_(LPVOID,GetPrivPtr)(CTHIS) SCONST PURE;
@@ -123,7 +94,7 @@ DECLARE_INTERFACE_(IXmlNode,IObjRef)
 
 	STDMETHOD_(BOOL, RemoveAttribute)(THIS_ const wchar_t* name) PURE;
 	STDMETHOD_(BOOL, RemoveChild)(THIS_ const wchar_t* name) PURE;
-	STDMETHOD_(BOOL, RemoveAllChilden)(THIS_ const wchar_t* name) PURE;
+	STDMETHOD_(BOOL, RemoveAllChilden)(THIS) PURE;
 };
 
 typedef enum _XmlStatus
@@ -251,17 +222,17 @@ typedef struct _XmlParseResult
 #define INTERFACE IXmlDoc
 DECLARE_INTERFACE_(IXmlDoc,IObjRef)
 {
-	//!Ìí¼ÓÒýÓÃ
+	//!æ·»åŠ å¼•ç”¨
 	/*!
 	*/
 	STDMETHOD_(long,AddRef) (THIS) PURE;
 
-	//!ÊÍ·ÅÒýÓÃ
+	//!é‡Šæ”¾å¼•ç”¨
 	/*!
 	*/
 	STDMETHOD_(long,Release) (THIS) PURE;
 
-	//!ÊÍ·Å¶ÔÏó
+	//!é‡Šæ”¾å¯¹è±¡
 	/*!
 	*/
 	STDMETHOD_(void,OnFinalRelease) (THIS) PURE;
@@ -313,3 +284,5 @@ typedef SOUI::IXmlDoc * IXmlDocPtr;
 typedef IXmlDoc * IXmlDocPtr;
 #endif
 
+
+#endif // __SXML_I__H__

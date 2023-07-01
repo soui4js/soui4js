@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef __SMENU__H__
+#define __SMENU__H__
 
 #include <sobject/Sobject.hpp>
 #include <core/SNativeWnd.h>
@@ -163,12 +164,12 @@ class SOwnerDraw {
             // return default height for a system font
             T *pT = static_cast<T *>(this);
             HWND hWnd = pT->GetDlgItem(lpMeasureItemStruct->CtlID);
-            HDC dc = GetDC(hWnd);
+            HDC dc = ::GetDC(hWnd);
             TEXTMETRIC tm = { 0 };
             GetTextMetrics(dc, &tm);
 
             lpMeasureItemStruct->itemHeight = tm.tmHeight;
-            ReleaseDC(dc);
+            ::ReleaseDC(hWnd, dc);
         }
         else
             lpMeasureItemStruct->itemHeight = ::GetSystemMetrics(SM_CYMENU);
@@ -238,7 +239,7 @@ class SOUI_EXP SMenu : public TObjRefImpl<IMenu> {
 
     STDMETHOD_(BOOL, LoadMenu)(THIS_ LPCTSTR resId) OVERRIDE;
 
-	STDMETHOD_(BOOL, LoadMenuA)(THIS_ LPCSTR resId) OVERRIDE;
+    STDMETHOD_(BOOL, LoadMenuU8)(THIS_ LPCSTR resId) OVERRIDE;
 
     STDMETHOD_(BOOL, LoadMenu2)(THIS_ IXmlNode *xmlMenu) OVERRIDE;
 
@@ -279,6 +280,8 @@ class SOUI_EXP SMenu : public TObjRefImpl<IMenu> {
 
     STDMETHOD_(HMENU, GetSubMenu)(THIS_ int nPos) OVERRIDE;
 
+    STDMETHOD_(BOOL, GetMenuString)(THIS_ UINT uPosition, UINT uFlags, IStringT *lpItemString) OVERRIDE;
+
   protected:
     void UpdateScale(int nScale);
     void BuildMenu(HMENU menuPopup, SXmlNode xmlNode);
@@ -293,3 +296,4 @@ class SOUI_EXP SMenu : public TObjRefImpl<IMenu> {
 };
 
 SNSEND
+#endif // __SMENU__H__

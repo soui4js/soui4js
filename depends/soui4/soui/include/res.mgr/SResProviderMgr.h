@@ -1,9 +1,11 @@
-﻿#pragma once
+﻿#ifndef __SRESPROVIDERMGR__H__
+#define __SRESPROVIDERMGR__H__
 
 #include <interface/sresprovidermgr-i.h>
 #include <atl.mini/scomcli.h>
-#include <helper/SCriticalSection.h>
 #include <layout/SLayoutSize.h>
+#include <helper/SCriticalSection.h>
+#include <helper/SAutoBuf.h>
 
 SNSBEGIN
 
@@ -17,8 +19,8 @@ class SOUI_EXP SResProviderMgr : public IResProviderMgr {
     STDMETHOD_(void, AddResProvider)
     (THIS_ IResProvider *pResProvider, LPCTSTR pszUidef DEF_VAL(_T("uidef:xml_init"))) OVERRIDE;
 
-	STDMETHOD_(void, AddResProviderA)
-		(THIS_ IResProvider *pResProvider, LPCSTR pszUidef DEF_VAL("uidef:xml_init")) OVERRIDE;
+    STDMETHOD_(void, AddResProviderA)
+    (THIS_ IResProvider *pResProvider, LPCSTR pszUidef DEF_VAL("uidef:xml_init")) OVERRIDE;
 
     STDMETHOD_(void, RemoveResProvider)(THIS_ IResProvider *pResProvider) OVERRIDE;
 
@@ -59,6 +61,8 @@ class SOUI_EXP SResProviderMgr : public IResProviderMgr {
     //使用name:size形式的字符串加载图标，如果没有size,则默认系统图标SIZE
     HICON LoadIcon2(const SStringW &strIconID);
 
+    BOOL LoadRawBuffer(LPCTSTR pszType, LPCTSTR pszResName, IResProvider *pResProvider, SAutoBuf &buf);
+
   protected:
 #ifdef _DEBUG
     static BOOL CALLBACK CheckUsage(LPCTSTR pszName, LPCTSTR pszType, LPARAM lp);
@@ -84,3 +88,4 @@ class SOUI_EXP SResProviderMgr : public IResProviderMgr {
 };
 
 SNSEND
+#endif // __SRESPROVIDERMGR__H__

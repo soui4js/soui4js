@@ -121,7 +121,8 @@ Context::Context(Runtime* runtime)
 	, log_func_(NULL)
 	, is_attach_(false)
 {
-	Init();
+	JS_SetContextOpaque(context_, this);
+	js_std_set_worker_new_context_func(JS_NewCustomContext);
 }
 
 Context::Context(JSContext* context)
@@ -129,7 +130,10 @@ Context::Context(JSContext* context)
 	, log_func_(NULL)
 	, is_attach_(true)
 {
-	if(context_)Init();
+	if (context_)
+	{
+		JS_SetContextOpaque(context_, this);
+	}
 }
 
 Context::~Context() {
@@ -152,12 +156,6 @@ JSClassID Context::GetParentClassId(JSClassID classid) {
 	}
 	return 0;
 }
-
-void Context::Init() {
-	JS_SetContextOpaque(context_, this);
-	if(!is_attach_) js_std_set_worker_new_context_func(JS_NewCustomContext);
-}
-
 
 void Context::ExecuteJobs() {
 	JSContext* ctx1;
@@ -248,24 +246,33 @@ void Context::DumpError() const{
 //-------------------------------------------------------------
 
 uint8_t* WeakValue::ToBuffer(size_t* psize) const {
-	size_t aoffset, asize, size;
-	JSValue abuf = JS_GetTypedArrayBuffer(context_, value_, &aoffset, &asize, NULL);
-	if (JS_IsException(abuf)) {
-		Context::get(context_)->DumpError();
+	if (JS_IsArrayBuffer(context_, value_)) {
+		return JS_GetArrayBuffer(context_, psize, value_);
+	}
+	else if (JS_IsTypedArrayBuffer(context_, value_)) {
+		size_t aoffset, asize, size;
+		JSValue abuf = JS_GetTypedArrayBuffer(context_, value_, &aoffset, &asize, NULL);
+		if (JS_IsException(abuf)) {
+			Context::get(context_)->DumpError();
+			return nullptr;
+		}
+
+		uint8_t* buf = JS_GetArrayBuffer(context_, &size, abuf);
+		if (buf) {
+			buf += aoffset;
+			size = asize;
+		}
+		else {
+			size = 0;
+		}
+		JS_FreeValue(context_, abuf);
+
+		*psize = size;
+		return buf;
+	}
+	else {
 		return nullptr;
 	}
-
-	uint8_t* buf = JS_GetArrayBuffer(context_, &size, abuf);
-	if (buf) {
-		buf += aoffset;
-		size = asize;
-	} else {
-		size = 0;
-	}
-	JS_FreeValue(context_, abuf);
-
-	*psize = size;
-	return buf;
 }
 
 

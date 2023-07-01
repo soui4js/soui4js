@@ -1,4 +1,5 @@
-#pragma once
+ï»¿#ifndef __SMSGLOOP_I__H__
+#define __SMSGLOOP_I__H__
 
 #include <interface/obj-ref-i.h>
 #include <interface/STaskLoop-i.h>
@@ -23,17 +24,17 @@ DECLARE_INTERFACE(IIdleHandler)
 #define INTERFACE IMessageLoop
 DECLARE_INTERFACE_(IMessageLoop, IObjRef)
 {
-    //!Ìí¼ÓÒýÓÃ
+    //!æ·»åŠ å¼•ç”¨
     /*!
      */
     STDMETHOD_(long, AddRef)(THIS) PURE;
 
-    //!ÊÍ·ÅÒýÓÃ
+    //!é‡Šæ”¾å¼•ç”¨
     /*!
      */
     STDMETHOD_(long, Release)(THIS) PURE;
 
-    //!ÊÍ·Å¶ÔÏó
+    //!é‡Šæ”¾å¯¹è±¡
     /*!
      */
     STDMETHOD_(void, OnFinalRelease)(THIS) PURE;
@@ -60,27 +61,27 @@ DECLARE_INTERFACE_(IMessageLoop, IObjRef)
 
     STDMETHOD_(void, OnMsg)(THIS_ LPMSG pMsg) PURE;
 
-    STDMETHOD_(void, Quit)(THIS) PURE;
+    STDMETHOD_(void, Quit)(THIS_ int exitCode DEF_VAL(0)) PURE;
 
     STDMETHOD_(BOOL, PostTask)(THIS_ IRunnable * runable) PURE;
 
     STDMETHOD_(int, RemoveTasksForObject)(THIS_ void *pObj) PURE;
 
-	STDMETHOD_(void, ExecutePendingTask)() PURE;
+    STDMETHOD_(void, ExecutePendingTask)(THIS) PURE;
 
-	STDMETHOD_(BOOL,PeekMsg)(THIS_ LPMSG pMsg,UINT wMsgFilterMin,UINT wMsgFilterMax,BOOL bRemove) PURE;
+    STDMETHOD_(BOOL, PeekMsg)(THIS_ LPMSG pMsg, UINT wMsgFilterMin, UINT wMsgFilterMax, BOOL bRemove) PURE;
 
-	STDMETHOD_(BOOL,WaitMsg)(THIS) PURE;
+    STDMETHOD_(BOOL, WaitMsg)(THIS) PURE;
 
-	STDMETHOD_(void,HandleMsg)(THIS) PURE;
-
+    STDMETHOD_(int, HandleMsg)(THIS) PURE;
 };
 
 #undef INTERFACE
 #define INTERFACE IMsgLoopFactory
 DECLARE_INTERFACE_(IMsgLoopFactory, IObjRef)
 {
-    STDMETHOD_(HRESULT, CreateMsgLoop)(THIS_ IMessageLoop * *ppMsgLoop, IMessageLoop *pParentLoop DEF_VAL(NULL)) PURE;
+    STDMETHOD_(HRESULT, CreateMsgLoop)(THIS_ IMessageLoop * *ppMsgLoop, IMessageLoop * pParentLoop DEF_VAL(NULL)) PURE;
 };
 
 SNSEND
+#endif // __SMSGLOOP_I__H__

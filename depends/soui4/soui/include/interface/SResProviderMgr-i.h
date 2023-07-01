@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __SRESPROVIDERMGR_I__H__
+#define __SRESPROVIDERMGR_I__H__
 #include <interface/SResProvider-i.h>
 
 SNSBEGIN
@@ -9,7 +10,7 @@ DECLARE_INTERFACE(IResProviderMgr)
 {
     STDMETHOD_(void, AddResProvider)(THIS_ IResProvider * pResProvider, LPCTSTR pszUidef DEF_VAL(_T("uidef:xml_init"))) PURE;
 
-	STDMETHOD_(void, AddResProviderA)(THIS_ IResProvider * pResProvider, LPCSTR pszUidef DEF_VAL("uidef:xml_init")) PURE;
+    STDMETHOD_(void, AddResProviderA)(THIS_ IResProvider * pResProvider, LPCSTR pszUidef DEF_VAL("uidef:xml_init")) PURE;
 
     STDMETHOD_(void, RemoveResProvider)(THIS_ IResProvider * pResProvider) PURE;
 
@@ -39,3 +40,4 @@ DECLARE_INTERFACE(IResProviderMgr)
 };
 
 SNSEND
+#endif // __SRESPROVIDERMGR_I__H__

@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef __STIMERGENERATOR__H__
+#define __STIMERGENERATOR__H__
 
 #include "core/SSingletonMap.h"
 
@@ -6,9 +7,9 @@ SNSBEGIN
 
 struct TIMERINFO
 {
-	SAutoRefPtr<IEvtSlot> pEvtSlot;
+    SAutoRefPtr<IEvtSlot> pEvtSlot;
     BOOL bRepeat;
-	LPARAM uData;
+    LPARAM uData;
 };
 
 class STimerGenerator : public SSingletonMap<STimerGenerator, TIMERINFO, UINT_PTR> {
@@ -16,7 +17,7 @@ class STimerGenerator : public SSingletonMap<STimerGenerator, TIMERINFO, UINT_PT
   public:
     ~STimerGenerator();
 
-    UINT SetTimer(IEvtSlot *pEvtSlot, UINT nElapse, BOOL bRepeat,LPARAM uData);
+    UINT SetTimer(IEvtSlot *pEvtSlot, UINT nElapse, BOOL bRepeat, LPARAM uData);
 
     void ClearTimer(UINT_PTR uID);
 
@@ -24,3 +25,4 @@ class STimerGenerator : public SSingletonMap<STimerGenerator, TIMERINFO, UINT_PT
 };
 
 SNSEND
+#endif // __STIMERGENERATOR__H__

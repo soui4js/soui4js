@@ -10,7 +10,8 @@
  *
  * Describe
  */
-#pragma once
+#ifndef __SSLIDERBAR__H__
+#define __SSLIDERBAR__H__
 #include "SCmnCtrl.h"
 
 SNSBEGIN
@@ -54,6 +55,8 @@ class SOUI_EXP SSliderBar : public SProgress {
         SC_RAILBACK,
     };
 
+    STDMETHOD_(BOOL, SetValue)(THIS_ int nValue) OVERRIDE;
+
   protected:
     /**
      * SSliderBar::HitTest
@@ -76,12 +79,12 @@ class SOUI_EXP SSliderBar : public SProgress {
     /**
      * SSliderBar::NotifyPos
      * @brief    通知
-     * @param    UINT uCode  -- 消息码
-     * @param    int nPos  -- 坐标
+     * @param    SliderBarAction action  -- 消息码
+     * @param    int value  -- 值
      *
      * Describe  自定义消息响应函数
      */
-    LRESULT NotifyPos(UINT uCode, int nPos);
+    LRESULT NotifyPos(SliderBarAction action, int value);
 
     /**
      * SSliderBar::GetDesiredSize
@@ -171,3 +174,5 @@ class SOUI_EXP SSliderBar : public SProgress {
 };
 
 SNSEND
+
+#endif // __SSLIDERBAR__H__

@@ -11,7 +11,8 @@
  * Describe    SOUI的窗口面板，实现在非客户区的滚动条支持
  */
 
-#pragma once
+#ifndef __SPANEL__H__
+#define __SPANEL__H__
 
 #include <core/SWnd.h>
 #include <core/SScrollBarHandler.h>
@@ -58,20 +59,20 @@ class SOUI_EXP SPanel
 
   protected:
     // 通过 IScrollBarHost 继承
-      STDMETHOD_(CRect, GetScrollBarRect)(CTHIS_ BOOL bVert) SCONST OVERRIDE;
-      STDMETHOD_(ISkinObj*, GetScrollBarSkin)(CTHIS_ BOOL bVert) SCONST OVERRIDE;
-      STDMETHOD_(const SCROLLINFO*, GetScrollBarInfo)(CTHIS_ BOOL bVert) SCONST OVERRIDE;
-      STDMETHOD_(int, GetScrollBarArrowSize)(CTHIS_ BOOL bVert) SCONST OVERRIDE;
-      STDMETHOD_(void, OnScrollUpdatePart)(THIS_ BOOL bVert, int iPart) OVERRIDE;
-      STDMETHOD_(void, OnScrollUpdateThumbTrack)(THIS_ BOOL bVert, int nPos) OVERRIDE;
-      STDMETHOD_(ISwndContainer*, GetScrollBarContainer)(THIS) OVERRIDE;
-      //STDMETHOD_(BOOL, IsScrollBarEnable)(THIS_ BOOL bVertical) SCONST OVERRIDE; //same as IPanel::IsScrollBarEnable
-      STDMETHOD_(void, OnScrollCommand)(THIS_ BOOL bVert, int iCmd, int nPos) OVERRIDE;
-      STDMETHOD_(void, OnScrollSetTimer)(THIS_ BOOL bVert, char id, UINT uElapse) OVERRIDE;
-      STDMETHOD_(void, OnScrollKillTimer)(THIS_ BOOL bVert, char id) OVERRIDE;
-      STDMETHOD_(const IInterpolator*, GetScrollInterpolator)(CTHIS) SCONST OVERRIDE;
-      STDMETHOD_(int, GetScrollFadeFrames)(CTHIS) SCONST OVERRIDE;
-      STDMETHOD_(BYTE, GetScrollThumbTrackMinAlpha)(CTHIS) SCONST OVERRIDE;
+    STDMETHOD_(CRect, GetScrollBarRect)(CTHIS_ BOOL bVert) SCONST OVERRIDE;
+    STDMETHOD_(ISkinObj *, GetScrollBarSkin)(CTHIS_ BOOL bVert) SCONST OVERRIDE;
+    STDMETHOD_(const SCROLLINFO *, GetScrollBarInfo)(CTHIS_ BOOL bVert) SCONST OVERRIDE;
+    STDMETHOD_(int, GetScrollBarArrowSize)(CTHIS_ BOOL bVert) SCONST OVERRIDE;
+    STDMETHOD_(void, OnScrollUpdatePart)(THIS_ BOOL bVert, int iPart) OVERRIDE;
+    STDMETHOD_(void, OnScrollUpdateThumbTrack)(THIS_ BOOL bVert, int nPos) OVERRIDE;
+    STDMETHOD_(ISwndContainer *, GetScrollBarContainer)(THIS) OVERRIDE;
+    // STDMETHOD_(BOOL, IsScrollBarEnable)(THIS_ BOOL bVertical) SCONST OVERRIDE; //same as IPanel::IsScrollBarEnable
+    STDMETHOD_(void, OnScrollCommand)(THIS_ BOOL bVert, int iCmd, int nPos) OVERRIDE;
+    STDMETHOD_(void, OnScrollSetTimer)(THIS_ BOOL bVert, char id, UINT uElapse) OVERRIDE;
+    STDMETHOD_(void, OnScrollKillTimer)(THIS_ BOOL bVert, char id) OVERRIDE;
+    STDMETHOD_(const IInterpolator *, GetScrollInterpolator)(CTHIS) SCONST OVERRIDE;
+    STDMETHOD_(int, GetScrollFadeFrames)(CTHIS) SCONST OVERRIDE;
+    STDMETHOD_(BYTE, GetScrollThumbTrackMinAlpha)(CTHIS) SCONST OVERRIDE;
 
   protected:
     virtual int GetScrollLineSize(BOOL bVertical);
@@ -203,11 +204,11 @@ class SOUI_EXP SScrollView : public TPanelProxy<IScrollView> {
     }
 
   public:
-    STDMETHOD_(SIZE, GetViewSize)(THIS) SCONST OVERRIDE;
+    STDMETHOD_(void, GetViewSize)(CTHIS_ SIZE *szView) SCONST OVERRIDE;
 
     STDMETHOD_(void, SetViewSize)(THIS_ SIZE szView) OVERRIDE;
 
-    STDMETHOD_(POINT, GetViewOrigin)(THIS) SCONST OVERRIDE;
+    STDMETHOD_(void, GetViewOrigin)(CTHIS_ POINT *ptOri) SCONST OVERRIDE;
 
     STDMETHOD_(void, SetViewOrigin)(THIS_ POINT pt) OVERRIDE;
 
@@ -246,3 +247,5 @@ class SOUI_EXP SScrollView : public TPanelProxy<IScrollView> {
 };
 
 SNSEND
+
+#endif // __SPANEL__H__

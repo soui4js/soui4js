@@ -11,7 +11,8 @@
  * Describe    此文件中定义了很多通用控件:静态文本，超链接，按钮，单选按钮等
  */
 
-#pragma once
+#ifndef __SCMNCTRL__H__
+#define __SCMNCTRL__H__
 #include "core/SWnd.h"
 #include "core/SAccelerator.h"
 #include "core/SFocusManager.h"
@@ -343,7 +344,7 @@ class SOUI_EXP SImageWnd : public TWindowProxy<IImageWnd> {
     virtual void OnColorize(COLORREF cr);
 
     virtual void OnScaleChanged(int scale);
-	virtual SIZE MeasureContent(int nParentWid, int nParentHei);
+    virtual SIZE MeasureContent(int nParentWid, int nParentHei);
 
     int m_iTile;                   /**<绘制是否平铺,0--位伸（默认），1--不变常规绘制, 2--平铺 */
     BOOL m_bManaged;               /**< 是否要自动释放当前的m_pSkin对象 */
@@ -429,7 +430,7 @@ class SOUI_EXP SAnimateImgWnd
     STDMETHOD_(void, OnNextFrame)(THIS_) OVERRIDE;
     virtual void OnColorize(COLORREF cr);
     virtual void OnContainerChanged(ISwndContainer *pOldContainer, ISwndContainer *pNewContainer);
-	void OnScaleChanged(int scale) override;
+    void OnScaleChanged(int scale) override;
     void OnPaint(IRenderTarget *pRT);
 
     void OnShowWindow(BOOL bShow, UINT nStatus);
@@ -485,7 +486,7 @@ class SOUI_EXP SProgress : public TWindowProxy<IProgress> {
      *
      * Describe  设置进度条进度值
      */
-    BOOL WINAPI SetValue(int nValue);
+    STDMETHOD_(BOOL, SetValue)(THIS_ int nValue) OVERRIDE;
     /**
      * SProgress::GetValue
      * @brief    获取进度值
@@ -493,7 +494,7 @@ class SOUI_EXP SProgress : public TWindowProxy<IProgress> {
      *
      * Describe  获取进度值
      */
-    int WINAPI GetValue() const
+    STDMETHOD_(int, GetValue)(CTHIS) SCONST OVERRIDE
     {
         return m_nValue;
     }
@@ -506,7 +507,7 @@ class SOUI_EXP SProgress : public TWindowProxy<IProgress> {
      *
      * Describe  设置进度值
      */
-    void WINAPI SetRange(int nMin, int nMax);
+    STDMETHOD_(void, SetRange)(THIS_ int nMin, int nMax) OVERRIDE;
     /**
      * SProgress::GetRange
      * @param    int nMin  --  进度最小值
@@ -515,7 +516,7 @@ class SOUI_EXP SProgress : public TWindowProxy<IProgress> {
      *
      * Describe  获取进度值
      */
-    void WINAPI GetRange(int *pMin, int *pMax) const;
+    STDMETHOD_(void, GetRange)(CTHIS_ int *pMin, int *pMax) SCONST OVERRIDE;
     /**
      * SProgress::IsVertical
      * @brief    判断进度条是否为竖直状态
@@ -523,7 +524,7 @@ class SOUI_EXP SProgress : public TWindowProxy<IProgress> {
      *
      * Describe  获取进度值
      */
-    BOOL WINAPI IsVertical() const
+    STDMETHOD_(BOOL, IsVertical)(CTHIS) SCONST OVERRIDE
     {
         return m_bVertical;
     }
@@ -538,7 +539,7 @@ class SOUI_EXP SProgress : public TWindowProxy<IProgress> {
      *
      * Describe  根据矩形的大小，获取预期大小(解释有点不对)
      */
-    STDMETHOD_(void, GetDesiredSize)(THIS_ SIZE *psz,int wid, int hei) OVERRIDE;
+    STDMETHOD_(void, GetDesiredSize)(THIS_ SIZE *psz, int wid, int hei) OVERRIDE;
     virtual void OnColorize(COLORREF cr);
     virtual void OnScaleChanged(int scale);
 
@@ -751,29 +752,29 @@ class SOUI_EXP SIconWnd : public TWindowProxy<IIconWnd> {
     virtual ~SIconWnd();
 
   public:
-	STDMETHOD_(void, SetIcon)(THIS_ HICON hIcon) OVERRIDE;
+    STDMETHOD_(void, SetIcon)(THIS_ HICON hIcon) OVERRIDE;
 
   protected:
-	SIZE MeasureContent(int wid, int hei) override;
+    SIZE MeasureContent(int wid, int hei) override;
 
-	void OnPaint(IRenderTarget *pRT);
+    void OnPaint(IRenderTarget *pRT);
 
-	SOUI_MSG_MAP_BEGIN()
-		MSG_WM_PAINT_EX(OnPaint)
-	SOUI_MSG_MAP_END()
+    SOUI_MSG_MAP_BEGIN()
+        MSG_WM_PAINT_EX(OnPaint)
+    SOUI_MSG_MAP_END()
 
-public:
-
+  public:
     SOUI_ATTRS_BEGIN()
-		ATTR_CUSTOM(L"src",OnAttrIcon)
+        ATTR_CUSTOM(L"src", OnAttrIcon)
     SOUI_ATTRS_END()
-protected:
-	HRESULT OnAttrIcon(const SStringW &value,BOOL bLoading);
+  protected:
+    HRESULT OnAttrIcon(const SStringW &value, BOOL bLoading);
 
-	void OnScaleChanged(int scale) override;
-protected:
-	SStringW m_strIconSrc;
-	HICON m_theIcon; /**< 图标资源句柄 */
+    void OnScaleChanged(int scale) override;
+
+  protected:
+    SStringW m_strIconSrc;
+    HICON m_theIcon; /**< 图标资源句柄 */
 };
 
 /**
@@ -812,7 +813,7 @@ class SOUI_EXP SRadioBox : public SWindow {
      * Describe
      */
     virtual void GetTextRect(LPRECT pRect);
-    
+
     SIZE MeasureContent(int wid, int hei) OVERRIDE;
     /**
      * SRadioBox::OnGetDlgCode
@@ -1019,3 +1020,5 @@ class SOUI_EXP SGroup : public SWindow {
 };
 
 SNSEND
+
+#endif // __SCMNCTRL__H__

@@ -3,19 +3,18 @@
 //    Description: Real Container of SWindow
 //////////////////////////////////////////////////////////////////////////
 
-#pragma once
+#ifndef __SHOSTWND__H__
+#define __SHOSTWND__H__
 
 #include <core/SWndContainerImpl.h>
 #include <core/SNativeWnd.h>
 #include <core/SDropTargetDispatcher.h>
 #include <event/SEventcrack.h>
 #include <interface/stooltip-i.h>
-#include <interface/SHostMsgHandler-i.h>
 #include <interface/shostwnd-i.h>
 #include <interface/SHostPresenter-i.h>
 #include <core/SCaret.h>
 #include <core/SNcPainter.h>
-#include <core/SHostMsgDef.h>
 #include <layout/SLayoutsize.h>
 #include <helper/SplitString.h>
 #include <helper/SWndSpy.h>
@@ -81,7 +80,7 @@ class SOUI_EXP SHostWndAttr : public TObjRefImpl<SObject> {
         ATTR_ICON(L"smallIcon", m_hAppIconSmall, FALSE)
         ATTR_ICON(L"bigIcon", m_hAppIconBig, FALSE)
         ATTR_BOOL(L"allowSpy", m_bAllowSpy, FALSE)
-		ATTR_BOOL(L"hasMsgLoop", m_bHasMsgLoop, FALSE)
+        ATTR_BOOL(L"hasMsgLoop", m_bHasMsgLoop, FALSE)
         ATTR_ENUM_BEGIN(L"wndType", DWORD, FALSE)
             ATTR_ENUM_VALUE(L"undefine", WT_UNDEFINE)
             ATTR_ENUM_VALUE(L"appMain", WT_APPMAIN)
@@ -102,7 +101,7 @@ class SOUI_EXP SHostWndAttr : public TObjRefImpl<SObject> {
     DWORD m_bTranslucent : 1;     //窗口的半透明属性
     DWORD m_bAllowSpy : 1;        //允许spy
     DWORD m_bSendWheel2Hover : 1; //将滚轮消息发送到hover窗口
-	DWORD m_bHasMsgLoop : 1;	  //窗口有的MsgLoop标志，主要影响tooltip的RelayEvent时机
+    DWORD m_bHasMsgLoop : 1;      //窗口有的MsgLoop标志，主要影响tooltip的RelayEvent时机
     DWORD m_dwStyle;
     DWORD m_dwExStyle;
 
@@ -121,6 +120,8 @@ class SOUI_EXP SRootWindow : public SWindow {
 
   public:
     SHostWnd *GetHostWnd() const;
+
+    void FireMenuCmd(int menuID);
 
   public:
     STDMETHOD_(void, UpdateLayout)(THIS) OVERRIDE;
@@ -151,13 +152,14 @@ class SOUI_EXP SRootWindow : public SWindow {
     SHostWnd *m_pHostWnd;
 };
 
+class SDummyWnd;
 class SOUI_EXP SHostWnd
     : public TNativeWndProxy<IHostWnd>
-    , public SwndContainerImpl
-    , protected IHostMsgHandler {
+    , public SwndContainerImpl {
     friend class SDummyWnd;
     friend class SRootWindow;
     friend class SNcPainter;
+
   protected:
     SDummyWnd *m_dummyWnd;   /**<半透明窗口使用的一个响应WM_PAINT消息的窗口*/
     SHostWndAttr m_hostAttr; /**<host属性，对应XML中的SOUI结点 */
@@ -170,12 +172,12 @@ class SOUI_EXP SHostWnd
 
     IToolTip *m_pTipCtrl; /**<tip接口*/
 
-    SAutoRefPtr<IRegionS> m_rgnInvalidate;            /**<脏区域*/
-    SAutoRefPtr<IRenderTarget> m_memRT;               /**<绘制缓存*/
-	SAutoRefPtr<IUiDefInfo> m_privateUiDefInfo;       /** 局部uidefinfo*/
-
-    SAutoRefPtr<IScriptModule> m_pScriptModule;       /**<脚本模块*/
-    SAutoRefPtr<SNcPainter> m_pNcPainter;             /**<非客户区绘制模块*/
+    SAutoRefPtr<IRegionS> m_rgnInvalidate;      /**<脏区域*/
+    SAutoRefPtr<IRenderTarget> m_memRT;         /**<绘制缓存*/
+    SAutoRefPtr<IUiDefInfo> m_privateUiDefInfo; /** 局部uidefinfo*/
+    int m_cEnableUiDefCount;                    /** 局部uidefinfo enable count*/
+    SAutoRefPtr<IScriptModule> m_pScriptModule; /**<脚本模块*/
+    SAutoRefPtr<SNcPainter> m_pNcPainter;       /**<非客户区绘制模块*/
 
     MSG m_msgMouse; /**<上一次鼠标按下消息*/
 
@@ -189,20 +191,37 @@ class SOUI_EXP SHostWnd
     DWORD m_dwThreadID;
     SRootWindow *m_pRoot;
 
-	EventHandlerInfo m_evtHandler;
-	SAutoRefPtr<IHostPresenter> m_presenter;
+    EventHandlerInfo m_evtHandler;
+    SAutoRefPtr<IHostPresenter> m_presenter;
+
+    //几个异步任务相关的对象，由于msgloop的异步任务依赖msgloop，在dll中使用soui可能没有soui自己的msgloop
+    SCriticalSection m_cs;
+    SList<IRunnable *> m_runnables;
+    SCriticalSection m_csRunningQueue;
+    SList<IRunnable *> m_runningQueue;
+
+    static BOOL s_HideLocalUiDef;  /**<隐藏局部uidef对象全局标志  */
+    static int s_TaskQueueBufSize; /**<异步任务等待长度,默认为5  */
   public:
     SHostWnd(LPCWSTR pszResName = NULL);
-	SHostWnd(LPCSTR pszResName);
+    SHostWnd(LPCSTR pszResName);
     virtual ~SHostWnd();
+
+    /************************************************************************/
+    /*用来设置是否隐藏窗口的局部布局属性，整个程序只应在窗口初始化前调用一次*/
+    /************************************************************************/
+    static void SetHideLocalUiDef(BOOL bHide);
+    static void SetTaskQueueBufSize(int nBufSize);
 
   public:
     enum
     {
         kPulseTimer = 4321, // soui timer. don't use it in app
         kPulseInterval = 10,
-		kNcCheckTimer = 4322,
-		kNcCheckInterval=50,
+        kNcCheckTimer = 4322,
+        kNcCheckInterval = 50,
+        kTaskTimer = 4323,
+        kTaskInterval = 100,
     };
 
   public:
@@ -219,24 +238,27 @@ class SOUI_EXP SHostWnd
     {
         return m_pRoot;
     }
-	
-	STDMETHOD_(BOOL,IsTranslucent)(CTHIS) SCONST OVERRIDE;
-	STDMETHOD_(IHostPresenter*,GetPresenter)(THIS) OVERRIDE;
 
-	STDMETHOD_(void,SetPresenter)(THIS_ IHostPresenter* pPresenter) OVERRIDE;
-	STDMETHOD_(IMessageLoop *, GetMsgLoop)(THIS) OVERRIDE;
+    STDMETHOD_(BOOL, IsTranslucent)(CTHIS) SCONST OVERRIDE;
+    STDMETHOD_(IHostPresenter *, GetPresenter)(THIS) OVERRIDE;
 
-	STDMETHOD_(IWindow *, FindIChildByID)(THIS_ int nId) OVERRIDE{
-		return m_pRoot->FindIChildByID(nId);
-	}
+    STDMETHOD_(void, SetPresenter)(THIS_ IHostPresenter *pPresenter) OVERRIDE;
+    STDMETHOD_(IMessageLoop *, GetMsgLoop)(THIS) OVERRIDE;
 
-	STDMETHOD_(IWindow *, FindIChildByName)(THIS_ LPCWSTR pszName) OVERRIDE{
-		return m_pRoot->FindIChildByName(pszName);
-	}
+    STDMETHOD_(IWindow *, FindIChildByID)(THIS_ int nId) OVERRIDE
+    {
+        return m_pRoot->FindIChildByID(nId);
+    }
 
-	STDMETHOD_(IWindow *, FindIChildByNameA)(THIS_ LPCSTR pszName) OVERRIDE{
-		return m_pRoot->FindIChildByNameA(pszName);
-	}
+    STDMETHOD_(IWindow *, FindIChildByName)(THIS_ LPCWSTR pszName) OVERRIDE
+    {
+        return m_pRoot->FindIChildByName(pszName);
+    }
+
+    STDMETHOD_(IWindow *, FindIChildByNameA)(THIS_ LPCSTR pszName) OVERRIDE
+    {
+        return m_pRoot->FindIChildByNameA(pszName);
+    }
 
     STDMETHOD_(INcPainter *, GetNcPainter)(THIS) OVERRIDE
     {
@@ -252,12 +274,16 @@ class SOUI_EXP SHostWnd
 
     STDMETHOD_(void, SetEventHandler)(THIS_ FunCallback fun, void *ctx) OVERRIDE;
 
-	STDMETHOD_(EventHandlerInfo*,GetEventHandler)(THIS) OVERRIDE;
+    STDMETHOD_(EventHandlerInfo *, GetEventHandler)(THIS) OVERRIDE;
 
-	STDMETHOD_(BOOL, AnimateHostWindow)(THIS_ DWORD dwTime, DWORD dwFlags) OVERRIDE;
-	STDMETHOD_(void,EnableDragDrop)(THIS) OVERRIDE;
+    STDMETHOD_(BOOL, AnimateHostWindow)(THIS_ DWORD dwTime, DWORD dwFlags) OVERRIDE;
+    STDMETHOD_(void, EnableDragDrop)(THIS) OVERRIDE;
 
-	STDMETHOD_(void,ShowHostWnd)(THIS_ int uShowCmd,BOOL bWaitAniDone) OVERRIDE;
+    STDMETHOD_(void, ShowHostWnd)(THIS_ int uShowCmd, BOOL bWaitAniDone) OVERRIDE;
+    STDMETHOD_(void, EnablePrivateUiDef)(THIS_ BOOL bEnable) OVERRIDE;
+
+    STDMETHOD_(void, SetScale)(THIS_ int nScale, LPCRECT pDestRect) OVERRIDE;
+
   public:
     SWindow *FindChildByName(LPCWSTR strName, int nDeep = -1)
     {
@@ -308,7 +334,6 @@ class SOUI_EXP SHostWnd
         return this;
     }
 
-
     CRect GetWindowRect() const;
     CRect GetClientRect() const;
 
@@ -344,9 +369,10 @@ class SOUI_EXP SHostWnd
     void _RestoreClickState();
     void _Invalidate(LPCRECT prc);
     void _SetToolTipInfo(const SwndToolTipInfo *info, BOOL bNcTip);
-	void _Init();
-	void _ExcludeVideoCanvasFromPaint(IRenderTarget *pRT);
-	void _PaintVideoCanvasForeground(IRenderTarget *pRT);
+    void _Init();
+    void _ExcludeVideoCanvasFromPaint(IRenderTarget *pRT);
+    void _PaintVideoCanvasForeground(IRenderTarget *pRT);
+
   protected:
     //////////////////////////////////////////////////////////////////////////
     // Message handler
@@ -386,8 +412,8 @@ class SOUI_EXP SHostWnd
     void OnSetFocus(HWND wndOld);
     void OnKillFocus(HWND wndFocus);
 
-	void UpdateAlpha(BYTE byAlpha);
-    void UpdatePresenter(HDC dc,IRenderTarget *pRT, LPCRECT rc, BYTE byAlpha = 255);
+    void UpdateAlpha(BYTE byAlpha);
+    void UpdatePresenter(HDC dc, IRenderTarget *pRT, LPCRECT rc, BYTE byAlpha = 255, UINT uFlag = 0);
 
     void OnCaptureChanged(HWND wnd);
 
@@ -398,6 +424,7 @@ class SOUI_EXP SHostWnd
 
     LRESULT OnGetObject(UINT uMsg, WPARAM wParam, LPARAM lParam);
     void OnSysCommand(UINT nID, CPoint lParam);
+    void OnCommand(UINT uNotifyCode, int nID, HWND wndCtl);
 
 #if (!DISABLE_SWNDSPY)
   protected:
@@ -421,49 +448,58 @@ class SOUI_EXP SHostWnd
 
     STDMETHOD_(LPCWSTR, GetTranslatorContext)() const OVERRIDE;
 
-	STDMETHOD_(void, UpdateRegion)(IRegionS *rgn) OVERRIDE;
+    STDMETHOD_(void, UpdateRegion)(IRegionS *rgn) OVERRIDE;
 
-    STDMETHOD_(void, OnRedraw)(LPCRECT rc,BOOL bClip) OVERRIDE;
+    STDMETHOD_(void, OnRedraw)(LPCRECT rc, BOOL bClip) OVERRIDE;
 
     STDMETHOD_(BOOL, OnReleaseSwndCapture)() OVERRIDE;
 
     STDMETHOD_(SWND, OnSetSwndCapture)(SWND swnd) OVERRIDE;
 
-	//STDMETHOD_(BOOL, IsTranslucent)() const; same as IHostWnd::IsTranslucent
+    // STDMETHOD_(BOOL, IsTranslucent)() const; same as IHostWnd::IsTranslucent
 
     STDMETHOD_(BOOL, IsSendWheel2Hover)() const OVERRIDE;
 
-    STDMETHOD_(BOOL, UpdateWindow)() OVERRIDE;
+    STDMETHOD_(BOOL, UpdateWindow)(BOOL bForce DEF_VAL(TRUE)) OVERRIDE;
 
     STDMETHOD_(void, UpdateTooltip)() OVERRIDE;
 
     STDMETHOD_(BOOL, RegisterTimelineHandler)(THIS_ ITimelineHandler *pHandler) OVERRIDE;
     STDMETHOD_(BOOL, UnregisterTimelineHandler)(THIS_ ITimelineHandler *pHandler) OVERRIDE;
+    STDMETHOD_(void, EnableHostPrivateUiDef)(THIS_ BOOL bEnable) OVERRIDE;
 
-	//STDMETHOD_(IMessageLoop *, GetMsgLoop)(); same as IHostWnd::GetMsgLoop
+    // STDMETHOD_(IMessageLoop *, GetMsgLoop)(); same as IHostWnd::GetMsgLoop
 
     STDMETHOD_(IScriptModule *, GetScriptModule)() OVERRIDE;
 
     STDMETHOD_(int, GetScale)() const OVERRIDE;
 
     STDMETHOD_(void, EnableIME)(BOOL bEnable) OVERRIDE;
+
     STDMETHOD_(void, OnUpdateCursor)() OVERRIDE;
 
-  protected:
-    STDMETHOD_(void, OnHostMsg)(THIS_ BOOL bRelayout, UINT uMsg, WPARAM wp, LPARAM lp) OVERRIDE;
+    STDMETHOD_(BOOL, PostTask)(THIS_ IRunnable *runable, BOOL bAsync DEF_VAL(TRUE)) OVERRIDE;
+
+    STDMETHOD_(int, RemoveTasksForObject)(THIS_ void *pObj) OVERRIDE;
 
   protected:
     virtual IToolTip *CreateTooltip() const;
     virtual void DestroyTooltip(IToolTip *pTooltip) const;
+
   protected:
     virtual BOOL OnLoadLayoutFromResourceID(const SStringT &resId);
     virtual void OnUserXmlNode(SXmlNode xmlUser);
-	
+
   public:
     virtual BOOL onRootResize(IEvtArgs *e);
 
   public: //事件处理接口
     virtual BOOL _HandleEvent(IEvtArgs *pEvt);
+
+  protected:
+    LRESULT OnSetLanguage(UINT uMsg,WPARAM wp,LPARAM lp);
+    LRESULT OnUpdateFont(UINT uMsg, WPARAM wp, LPARAM lp);
+    LRESULT OnRunTasks(UINT uMsg, WPARAM wp, LPARAM lp);
 
     BEGIN_MSG_MAP_EX(SHostWnd)
         MSG_WM_SIZE(OnSize)
@@ -492,7 +528,11 @@ class SOUI_EXP SHostWnd
         MSG_WM_WINDOWPOSCHANGING(OnWindowPosChanging)
         MSG_WM_WINDOWPOSCHANGED(OnWindowPosChanged)
         MESSAGE_HANDLER_EX(WM_GETOBJECT, OnGetObject)
+        MSG_WM_COMMAND(OnCommand)
         MSG_WM_SYSCOMMAND(OnSysCommand)
+        MESSAGE_HANDLER_EX(UM_UPDATEFONT, OnUpdateFont)
+		MESSAGE_HANDLER_EX(UM_SETLANGUAGE,OnSetLanguage)
+        MESSAGE_HANDLER_EX(UM_RUN_TASKS, OnRunTasks)
         CHAIN_MSG_MAP_MEMBER(*m_pNcPainter)
 #if (!DISABLE_SWNDSPY)
         MESSAGE_HANDLER_EX(SPYMSG_SETSPY, OnSpyMsgSetSpy)
@@ -505,3 +545,4 @@ class SOUI_EXP SHostWnd
 };
 
 SNSEND
+#endif // __SHOSTWND__H__

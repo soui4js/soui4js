@@ -10,7 +10,8 @@
  *
  * Describe    扩展列表框
  */
-#pragma once
+#ifndef __STABCTRL__H__
+#define __STABCTRL__H__
 #include <core/SWnd.h>
 #include <helper/SplitString.h>
 
@@ -21,7 +22,7 @@ SNSBEGIN
  *
  * Describe   tab标签页面
  */
-class SOUI_EXP STabPage : public TWindowProxy<ITabPage>{
+class SOUI_EXP STabPage : public TWindowProxy<ITabPage> {
     DEF_SOBJECT(SWindow, L"page")
     friend class STabCtrl;
 
@@ -47,26 +48,28 @@ class SOUI_EXP STabPage : public TWindowProxy<ITabPage>{
     virtual ~STabPage()
     {
     }
-public:
-	STDMETHOD_(LPCTSTR,GetTitle)(CTHIS) SCONST OVERRIDE
-	{
-		return m_strTitle.GetText(FALSE);
-	}
-	STDMETHOD_(void,SetTitle)(THIS_ LPCTSTR lpszTitle) OVERRIDE  
-	{
-		m_strTitle.SetText(lpszTitle);
-	}
 
-	STDMETHOD_(int,GetIconIndex)(CTHIS) SCONST OVERRIDE{
-		return m_iIcon;
-	}
+  public:
+    STDMETHOD_(LPCTSTR, GetTitle)(CTHIS) SCONST OVERRIDE
+    {
+        return m_strTitle.GetText(FALSE);
+    }
+    STDMETHOD_(void, SetTitle)(THIS_ LPCTSTR lpszTitle) OVERRIDE
+    {
+        m_strTitle.SetText(lpszTitle, false);
+    }
 
-    STDMETHOD_(void,SetIconIndex)(THIS_ int iIcon) OVERRIDE
+    STDMETHOD_(int, GetIconIndex)(CTHIS) SCONST OVERRIDE
+    {
+        return m_iIcon;
+    }
+
+    STDMETHOD_(void, SetIconIndex)(THIS_ int iIcon) OVERRIDE
     {
         m_iIcon = iIcon;
     }
 
-protected:
+  protected:
     /**
      * OnUpdateToolTip
      * @brief    处理tooltip
@@ -90,6 +93,7 @@ protected:
     int m_iIcon;
 };
 
+class STabSlider;
 /**
  * @class     STabCtrl
  * @brief     tab控件
@@ -211,7 +215,7 @@ class SOUI_EXP STabCtrl : public TWindowProxy<ITabCtrl> {
      *
      * Describe  获取当前选中
      */
-    STDMETHOD_(ITabPage *, GetPage)(THIS_ int nIndex) OVERRIDE;
+    STDMETHOD_(IWindow *, GetPage)(THIS_ int nIndex) OVERRIDE;
 
     /**
      * STabCtrl::RemoveItem
@@ -497,3 +501,4 @@ class SOUI_EXP STabCtrl : public TWindowProxy<ITabCtrl> {
 };
 
 SNSEND
+#endif // __STABCTRL__H__

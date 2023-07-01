@@ -15,6 +15,7 @@ function main(inst,workDir,args)
         let soui4js = workDir.substring(0,pos);
         regKey.SetStringValue("SOUI4JS_PATH",soui4js);
         regKey.Close();
+        soui4.NotifySettingChange("Environment",5000);
         console.log("set env succeed!");
         ret = 0;
     }else{

@@ -11,11 +11,11 @@
  * Describe    SOUI窗口容器的实现
  */
 
-#pragma once
+#ifndef __SWNDCONTAINERIMPL__H__
+#define __SWNDCONTAINERIMPL__H__
 
 #include <core/SDropTargetDispatcher.h>
 #include <core/SFocusManager.h>
-#include <core/SCaret.h>
 #include <core/STimerlineHandlerMgr.h>
 
 SNSBEGIN
@@ -76,11 +76,10 @@ class SOUI_EXP SwndContainerImpl
     //重建窗口树的zorder
     STDMETHOD_(void, BuildWndTreeZorder)(THIS) OVERRIDE;
 
-    STDMETHOD_(ICaret *, GetCaret)(THIS) OVERRIDE;
-
     STDMETHOD_(BOOL, RegisterVideoCanvas)(THIS_ SWND swnd) OVERRIDE;
 
     STDMETHOD_(BOOL, UnregisterVideoCanvas)(THIS_ SWND swnd) OVERRIDE;
+
   public: // ITimelineHandler
     STDMETHOD_(void, OnNextFrame)(THIS_) OVERRIDE;
 
@@ -119,10 +118,12 @@ class SOUI_EXP SwndContainerImpl
     BOOL m_bZorderDirty;
 
     SList<SWND> m_lstTrackMouseEvtWnd;
-	SList<SWND> m_lstVideoCanvas;
+    SList<SWND> m_lstVideoCanvas;
     SAutoRefPtr<ICaret> m_caret;
 
     STimerlineHandlerMgr m_timelineHandlerMgr;
 };
 
 SNSEND
+
+#endif // __SWNDCONTAINERIMPL__H__

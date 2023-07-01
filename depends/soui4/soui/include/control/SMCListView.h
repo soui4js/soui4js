@@ -10,7 +10,8 @@
  *
  * Describe    ListCtrl控件
  */
-#pragma once
+#ifndef __SMCLISTVIEW__H__
+#define __SMCLISTVIEW__H__
 #include "core/SPanel.h"
 #include "core/SItemPanel.h"
 #include "SHeaderCtrl.h"
@@ -69,7 +70,8 @@ class SOUI_EXP SMCListView
 
     STDMETHOD_(int, GetColumnCount)(THIS) SCONST OVERRIDE;
 
-	STDMETHOD_(void, GetDesiredSize)(THIS_ SIZE *psz,int nParentWid, int nParentHei) OVERRIDE;
+    STDMETHOD_(void, GetDesiredSize)(THIS_ SIZE *psz, int nParentWid, int nParentHei) OVERRIDE;
+
   public:
     SItemPanel *HitTest(CPoint &pt) const;
 
@@ -229,6 +231,7 @@ class SOUI_EXP SMCListView
 
   protected:
     CRect _OnItemGetRect(int iPosition) const;
+    void _UpdateAdapterColumnsWidth() const;
 
   protected:
     SHeaderCtrl *m_pHeader;
@@ -237,3 +240,5 @@ class SOUI_EXP SMCListView
 };
 
 SNSEND
+
+#endif // __SMCLISTVIEW__H__

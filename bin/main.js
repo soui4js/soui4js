@@ -38,7 +38,7 @@ class AppLvAdapter extends soui4.SLvAdapter{
 			imgApi.SetImage(appInfo.img,1);
 			imgApi.Release();
 		}
-		soui4.SConnect(pItem,10000+11,this,this.OnItemDblClick);
+		soui4.SConnect(pItem,soui4.EVT_ITEMPANEL_DBCLICK,this,this.OnItemDblClick);
 	}
 
 	OnItemDblClick(e){

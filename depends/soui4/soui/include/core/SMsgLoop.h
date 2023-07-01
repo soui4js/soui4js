@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef __SMSGLOOP__H__
+#define __SMSGLOOP__H__
 #include <interface/smsgloop-i.h>
 #include <souicoll.h>
 
@@ -6,7 +7,7 @@ SNSBEGIN
 
 class SOUI_EXP SMessageLoop : public TObjRefImpl<IMessageLoop> {
   public:
-    SMessageLoop(IMessageLoop * pParentLoop);
+    SMessageLoop(IMessageLoop *pParentLoop);
     virtual ~SMessageLoop();
 
   public:
@@ -32,19 +33,19 @@ class SOUI_EXP SMessageLoop : public TObjRefImpl<IMessageLoop> {
 
     STDMETHOD_(void, OnMsg)(THIS_ LPMSG pMsg) OVERRIDE;
 
-    STDMETHOD_(void, Quit)(THIS) OVERRIDE;
+    STDMETHOD_(void, Quit)(THIS_ int exitCode) OVERRIDE;
 
     STDMETHOD_(BOOL, PostTask)(THIS_ IRunnable *runable) OVERRIDE;
 
     STDMETHOD_(int, RemoveTasksForObject)(THIS_ void *pObj) OVERRIDE;
 
-	STDMETHOD_(void, ExecutePendingTask)() OVERRIDE;
+    STDMETHOD_(void, ExecutePendingTask)() OVERRIDE;
 
-	STDMETHOD_(BOOL,PeekMsg)(THIS_ LPMSG pMsg,UINT wMsgFilterMin,UINT wMsgFilterMax,BOOL bRemove) OVERRIDE;
+    STDMETHOD_(BOOL, PeekMsg)(THIS_ LPMSG pMsg, UINT wMsgFilterMin, UINT wMsgFilterMax, BOOL bRemove) OVERRIDE;
 
-	STDMETHOD_(BOOL,WaitMsg)(THIS) OVERRIDE;
+    STDMETHOD_(BOOL, WaitMsg)(THIS) OVERRIDE;
 
-	STDMETHOD_(void,HandleMsg)(THIS) OVERRIDE;
+    STDMETHOD_(int, HandleMsg)(THIS) OVERRIDE;
 
   public:
     static BOOL IsIdleMessage(MSG *pMsg);
@@ -52,19 +53,19 @@ class SOUI_EXP SMessageLoop : public TObjRefImpl<IMessageLoop> {
   protected:
     SArray<IMsgFilter *> m_aMsgFilter;
     SArray<IIdleHandler *> m_aIdleHandler;
-    MSG m_msg;
 
     BOOL m_bRunning;
     BOOL m_bQuit;
-	BOOL m_bDoIdle ;
-	int m_nIdleCount ;
+    BOOL m_bDoIdle;
+    int m_nIdleCount;
 
     SCriticalSection m_cs;
     SList<IRunnable *> m_runnables;
     SCriticalSection m_csRunningQueue;
     SList<IRunnable *> m_runningQueue;
-	SAutoRefPtr<IMessageLoop> m_parentLoop;
+    SAutoRefPtr<IMessageLoop> m_parentLoop;
     DWORD m_tid;
 };
 
 SNSEND
+#endif // __SMSGLOOP__H__

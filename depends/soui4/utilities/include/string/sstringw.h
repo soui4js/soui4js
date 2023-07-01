@@ -1,13 +1,12 @@
 ﻿#ifndef __TSTRINGW_H__
 #define __TSTRINGW_H__
 
-#pragma once
+
 
 #include <windows.h>
 #include <utilities-def.h>
 #include <string/sstringdata.h>
 #include <interface/sstring-i.h>
-#include <helper/obj-ref-impl.hpp>
 
 SNSBEGIN
 
@@ -32,7 +31,7 @@ struct UTILITIES_API wchar_traits
 		int nBufferMax);
 };
 
-class UTILITIES_API SStringW : public TObjRefImpl<IStringW>
+class UTILITIES_API SStringW : public IStringW
 {
 public:
 	typedef const wchar_t * pctstr;
@@ -68,14 +67,14 @@ public:
 	STDMETHOD_(int, Replace)(THIS_ const wchar_t* pszOld, const wchar_t* pszNew);
 	STDMETHOD_(int, Remove)(THIS_ wchar_t chRemove);
 
-	STDMETHOD_(int, FindChar)(THIS_ wchar_t ch, int nStart=0) SCONST ;
+	STDMETHOD_(int, FindChar)(THIS_ wchar_t ch, int nStart DEF_VAL(0)) SCONST ;
 	STDMETHOD_(int, ReverseFind)(THIS_ wchar_t ch) SCONST ;
 
 	// find a sub-string (like strstr)
-	STDMETHOD_(int, Find)(THIS_ const wchar_t* pszSub, int nStart=0) SCONST ;
+	STDMETHOD_(int, Find)(THIS_ const wchar_t* pszSub, int nStart DEF_VAL(0)) SCONST ;
 	// Access to string implementation buffer as "C" character array
-	STDMETHOD_(wchar_t*, GetBuffer)(THIS_ int nMinBufLength);
-	STDMETHOD_(void ,ReleaseBuffer)(THIS_ int nNewLength=-1);
+	STDMETHOD_(wchar_t*, GetBuffer)(THIS_ int nMinBufLength DEF_VAL(-1));
+	STDMETHOD_(void ,ReleaseBuffer)(THIS_ int nNewLength DEF_VAL(-1));
 	STDMETHOD_(wchar_t* ,GetBufferSetLength)(THIS_ int nNewLength);
 	STDMETHOD_(void ,SetLength)(THIS_ int nLength);
 	STDMETHOD_(void ,Copy)(THIS_ const IStringW * src);
@@ -91,6 +90,7 @@ public:
 	STDMETHOD_(void,Trim)(THIS_ wchar_t chTarget DEF_VAL(VK_SPACE)) OVERRIDE;
 	STDMETHOD_(void,AppendChar)(THIS_ wchar_t ch) OVERRIDE;
 	STDMETHOD_(void,AppendStr)(THIS_ const wchar_t *pszStr, int nLen DEF_VAL(-1)) OVERRIDE;
+	STDMETHOD_(void,Release)(THIS) OVERRIDE;
 
 	// simple sub-string extraction
 	SStringW Mid(int nFirst) const;

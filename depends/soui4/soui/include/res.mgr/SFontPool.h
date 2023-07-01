@@ -11,7 +11,8 @@
  * Describe    SOUI字体管理模块
  */
 
-#pragma once
+#ifndef __SFONTPOOL__H__
+#define __SFONTPOOL__H__
 
 #include <core/ssingletonmap.h>
 #include <interface/SRender-i.h>
@@ -46,10 +47,7 @@ class CElementTraits<FontInfo> : public CElementTraitsBase<FontInfo> {
 
     static bool CompareElements(INARGTYPE element1, INARGTYPE element2)
     {
-        return element1.strFaceName == element2.strFaceName 
-			&& element1.strPropEx == element2.strPropEx 
-			&& element1.style.syle == element2.style.syle
-			&& element1.scale == element2.scale;
+        return element1.strFaceName == element2.strFaceName && element1.strPropEx == element2.strPropEx && element1.style.syle == element2.style.syle && element1.scale == element2.scale;
     }
 
     static int CompareElementsOrdered(INARGTYPE element1, INARGTYPE element2)
@@ -59,8 +57,8 @@ class CElementTraits<FontInfo> : public CElementTraitsBase<FontInfo> {
             nRet = element1.strPropEx.Compare(element2.strPropEx);
         if (nRet == 0)
             nRet = (int)(element1.style.syle - element2.style.syle);
-		if (nRet == 0)
-			nRet = (int)(element1.scale - element2.scale);
+        if (nRet == 0)
+            nRet = (int)(element1.scale - element2.scale);
 
         return nRet;
     }
@@ -75,44 +73,81 @@ typedef BOOL (*FunFontCheck)(const SStringW &strFontName);
  *
  * Describe
  */
-class SOUI_EXP SFontPool : public SSingletonMap<SFontPool, IFontPtr, FontInfo> {
-    SINGLETON2_TYPE(SINGLETON_FONTPOOL)
+class SOUI_EXP SFontPool : public SCmnMap<IFontPtr, FontInfo> {
   public:
-    SFontPool(IRenderFactory *pRendFactory);
+    /**
+     * @brief 设置检查字体的回调函数
+     * @param fontCheck  检查字体的回调函数
+     */
+    static void SetFontChecker(FunFontCheck fontCheck);
 
-public:
-	static void SetFontChecker(FunFontCheck fontCheck);
-	static BOOL CheckFont(const SStringW &strFontName);
-public:
+    /**
+     * @brief 检查一个字体是否有效
+     * @param strFontName 字体名
+     * @return TRUE-有效
+     */
+    static BOOL CheckFont(const SStringW &strFontName);
+
+    /**
+     * @brief 将字体描述转换为FontInfo
+     * @param strFontInfo 字体描述
+     * @param defFontInfo 默认字体的FontInfo
+     * @return FontInfo
+     */
+    static FontInfo FontInfoFromString(const SStringW &strFontInfo, const FontInfo &defFontInfo);
+
+    /**
+     * @brief 将FontInfo转换为字体描述
+     * @param fi FontInfo
+     * @return 字体描述
+     */
+    static SStringW FontInfoToString(const FontInfo &fi);
+
     /**
      * GetFont
      * @brief    获得与指定的strFont对应的IFontPtr
      * @param    const SStringW & strFont --  font描述字符串
+     * @param scale 放大倍数
      * @return   IFontPtr -- font对象
      *
      * Describe  描述字符串格式如：face:宋体,bold:0,italic:1,underline:1,strike:1,adding:10
      */
-    IFontPtr GetFont(const SStringW &strFont, int scale);
+    static IFontPtr GetFont(const SStringW &strFont, int scale);
 
-    void SetDefFontInfo(const SStringW &strFontInfo);
+    /**
+     * @brief 设置默认字体
+     * @param strFontInfo 默认字体描述
+     */
+    static void SetDefFontInfo(const SStringW &strFontInfo);
 
-public:
-	static FontInfo FontInfoFromString(const SStringW &strFontInfo, const FontInfo & defFontInfo);
-	static SStringW FontInfoToString(const FontInfo & fi);
+    /**
+     * @brief 获取默认字体信息
+     * @return FontInfo 字体信息
+     */
+    static FontInfo GetDefFontInfo();
+
   protected:
-
-    const FontInfo &GetDefFontInfo() const;
-
     static void OnKeyRemoved(const IFontPtr &obj);
 
+  protected:
+    SFontPool(IRenderFactory *fac);
+
+  protected:
+    const FontInfo &_GetDefFontInfo() const;
+    void SetRenderFactory(IRenderFactory *fac);
+
+    IFontPtr _GetFont(const SStringW &strFont, int scale);
+    void _SetDefFontInfo(const SStringW &strFontInfo);
+
     IFontPtr _CreateFont(const FontInfo &fontInfo);
-	void _SetDefFontInfo(const FontInfo &fontInfo);
+    void _SetDefFontInfo(const FontInfo &fontInfo);
 
     SAutoRefPtr<IRenderFactory> m_RenderFactory;
     FontInfo m_defFontInfo;
-    SCriticalSection m_cs;
 
-	static FunFontCheck s_funFontCheck;
+    static FunFontCheck s_funFontCheck;
 };
 
 SNSEND
+
+#endif // __SFONTPOOL__H__

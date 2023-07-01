@@ -11,7 +11,8 @@
  * Describe    SOUI应用程序入口
  */
 
-#pragma once
+#ifndef __SAPP__H__
+#define __SAPP__H__
 #include <core/ssingleton.h>
 #include <interface/sapp-i.h>
 
@@ -96,6 +97,7 @@ class SOUI_EXP SApplication
 
   public:
     STDMETHOD_(IRenderFactory *, GetRenderFactory)(THIS) OVERRIDE;
+	STDMETHOD_(BOOL, SetRenderFactory)(THIS_ IRenderFactory * renderFac) OVERRIDE;
 
     STDMETHOD_(HMODULE, GetModule)(THIS) SCONST OVERRIDE;
     STDMETHOD_(UINT, LoadSystemNamedResource)(THIS_ IResProvider *pResProvider) OVERRIDE;
@@ -136,13 +138,13 @@ class SOUI_EXP SApplication
     (THIS_ const LPCWSTR *pNames, const int *nIds, int nCount) OVERRIDE;
 
     STDMETHOD_(IXmlDoc *, LoadXmlDocment)(THIS_ LPCTSTR strResId) OVERRIDE;
-	STDMETHOD_(IXmlDoc *, LoadXmlDocmentA)(THIS_ LPCSTR strResId) OVERRIDE{
+	STDMETHOD_(IXmlDoc *, LoadXmlDocmentU8)(THIS_ LPCSTR strResId) OVERRIDE{
 		SStringT str = S_CA2T(strResId,CP_UTF8);
 		return LoadXmlDocment(str);
 	}
 
     STDMETHOD_(IAnimation *, LoadAnimation)(THIS_ LPCTSTR strResId) OVERRIDE;
-	STDMETHOD_(IAnimation *, LoadAnimationA)(THIS_ LPCSTR strResId) OVERRIDE{
+	STDMETHOD_(IAnimation *, LoadAnimationU8)(THIS_ LPCSTR strResId) OVERRIDE{
 		SStringT str = S_CA2T(strResId,CP_UTF8);
 		return LoadAnimation(str);
 	}
@@ -150,19 +152,19 @@ class SOUI_EXP SApplication
 		SStringW wcsResId = S_CT2W(strResId);
 		return SResProviderMgr::LoadImage2(wcsResId);
 	}
-	STDMETHOD_(IBitmapS *,LoadImageA)(THIS_ LPCSTR strResId) OVERRIDE{
+	STDMETHOD_(IBitmapS *,LoadImageU8)(THIS_ LPCSTR strResId) OVERRIDE{
 		SStringT str = S_CA2T(strResId,CP_UTF8);
 		return LoadImage(str);
 	}
 
     STDMETHOD_(IValueAnimator *, LoadValueAnimator)(THIS_ LPCTSTR strResId) OVERRIDE;
-	STDMETHOD_(IValueAnimator *, LoadValueAnimatorA)(THIS_ LPCSTR strResId) OVERRIDE{
+	STDMETHOD_(IValueAnimator *, LoadValueAnimatorU8)(THIS_ LPCSTR strResId) OVERRIDE{
 		SStringT str = S_CA2T(strResId,CP_UTF8);
 		return LoadValueAnimator(str);
 	}
 
 	STDMETHOD_(ITranslator *,LoadTranslator)(THIS_ LPCTSTR strResId) OVERRIDE;
-	STDMETHOD_(ITranslator *,LoadTranslatorA)(THIS_ LPCSTR strResId) OVERRIDE{
+	STDMETHOD_(ITranslator *,LoadTranslatorU8)(THIS_ LPCSTR strResId) OVERRIDE{
 		SStringT str = S_CA2T(strResId,CP_UTF8);
 		return LoadTranslator(str);
 	}
@@ -294,3 +296,4 @@ class SOUI_EXP SApplication
 };
 
 SNSEND
+#endif // __SAPP__H__

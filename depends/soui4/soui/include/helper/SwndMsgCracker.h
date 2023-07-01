@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef __SWNDMSGCRACKER__H__
+#define __SWNDMSGCRACKER__H__
 
 #define SOUI_MSG_MAP_BEGIN()                                                                   \
   protected:                                                                                   \
@@ -11,8 +12,8 @@
     return TRUE;                                                             \
     }
 
-#define SOUI_MSG_MAP_END_BASE()                     \
-    return FALSE; \
+#define SOUI_MSG_MAP_END_BASE() \
+    return FALSE;               \
     }
 
 // BOOL OnEraseBkgnd(SOUI::IRenderTarget * pRT)
@@ -124,3 +125,4 @@
             return TRUE;      \
     }
 
+#endif // __SWNDMSGCRACKER__H__

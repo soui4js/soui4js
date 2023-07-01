@@ -30,7 +30,7 @@ SIZE IWindow_GetDesiredSize(Context* ctx, IWindow* _this, ArgList& args) {
 	SIZE ret = { 0,0 };
 	int nWid = -1, nHei = -1;
 	if (args.size() >= 1) nWid = args[0];
-	if (args.size() >= 2) nHei = args[2];
+	if (args.size() >= 2) nHei = args[1];
 
 	_this->GetDesiredSize(&ret, nWid, nHei);
 	return ret;
@@ -57,7 +57,7 @@ void Exp_IWindow(qjsbind::Module* module)
 	jsCls.AddFunc("IsDisplay", &IWindow::IsDisplay);
 	jsCls.AddFunc("IsMsgTransparent", &IWindow::IsMsgTransparent);
 	jsCls.AddFunc("IsClipClient", &IWindow::IsClipClient);
-	jsCls.AddFunc("SetToolTipText", &IWindow::SetToolTipTextA);
+	jsCls.AddFunc("SetToolTipText", &IWindow::SetToolTipTextU8);
 	jsCls.AddFunc("IsChecked", &IWindow::IsChecked);
 	jsCls.AddFunc("SetCheck", &IWindow::SetCheck);
 	jsCls.AddFunc("IsDisabled", &IWindow::IsDisabled);
@@ -139,7 +139,7 @@ void Exp_IWindow(qjsbind::Module* module)
 	jsCls.AddFunc("GetNextLayoutIChild", &IWindow::GetNextLayoutIChild);
 	jsCls.AddCFunc("GetChildrenLayoutRect", &IWindow_GetChildrenLayoutRect);
 	jsCls.AddFunc("GetBkgndColor", &IWindow::GetBkgndColor);
-	jsCls.AddFunc("SetWindowText", &IWindow::SetWindowTextA);
+	jsCls.AddFunc("SetWindowText", &IWindow::SetWindowTextU8);
 	jsCls.AddCFunc("GetWindowText", &IWindow_GetWindowText);
 	jsCls.AddFunc("GetState", &IWindow::GetState);
 	jsCls.AddFunc("ModifyState", &IWindow::ModifyState);

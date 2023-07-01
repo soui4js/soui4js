@@ -13,7 +13,6 @@
 
 #ifndef _SRESPROVIDERBASE_
 #define _SRESPROVIDERBASE_
-#pragma once
 
 #include <interface/obj-ref-i.h>
 #include <interface/SRender-i.h>
@@ -158,14 +157,14 @@ DECLARE_INTERFACE_(IResProvider, IObjRef)
      */
     STDMETHOD_(void, EnumResource)(THIS_ EnumResCallback funEnumCB, LPARAM lp) PURE;
 
-	/**
+    /**
      * EnumFile
      * @brief    枚举资源文件,返回文件路径
      * @param    EnumResCallback funEnumCB --  枚举使用的回调函数
      * @return   void
      * Describe
      */
-	STDMETHOD_(void, EnumFile)(THIS_ EnumFileCallback funEnumCB, LPARAM lp) PURE;
+    STDMETHOD_(void, EnumFile)(THIS_ EnumFileCallback funEnumCB, LPARAM lp) PURE;
 };
 
 SNSEND

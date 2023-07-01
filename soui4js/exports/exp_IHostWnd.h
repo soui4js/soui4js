@@ -21,6 +21,7 @@ void Exp_IHostWnd(qjsbind::Module* module)
 	jsCls.AddFunc("GetMsgLoop", &IHostWnd::GetMsgLoop);
 	jsCls.AddFunc("EnableDragDrop", &IHostWnd::EnableDragDrop);
 	jsCls.AddFunc("ShowHostWnd", &IHostWnd::ShowHostWnd);
+	jsCls.AddFunc("EnablePrivateUiDef", &IHostWnd::EnablePrivateUiDef);
 }
 
 void Exp_IHostDialog(qjsbind::Module* module)

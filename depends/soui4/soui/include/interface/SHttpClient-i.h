@@ -1,12 +1,13 @@
+ï»¿/*****************************************************************
+ *HTTPå¤„ç†ç±»ï¼Œä¸»è¦ç”¨äºHTTP GET/POSTã€ä¸‹è½½ï¼ˆæ”¯æŒé‡å®šå‘ï¼‰åŠŸèƒ½
+ *Authorï¼š	JelinYao
+ *Dateï¼š		2015/2/14 12:11
+ *Emailï¼š	mailto://jelinyao@163.com
+ */
 /*****************************************************************
-*HTTP´¦ÀíÀà£¬Ö÷ÒªÓÃÓÚHTTP GET/POST¡¢ÏÂÔØ£¨Ö§³ÖÖØ¶¨Ïò£©¹¦ÄÜ
-*Author£º	JelinYao
-*Date£º		2015/2/14 12:11
-*Email£º	mailto://jelinyao@163.com
-*/
-/*****************************************************************
-*/
-#pragma once
+ */
+#ifndef __SHTTPCLIENT_I__H__
+#define __SHTTPCLIENT_I__H__
 #include <interface/obj-ref-i.h>
 #include <interface/sstring-i.h>
 #include <stdint.h>
@@ -15,100 +16,100 @@ SNSBEGIN
 
 typedef enum RequestType
 {
-	Hr_Post,
-	Hr_Get,
-}RequestType;
-//Ã¶¾ÙÏÂÔØ×´Ì¬
+    Hr_Post,
+    Hr_Get,
+} RequestType;
+//æšä¸¾ä¸‹è½½çŠ¶æ€
 typedef enum DownloadState
 {
-	DS_Start = 0,
-	DS_Loading,
-	DS_Finished,
-	DS_Failed,
-}DownloadState;
+    DS_Start = 0,
+    DS_Loading,
+    DS_Finished,
+    DS_Failed,
+} DownloadState;
 
 /******************************************************
-*¶¨Òå´íÎóĞÅÏ¢
-*
-******************************************************/
+ *å®šä¹‰é”™è¯¯ä¿¡æ¯
+ *
+ ******************************************************/
 typedef enum HttpError
 {
-	Hir_Success = 0,		//³É¹¦
-	Hir_InitErr,			//³õÊ¼»¯Ê§°Ü
-	Hir_ConnectErr,			//Á¬½ÓHTTP·şÎñÆ÷Ê§°Ü
-	Hir_SendErr,			//·¢ËÍÇëÇóÊ§°Ü
-	Hir_QueryErr,			//²éÑ¯HTTPÇëÇóÍ·Ê§°Ü
-	Hir_404,				//Ò³Ãæ²»´æÔÚ
-	Hir_IllegalUrl,			//ÎŞĞ§µÄURL
-	Hir_CreateFileErr,		//´´½¨ÎÄ¼şÊ§°Ü
-	Hir_DownloadErr,		//ÏÂÔØÊ§°Ü
-	Hir_QueryIPErr,			//»ñÈ¡ÓòÃû¶ÔÓ¦µÄµØÖ·Ê§°Ü
-	Hir_SocketErr,			//Ì×½Ó×Ö´íÎó
-	Hir_UserCancel,			//ÓÃ»§È¡ÏûÏÂÔØ
-	Hir_BufferErr,			//ÎÄ¼şÌ«´ó£¬»º³åÇø²»×ã
-	Hir_HeaderErr,			//HTTPÇëÇóÍ·´íÎó
-	Hir_ParamErr,			//²ÎÊı´íÎó£¬¿ÕÖ¸Õë£¬¿Õ×Ö·û¡­¡­
-	Hir_UnknowErr,
+    Hir_Success = 0,   //æˆåŠŸ
+    Hir_InitErr,       //åˆå§‹åŒ–å¤±è´¥
+    Hir_ConnectErr,    //è¿æ¥HTTPæœåŠ¡å™¨å¤±è´¥
+    Hir_SendErr,       //å‘é€è¯·æ±‚å¤±è´¥
+    Hir_QueryErr,      //æŸ¥è¯¢HTTPè¯·æ±‚å¤´å¤±è´¥
+    Hir_404,           //é¡µé¢ä¸å­˜åœ¨
+    Hir_IllegalUrl,    //æ— æ•ˆçš„URL
+    Hir_CreateFileErr, //åˆ›å»ºæ–‡ä»¶å¤±è´¥
+    Hir_DownloadErr,   //ä¸‹è½½å¤±è´¥
+    Hir_QueryIPErr,    //è·å–åŸŸåå¯¹åº”çš„åœ°å€å¤±è´¥
+    Hir_SocketErr,     //å¥—æ¥å­—é”™è¯¯
+    Hir_UserCancel,    //ç”¨æˆ·å–æ¶ˆä¸‹è½½
+    Hir_BufferErr,     //æ–‡ä»¶å¤ªå¤§ï¼Œç¼“å†²åŒºä¸è¶³
+    Hir_HeaderErr,     // HTTPè¯·æ±‚å¤´é”™è¯¯
+    Hir_ParamErr,      //å‚æ•°é”™è¯¯ï¼Œç©ºæŒ‡é’ˆï¼Œç©ºå­—ç¬¦â€¦â€¦
+    Hir_UnknowErr,
 
-}HttpError;
-
+} HttpError;
 
 #undef INTERFACE
 #define INTERFACE IHttpCallback
-DECLARE_INTERFACE_(IHttpCallback, IObjRef){
-   /**
-     * @brief Ôö¼ÓÒıÓÃ¼ÆÊı
-     * @return ĞÂÒıÓÃ¼ÆÊı
-    */
-    STDMETHOD_(long,AddRef) (THIS) PURE;
+DECLARE_INTERFACE_(IHttpCallback, IObjRef)
+{
+    /**
+     * @brief å¢åŠ å¼•ç”¨è®¡æ•°
+     * @return æ–°å¼•ç”¨è®¡æ•°
+     */
+    STDMETHOD_(long, AddRef)(THIS) PURE;
 
     /**
-     * @brief ¼õÉÙÒıÓÃ¼ÆÊı
-     * @return ĞÂÒıÓÃ¼ÆÊı
-    */
-    STDMETHOD_(long,Release) (THIS) PURE;
+     * @brief å‡å°‘å¼•ç”¨è®¡æ•°
+     * @return æ–°å¼•ç”¨è®¡æ•°
+     */
+    STDMETHOD_(long, Release)(THIS) PURE;
 
-	/**
-	 * @brief ÊÍ·Å¶ÔÏó
-	 * @return void
-	*/
-	STDMETHOD_(void,OnFinalRelease) (THIS) PURE;
-	//////////////////////////////////////////////////////////////////////////
-	STDMETHOD_(BOOL,OnDownloadCallback)(THIS_ DownloadState state, uint64_t nTotalSize, uint64_t nLoadSize) PURE;
+    /**
+     * @brief é‡Šæ”¾å¯¹è±¡
+     * @return void
+     */
+    STDMETHOD_(void, OnFinalRelease)(THIS) PURE;
+    //////////////////////////////////////////////////////////////////////////
+    STDMETHOD_(BOOL, OnDownloadCallback)(THIS_ DownloadState state, uint64_t nTotalSize, uint64_t nLoadSize) PURE;
 };
 
 #undef INTERFACE
 #define INTERFACE IHttpClient
-DECLARE_INTERFACE_(IHttpClient, IObjRef){
-   /**
-     * @brief Ôö¼ÓÒıÓÃ¼ÆÊı
-     * @return ĞÂÒıÓÃ¼ÆÊı
-    */
-    STDMETHOD_(long,AddRef) (THIS) PURE;
+DECLARE_INTERFACE_(IHttpClient, IObjRef)
+{
+    /**
+     * @brief å¢åŠ å¼•ç”¨è®¡æ•°
+     * @return æ–°å¼•ç”¨è®¡æ•°
+     */
+    STDMETHOD_(long, AddRef)(THIS) PURE;
 
     /**
-     * @brief ¼õÉÙÒıÓÃ¼ÆÊı
-     * @return ĞÂÒıÓÃ¼ÆÊı
-    */
-    STDMETHOD_(long,Release) (THIS) PURE;
+     * @brief å‡å°‘å¼•ç”¨è®¡æ•°
+     * @return æ–°å¼•ç”¨è®¡æ•°
+     */
+    STDMETHOD_(long, Release)(THIS) PURE;
 
-	/**
-	 * @brief ÊÍ·Å¶ÔÏó
-	 * @return void
-	*/
-	STDMETHOD_(void,OnFinalRelease) (THIS) PURE;
-	//////////////////////////////////////////////////////////////////////////
-	STDMETHOD_(void,SetHeader)(THIS_ LPCSTR pszKey,LPCSTR pszValue) PURE;
-	STDMETHOD_(void,SetDownloadCallback)(THIS_ IHttpCallback* pCallback) PURE;
-	STDMETHOD_(BOOL,DownloadFile)(THIS_ LPCSTR lpUrl, LPCSTR lpFilePath) PURE;
-	STDMETHOD_(BOOL,DownloadToMem)(THIS_ LPCSTR lpUrl, OUT void** ppBuffer, OUT int* nSize) PURE;
-	STDMETHOD_(HttpError,GetErrorCode)(CTHIS) SCONST PURE;
-	STDMETHOD_(BOOL,Request)(THIS_ IStringA *result,LPCSTR lpUrl, RequestType type, LPCSTR lpPostData DEF_VAL(NULL), LPCSTR lpHeader DEF_VAL(NULL)) PURE;
-	STDMETHOD_(void,SetTimeOut)(THIS_ int dwConnectTime,  int dwSendTime, int dwRecvTime) PURE;		
-	STDMETHOD_(int,GetHttpCode)(CTHIS) SCONST PURE;
+    /**
+     * @brief é‡Šæ”¾å¯¹è±¡
+     * @return void
+     */
+    STDMETHOD_(void, OnFinalRelease)(THIS) PURE;
+    //////////////////////////////////////////////////////////////////////////
+    STDMETHOD_(void, SetHeader)(THIS_ LPCSTR pszKey, LPCSTR pszValue) PURE;
+    STDMETHOD_(void, SetDownloadCallback)(THIS_ IHttpCallback * pCallback) PURE;
+    STDMETHOD_(BOOL, DownloadFile)(THIS_ LPCSTR lpUrl, LPCSTR lpFilePath) PURE;
+    STDMETHOD_(BOOL, DownloadToMem)(THIS_ LPCSTR lpUrl, OUT void **ppBuffer, OUT int *nSize) PURE;
+    STDMETHOD_(HttpError, GetErrorCode)(CTHIS) SCONST PURE;
+    STDMETHOD_(BOOL, Request)(THIS_ IStringA * result, LPCSTR lpUrl, RequestType type, LPCSTR lpPostData DEF_VAL(NULL), LPCSTR lpHeader DEF_VAL(NULL)) PURE;
+    STDMETHOD_(void, SetTimeOut)(THIS_ int dwConnectTime, int dwSendTime, int dwRecvTime) PURE;
+    STDMETHOD_(int, GetHttpCode)(CTHIS) SCONST PURE;
 };
 
 SNSEND
 
-
-
+#endif // __SHTTPCLIENT_I__H__

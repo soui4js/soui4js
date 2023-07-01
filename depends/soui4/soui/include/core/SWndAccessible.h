@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __SWNDACCESSIBLE__H__
+#define __SWNDACCESSIBLE__H__
 #include <oleacc.h>
 #include <helper/SUnknown.h>
 #include "Swnd.h"
@@ -24,12 +25,14 @@ class SOUI_EXP SAccessible
 
   public:
     // Implement IAccHelper
-	STDMETHOD_(void, SetOwner)(THIS_ IWindow * pOwner) OVERRIDE{
-		m_pWnd = (SWindow*)pOwner;
-	}
-	STDMETHOD_(IWindow *, GetOwner)(CTHIS) SCONST OVERRIDE{
-		return m_pWnd;
-	}
+    STDMETHOD_(void, SetOwner)(THIS_ IWindow *pOwner) OVERRIDE
+    {
+        m_pWnd = (SWindow *)pOwner;
+    }
+    STDMETHOD_(IWindow *, GetOwner)(CTHIS) SCONST OVERRIDE
+    {
+        return m_pWnd;
+    }
 
     // Implement IAccessible
     STDMETHODIMP get_accParent(IDispatch **ppdispParent);
@@ -68,3 +71,5 @@ class SOUI_EXP SAccessible
 };
 #endif // SOUI_ENABLE_ACC
 SNSEND
+
+#endif // __SWNDACCESSIBLE__H__

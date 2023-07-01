@@ -1,4 +1,5 @@
 ﻿import * as soui4 from "soui4";
+import {R} from "uires/R.js";
 
 var g_workDir="";
 
@@ -24,7 +25,7 @@ class MainDialog extends soui4.JsHostWnd{
 
 	init(){
 		console.log("init");
-		soui4.SConnect(this.FindIChildByName("btn_test"),soui4.EVT_CMD,this,this.onBtnTest);
+		soui4.SConnect(this.FindIChildByID(R.id.btn_test),soui4.EVT_CMD,this,this.onBtnTest);
 	}
 	uninit(){
 		//do uninit.
@@ -38,6 +39,8 @@ function main(inst,workDir,args)
 	soui4.log(workDir);
 	g_workDir = workDir;
 	let theApp = soui4.GetApp();
+	let res = theApp.InitXmlNamedID(R.name_arr,R.id_arr);
+	console.log("InitXmlNamedID ret:",res);
 	let souiFac = soui4.CreateSouiFactory();
 	//*
 	let resProvider = souiFac.CreateResProvider(1);

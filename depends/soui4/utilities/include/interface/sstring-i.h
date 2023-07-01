@@ -1,27 +1,13 @@
-#pragma once
+Ôªø#ifndef __SSTRING_I__H__
+#define __SSTRING_I__H__
 #include <utilities-def.h>
 #include <interface/obj-ref-i.h>
 SNSBEGIN
 
 #undef INTERFACE
 #define INTERFACE IStringA
-DECLARE_INTERFACE_(IStringA,IObjRef)
+DECLARE_INTERFACE(IStringA)
 {
-	//!ÃÌº”“˝”√
-	/*!
-	*/
-	STDMETHOD_(long,AddRef) (THIS) PURE;
-
-	//! Õ∑≈“˝”√
-	/*!
-	*/
-	STDMETHOD_(long,Release) (THIS) PURE;
-
-	//! Õ∑≈∂‘œÛ
-	/*!
-	*/
-	STDMETHOD_(void,OnFinalRelease) (THIS) PURE;
-
 	STDMETHOD_(int, GetLength)(CTHIS) SCONST PURE;
 	STDMETHOD_(BOOL, IsEmpty)(CTHIS) SCONST PURE;
 	STDMETHOD_(void, Empty)(THIS) PURE;
@@ -42,14 +28,14 @@ DECLARE_INTERFACE_(IStringA,IObjRef)
 	STDMETHOD_(int, Replace)(THIS_ const char* pszOld, const char* pszNew)PURE;
 	STDMETHOD_(int, Remove)(THIS_ char chRemove)PURE;
 
-	STDMETHOD_(int, FindChar)(CTHIS_ char ch, int nStart) SCONST PURE;
+	STDMETHOD_(int, FindChar)(CTHIS_ char ch, int nStart DEF_VAL(0)) SCONST PURE;
 	STDMETHOD_(int, ReverseFind)(CTHIS_ char ch) SCONST PURE;
 
 	// find a sub-string (like strstr)
-	STDMETHOD_(int, Find)(CTHIS_ const char* pszSub, int nStart) SCONST PURE;
+	STDMETHOD_(int, Find)(CTHIS_ const char* pszSub, int nStart DEF_VAL(0)) SCONST PURE;
 	// Access to string implementation buffer as "C" character array
-	STDMETHOD_(char*, GetBuffer)(THIS_ int nMinBufLength)PURE;
-	STDMETHOD_(void ,ReleaseBuffer)(THIS_ int nNewLength)PURE;
+	STDMETHOD_(char*, GetBuffer)(THIS_ int nMinBufLength DEF_VAL(-1))PURE;
+	STDMETHOD_(void ,ReleaseBuffer)(THIS_ int nNewLength DEF_VAL(-1))PURE;
 	STDMETHOD_(char* ,GetBufferSetLength)(THIS_ int nNewLength)PURE;
 	STDMETHOD_(void ,SetLength)(THIS_ int nLength)PURE;
 	STDMETHOD_(void ,Copy)(THIS_ const IStringA * src) PURE;
@@ -64,29 +50,14 @@ DECLARE_INTERFACE_(IStringA,IObjRef)
 	STDMETHOD_(void,Trim)(THIS_ char chTarget DEF_VAL(VK_SPACE)) PURE;
 	STDMETHOD_(void,AppendChar)(THIS_ char ch) PURE;
 	STDMETHOD_(void,AppendStr)(THIS_ const char *pszStr, int nLen DEF_VAL(-1)) PURE;
-
+	STDMETHOD_(void,Release)(THIS) PURE;
 };
 
 
 #undef INTERFACE
 #define INTERFACE IStringW
-DECLARE_INTERFACE_(IStringW,IObjRef)
+DECLARE_INTERFACE(IStringW)
 {
-	//!ÃÌº”“˝”√
-	/*!
-	*/
-	STDMETHOD_(long,AddRef) (THIS) PURE;
-
-	//! Õ∑≈“˝”√
-	/*!
-	*/
-	STDMETHOD_(long,Release) (THIS) PURE;
-
-	//! Õ∑≈∂‘œÛ
-	/*!
-	*/
-	STDMETHOD_(void,OnFinalRelease) (THIS) PURE;
-
 	STDMETHOD_(int, GetLength)(CTHIS) SCONST PURE;
 	STDMETHOD_(BOOL, IsEmpty)(CTHIS) SCONST PURE;
 	STDMETHOD_(void, Empty)(THIS) PURE;
@@ -107,14 +78,14 @@ DECLARE_INTERFACE_(IStringW,IObjRef)
 	STDMETHOD_(int, Replace)(THIS_ const wchar_t* pszOld, const wchar_t* pszNew)PURE;
 	STDMETHOD_(int, Remove)(THIS_ wchar_t chRemove)PURE;
 
-	STDMETHOD_(int, FindChar)(CTHIS_ wchar_t ch, int nStart) SCONST PURE;
+	STDMETHOD_(int, FindChar)(CTHIS_ wchar_t ch, int nStart DEF_VAL(0)) SCONST PURE;
 	STDMETHOD_(int, ReverseFind)(CTHIS_ wchar_t ch) SCONST PURE;
 
 	// find a sub-string (like strstr)
-	STDMETHOD_(int, Find)(CTHIS_ const wchar_t* pszSub, int nStart) SCONST PURE;
+	STDMETHOD_(int, Find)(CTHIS_ const wchar_t* pszSub, int nStart DEF_VAL(0)) SCONST PURE;
 	// Access to string implementation buffer as "C" character array
-	STDMETHOD_(wchar_t*, GetBuffer)(THIS_ int nMinBufLength)PURE;
-	STDMETHOD_(void ,ReleaseBuffer)(THIS_ int nNewLength)PURE;
+	STDMETHOD_(wchar_t*, GetBuffer)(THIS_ int nMinBufLength DEF_VAL(-1))PURE;
+	STDMETHOD_(void ,ReleaseBuffer)(THIS_ int nNewLength DEF_VAL(-1))PURE;
 	STDMETHOD_(wchar_t* ,GetBufferSetLength)(THIS_ int nNewLength)PURE;
 	STDMETHOD_(void ,SetLength)(THIS_ int nLength) PURE;
 	STDMETHOD_(void ,Copy)(THIS_ const IStringW * src) PURE;
@@ -129,7 +100,7 @@ DECLARE_INTERFACE_(IStringW,IObjRef)
 	STDMETHOD_(void,Trim)(THIS_ wchar_t chTarget DEF_VAL(VK_SPACE)) PURE;
 	STDMETHOD_(void,AppendChar)(THIS_ wchar_t ch) PURE;
 	STDMETHOD_(void,AppendStr)(THIS_ const wchar_t *pszStr, int nLen DEF_VAL(-1)) PURE;
-
+	STDMETHOD_(void,Release)(THIS) PURE;
 };
 
 #ifdef _UNICODE
@@ -139,3 +110,4 @@ DECLARE_INTERFACE_(IStringW,IObjRef)
 #endif
 
 SNSEND
+#endif // __SSTRING_I__H__

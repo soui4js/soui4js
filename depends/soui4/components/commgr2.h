@@ -2,7 +2,7 @@
 
 #pragma  once
 
-#include <com-def.h>
+#include <config.h>
 #include <string/tstring.h>
 #include <commask.h>
 #include <com-loader.hpp>
@@ -11,9 +11,9 @@
 #define SCOM_MASK scom_mask_scom_all
 #endif 
 
-#define COM_IMGDECODER  _T("imgdecoder-gdip")
 #define COM_RENDER_GDI  _T("render-gdi.dll")
 #define COM_RENDER_SKIA _T("render-skia.dll")
+#define COM_RENDER_D2D _T("render-d2d.dll")
 #define COM_SCRIPT_QJS _T("soui4js.dll")
 #define COM_TRANSLATOR _T("translator.dll")
 #define COM_LOG4Z   _T("log4z.dll")
@@ -29,10 +29,8 @@ namespace SOUI{
 class SComMgr2
 {
 public:
-    SComMgr2(LPCTSTR pszImgDecoder = NULL)
+    SComMgr2()
     {
-        if(pszImgDecoder) m_strImgDecoder = pszImgDecoder;
-        else m_strImgDecoder = COM_IMGDECODER;
     }
 
 	void SetDllPath(const SStringT & strDllPath)
@@ -47,9 +45,9 @@ public:
 		}
 	}
 
-    BOOL CreateImgDecoder(IObjRef ** ppObj)
+    BOOL CreateImgDecoder(LPCTSTR pszImgDecoderName,IObjRef ** ppObj)
     {
-        return imgDecLoader.CreateInstance(m_strDllPath+ COM_IMGDECODER,ppObj);
+        return imgDecLoader.CreateInstance(m_strDllPath+ pszImgDecoderName,ppObj);
     }
     
     BOOL CreateRender_GDI(IObjRef **ppObj)
@@ -60,6 +58,11 @@ public:
     BOOL CreateRender_Skia(IObjRef **ppObj)
     {
         return renderLoader.CreateInstance(m_strDllPath+COM_RENDER_SKIA,ppObj);
+    }
+
+    BOOL CreateRender_D2D(IObjRef** ppObj)
+    {
+        return renderLoader.CreateInstance(m_strDllPath + COM_RENDER_D2D, ppObj);
     }
 
     BOOL CreateScrpit_Qjs(IObjRef **ppObj)

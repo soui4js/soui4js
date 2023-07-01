@@ -214,6 +214,14 @@ public:
 			return TRUE;
 	}
 
+	STDMETHOD_(void, SetColumnsWidth)(THIS_ int* pWids, int nCol) OVERRIDE {
+		if (!m_funSetColumnWid.IsFunction())
+			return;
+		Context* ctx = m_funSetColumnWid.context();
+		Value args = ctx->NewArrayBuffer((const uint8_t*)pWids, nCol*sizeof(int));
+		ctx->Call(GetJsThis(), m_funSetColumnWid, 1, &args);
+	}
+
 	virtual const WeakValue& GetJsThis() const override {
 		if (m_cbHandler.IsObject())
 			return m_cbHandler;
@@ -231,6 +239,7 @@ public:
 		pThis->m_funOnSort.Mark(mark_fun);
 		pThis->m_funGetColumnName.Mark(mark_fun);
 		pThis->m_funIsColumnVisible.Mark(mark_fun);
+		pThis->m_funSetColumnWid.Mark(mark_fun);
 	}
 
 	Value m_cbHandler;
@@ -242,6 +251,7 @@ public:
 	Value m_funOnSort;
 	Value m_funGetColumnName;
 	Value m_funIsColumnVisible;
+	Value m_funSetColumnWid;
 };
 
 typedef int TvKey;
@@ -431,6 +441,7 @@ void Exp_SAdapter(qjsbind::Module* module) {
 		jsCls.AddGetSet("OnSort", &SMcLvAdapter::m_funOnSort);
 		jsCls.AddGetSet("onGetColumnName", &SMcLvAdapter::m_funGetColumnName);
 		jsCls.AddGetSet("onIsColumnVisible", &SMcLvAdapter::m_funIsColumnVisible);
+		jsCls.AddGetSet("onSetColumnWid", &SMcLvAdapter::m_funSetColumnWid);
 	}
 	{
 		JsClass<STvAdapter> jsCls = module->ExportClass<STvAdapter>("STvAdapter");

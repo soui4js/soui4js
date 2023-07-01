@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __SNCPAINTER__H__
+#define __SNCPAINTER__H__
 #include <sobject/Sobject.hpp>
 #include <interface/SNcPainter-i.h>
 #include <core/SItemPanel.h>
@@ -29,7 +30,8 @@ class SNcPainter
     ~SNcPainter(void);
 
     static int toNcBuiltinID(const SStringW &str);
-	static void updateSystemButton(SWindow *pRoot,UINT nResizeMode);
+    static void updateSystemButton(SWindow *pRoot, UINT nResizeMode);
+
   public:
     STDMETHOD_(BOOL, InitFromXml)(THIS_ IXmlNode *pXmlNode) OVERRIDE;
 
@@ -54,7 +56,7 @@ class SNcPainter
 
     virtual CRect GetHostRect() const;
 
-    virtual void InvalidateHostRect(LPCRECT pRc,BOOL bClip);
+    virtual void InvalidateHostRect(LPCRECT pRc, BOOL bClip);
 
     virtual ISwndContainer *GetHostContainer();
 
@@ -62,7 +64,7 @@ class SNcPainter
 
     virtual void OnReleaseHostRenderTarget(IRenderTarget *pRT, LPCRECT rc, GrtFlag gdcFlags);
 
-	virtual void OnLayoutDirty();
+    virtual void OnLayoutDirty();
 
   protected:
     int GetScale() const;
@@ -90,7 +92,7 @@ class SNcPainter
     LRESULT OnNcMouseEvent(UINT msg, WPARAM wp, LPARAM lp);
     LRESULT OnNcMouseLeave(UINT msg, WPARAM wp, LPARAM lp);
     void OnSize(UINT nType, CSize size);
-	void OnTimer(UINT_PTR tid);
+    void OnTimer(UINT_PTR tid);
     BEGIN_MSG_MAP_EX(SNcPainter)
         if (m_bSysNcPainter)
             return FALSE;
@@ -106,7 +108,7 @@ class SNcPainter
         MESSAGE_RANGE_HANDLER_EX(WM_NCMOUSEMOVE, WM_NCMBUTTONDBLCLK, OnNcMouseEvent)
         MESSAGE_HANDLER_EX(WM_SETTINGCHANGE, OnRepaint)
         MESSAGE_HANDLER_EX(WM_SYSCOLORCHANGE, OnRepaint)
-		MSG_WM_TIMER(OnTimer)
+        MSG_WM_TIMER(OnTimer)
     END_MSG_MAP()
 
   protected:
@@ -133,6 +135,7 @@ class SNcPainter
     BOOL m_bLButtonDown;
     BOOL m_bMouseHover;
     SNcPanel *m_root;
+    CRect m_rcInvalid;
 };
 
 class SNcPanel : public SOsrPanel {
@@ -141,6 +144,10 @@ class SNcPanel : public SOsrPanel {
     SNcPanel(IHostProxy *pFrameHost, IItemContainer *pItemContainer);
 
     void SetActive(BOOL bActive);
+    BOOL IsActive() const
+    {
+        return m_bActive;
+    }
 
   protected:
     BOOL OnEraseBkgnd(IRenderTarget *pRT);
@@ -166,3 +173,5 @@ class SNcPanel : public SOsrPanel {
 };
 
 SNSEND
+
+#endif // __SNCPAINTER__H__

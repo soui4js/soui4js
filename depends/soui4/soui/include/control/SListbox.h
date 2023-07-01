@@ -10,7 +10,8 @@
  *
  * Describe
  */
-#pragma once
+#ifndef __SLISTBOX__H__
+#define __SLISTBOX__H__
 #include "core/SPanel.h"
 
 SNSBEGIN
@@ -30,7 +31,7 @@ typedef struct tagLBITEM
         : strText(pOwner)
     {
         nImage = -1;
-        lParam = NULL;
+        lParam = 0;
     }
 
 } LBITEM, *LPLBITEM;
@@ -212,11 +213,12 @@ class SOUI_EXP SListBox : public TPanelProxy<IListBox> {
 
     STDMETHOD_(int, FindString)(THIS_ int iFindAfter, LPCTSTR pszText) SCONST OVERRIDE;
 
-	STDMETHOD_(void, GetDesiredSize)(THIS_ SIZE *psz,int nParentWid, int nParentHei) OVERRIDE;
+    STDMETHOD_(void, GetDesiredSize)(THIS_ SIZE *psz, int nParentWid, int nParentHei) OVERRIDE;
 
-	STDMETHOD_(BOOL, SetItemImage)(THIS_ int nIndex,int iImage) OVERRIDE;
+    STDMETHOD_(BOOL, SetItemImage)(THIS_ int nIndex, int iImage) OVERRIDE;
 
-	STDMETHOD_(int, GetItemImage)(THIS_ int nIndex) OVERRIDE;
+    STDMETHOD_(int, GetItemImage)(THIS_ int nIndex) OVERRIDE;
+
   public:
     /**
      * SListBox::GetText
@@ -256,6 +258,8 @@ class SOUI_EXP SListBox : public TPanelProxy<IListBox> {
     void UpdateScrollBar();
 
     virtual HRESULT OnLanguageChanged();
+
+    void OnScaleChanged(int nScale) override;
 
     /**
      * SListBox::CreateChildren
@@ -473,3 +477,4 @@ class SOUI_EXP SListBox : public TPanelProxy<IListBox> {
 };
 
 SNSEND
+#endif // __SLISTBOX__H__

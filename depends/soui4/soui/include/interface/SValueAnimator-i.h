@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __SVALUEANIMATOR_I__H__
+#define __SVALUEANIMATOR_I__H__
 #include <interface/SAnimation-i.h>
 #include <interface/STimelineHandler-i.h>
 
@@ -44,7 +45,7 @@ DECLARE_INTERFACE(IAnimatorListener)
 #define INTERFACE IValueAnimator
 DECLARE_INTERFACE_(IValueAnimator, IObject)
 {
-	DEF_OBJ_BASE(IValueAnimator,ValueAnimator)
+    DEF_OBJ_BASE(IValueAnimator, ValueAnimator)
 #include <interface/SobjectApi.h>
 
     /**
@@ -205,7 +206,7 @@ DECLARE_INTERFACE_(IValueAnimator, IObject)
 
     STDMETHOD_(void, start)(THIS_ ITimelineHandlersMgr * pContainer) PURE;
 
-	STDMETHOD_(void, end)(THIS) PURE;
+    STDMETHOD_(void, end)(THIS) PURE;
 
     STDMETHOD_(BOOL, isRunning)(CTHIS) SCONST PURE;
 
@@ -237,7 +238,49 @@ DECLARE_INTERFACE_(IValueAnimator, IObject)
 
     STDMETHOD_(IValueAnimator *, clone)(CTHIS) SCONST PURE;
 
+    STDMETHOD_(void, copy)(THIS_ const IValueAnimator *src) PURE;
+
     STDMETHOD_(void, onEvaluateValue)(THIS_ float fraction) PURE;
 };
 
+typedef struct IAnimatorGroup IAnimatorGroup;
+
+#undef INTERFACE
+#define INTERFACE IAnimatorGroupListerer
+DECLARE_INTERFACE(IAnimatorGroupListerer)
+{
+    STDMETHOD_(void, OnAnimatorGroupEnd)(THIS_ IAnimatorGroup * pGroup) PURE;
+};
+
+#undef INTERFACE
+#define INTERFACE IAnimatorGroup
+DECLARE_INTERFACE_(IAnimatorGroup, IObjRef)
+{
+    /**
+     * @brief 增加引用计数
+     * @return 新引用计数
+     */
+    STDMETHOD_(long, AddRef)(THIS) PURE;
+
+    /**
+     * @brief 减少引用计数
+     * @return 新引用计数
+     */
+    STDMETHOD_(long, Release)(THIS) PURE;
+
+    /**
+     * @brief 释放对象
+     * @return void
+     */
+    STDMETHOD_(void, OnFinalRelease)(THIS) PURE;
+
+    //////////////////////////////////////////////////////////////////////////
+    STDMETHOD_(BOOL, AddAnimator)(THIS_ IValueAnimator * ani) PURE;
+
+    STDMETHOD_(BOOL, RemoveAnimator)(THIS_ IValueAnimator * ani) PURE;
+
+    STDMETHOD_(void, SetListener)(THIS_ IAnimatorGroupListerer * listener) PURE;
+};
+
 SNSEND
+#endif // __SVALUEANIMATOR_I__H__

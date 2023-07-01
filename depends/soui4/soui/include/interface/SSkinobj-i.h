@@ -10,7 +10,8 @@
  *
  * Describe    interface of SSkinObj
  */
-#pragma once
+#ifndef __SSKINOBJ_I__H__
+#define __SSKINOBJ_I__H__
 
 #include <interface/obj-ref-i.h>
 #include <interface/SRender-i.h>
@@ -27,7 +28,7 @@ SNSBEGIN
 #define INTERFACE ISkinObj
 DECLARE_INTERFACE_(ISkinObj, IObject)
 {
-	DEF_OBJ_BASE(ISkinObj,Skin)
+    DEF_OBJ_BASE(ISkinObj, Skin)
 #include <interface/SobjectApi.h>
     //------------------------------------------------------------------------
 
@@ -132,6 +133,13 @@ DECLARE_INTERFACE_(ISkinObj, IObject)
     STDMETHOD_(int, GetScale)(CTHIS) SCONST PURE;
 
     /**
+     * SetScale
+     * @brief    设置放大比例
+     * @param   int scale 放大比例
+     * Describe 内部接口，不要在业务层调用
+     */
+    STDMETHOD_(void, SetScale)(THIS_ int scale) PURE;
+    /**
      * Scale
      * @brief    将当前Skin按照指定比例缩放
      * @param    int nScale -- 放大比例
@@ -142,3 +150,4 @@ DECLARE_INTERFACE_(ISkinObj, IObject)
 };
 
 SNSEND
+#endif // __SSKINOBJ_I__H__

@@ -11,11 +11,13 @@
  * Describe    SOUI基础DUI窗口模块
  */
 
-#pragma once
+#ifndef __SWND__H__
+#define __SWND__H__
 #include <core/SWindowMgr.h>
 #include <interface/SwndContainer-i.h>
 #include <interface/slayout-i.h>
 #include <interface/saccproxy-i.h>
+#include <interface/scaret-i.h>
 #include <helper/SwndMsgCracker.h>
 #include <layout/SLayoutSize.h>
 #include <event/SEventSlot.h>
@@ -57,13 +59,7 @@ enum
     NormalEnable = 0,
     ParentEnable = 1
 }; //提供WM_ENABLE消息识别是父窗口可用还是直接操作当前窗口
-enum
-{
-    UM_SETSCALE = (WM_USER + 1000),
-    UM_SETLANGUAGE,
-    UM_SETCOLORIZE,
-    UM_UPDATEFONT,
-};
+
 // State Define
 enum WndState
 {
@@ -169,19 +165,20 @@ class SOUI_EXP STrText {
     STrText(SWindow *pOwner = NULL);
     void SetOwner(SWindow *pOwner);
 
-    void SetText(const SStringT &strText,bool bAutoEscape=true);
+    void SetText(const SStringT &strText, bool bAutoEscape = true);
 
     SStringT GetText(BOOL bRawText = FALSE) const;
 
     void TranslateText();
 
-	static SStringW EscapeString(const SStringW & str);
+    static SStringW EscapeString(const SStringW &str);
+
   protected:
     SWindow *pOwner;
 
     SStringT strRaw; //原始字符串
-	bool bAutoEscape;
-    SStringT strTr;  //翻译后的字符串
+    bool bAutoEscape;
+    SStringT strTr; //翻译后的字符串
 };
 
 /**
@@ -202,7 +199,7 @@ class SOUI_EXP SWindow
     friend class SGridLayout;
     friend class SLinearLayout;
     friend class SouiLayout;
-	friend class SHostProxy;
+    friend class SHostProxy;
 
     class SAnimationHandler : public ITimelineHandler {
       private:
@@ -235,10 +232,10 @@ class SOUI_EXP SWindow
     void SetMsgHandled(BOOL bHandled);
 
   public:
-	static SStringW GetXmlText(const SXmlNode &xmlNode);
+    static SStringW GetXmlText(const SXmlNode &xmlNode);
 
   public:
-	STDMETHOD_(void, OnFinalRelease)(THIS);
+    STDMETHOD_(void, OnFinalRelease)(THIS);
 
     STDMETHOD_(SWND, GetSwnd)(THIS) SCONST OVERRIDE;
 
@@ -260,10 +257,10 @@ class SOUI_EXP SWindow
 
     STDMETHOD_(void, SetWindowText)(THIS_ LPCTSTR lpszText) OVERRIDE;
 
-	STDMETHOD_(void, SetWindowTextA)(THIS_ LPCSTR lpszText) OVERRIDE;
+    STDMETHOD_(void, SetWindowTextU8)(THIS_ LPCSTR lpszText) OVERRIDE;
 
     STDMETHOD_(void, SetToolTipText)(THIS_ LPCTSTR pszText) OVERRIDE;
-	STDMETHOD_(void, SetToolTipTextA)(THIS_ LPCSTR pszText) OVERRIDE;
+    STDMETHOD_(void, SetToolTipTextU8)(THIS_ LPCSTR pszText) OVERRIDE;
 
     STDMETHOD_(BOOL, IsChecked)(THIS) SCONST OVERRIDE;
     STDMETHOD_(void, SetCheck)(THIS_ BOOL bCheck) OVERRIDE;
@@ -281,8 +278,8 @@ class SOUI_EXP SWindow
     STDMETHOD_(ULONG_PTR, GetUserData)(THIS) SCONST OVERRIDE;
     STDMETHOD_(ULONG_PTR, SetUserData)(THIS_ ULONG_PTR uData) OVERRIDE;
     STDMETHOD_(void, GetWindowRect)(THIS_ LPRECT prect) SCONST OVERRIDE;
-	STDMETHOD_(BOOL,IsVideoCanvas)(CTHIS) SCONST OVERRIDE;
-	STDMETHOD_(void, GetVisibleRect)(CTHIS_ LPRECT prect) SCONST OVERRIDE;
+    STDMETHOD_(BOOL, IsVideoCanvas)(CTHIS) SCONST OVERRIDE;
+    STDMETHOD_(void, GetVisibleRect)(CTHIS_ LPRECT prect) SCONST OVERRIDE;
     STDMETHOD_(void, GetClientRect)(THIS_ LPRECT prect) SCONST OVERRIDE;
     STDMETHOD_(BOOL, IsContainPoint)(THIS_ POINT pt, BOOL bClientOnly) SCONST OVERRIDE;
     STDMETHOD_(void, DoColorize)(THIS_ COLORREF cr) OVERRIDE;
@@ -291,7 +288,7 @@ class SOUI_EXP SWindow
     STDMETHOD_(void, BringWindowToTop)(THIS) OVERRIDE;
     STDMETHOD_(UINT, GetChildrenCount)(THIS) SCONST OVERRIDE;
     STDMETHOD_(LRESULT, SSendMessage)
-    (THIS_ UINT uMsg, WPARAM wParam = 0, LPARAM lParam = 0, BOOL *pbMsgHandled DEF_VAL(NULL) ) OVERRIDE;
+    (THIS_ UINT uMsg, WPARAM wParam = 0, LPARAM lParam = 0, BOOL *pbMsgHandled DEF_VAL(NULL)) OVERRIDE;
     STDMETHOD_(void, SDispatchMessage)
     (THIS_ UINT uMsg, WPARAM wParam = 0, LPARAM lParam = 0) OVERRIDE;
 
@@ -305,7 +302,7 @@ class SOUI_EXP SWindow
     STDMETHOD_(void, LockUpdate)(THIS) OVERRIDE;
     STDMETHOD_(void, UnlockUpdate)(THIS) OVERRIDE;
     STDMETHOD_(BOOL, IsUpdateLocked)(CTHIS_ BOOL bCheckParent DEF_VAL(FALSE)) SCONST OVERRIDE;
-    STDMETHOD_(void, Update)(THIS) OVERRIDE;
+    STDMETHOD_(void, Update)(THIS_ BOOL bForce DEF_VAL(FALSE)) OVERRIDE;
     STDMETHOD_(void, Move)(THIS_ LPCRECT prect) OVERRIDE;
     STDMETHOD_(void, SetWindowRgn)(THIS_ IRegionS *pRgn, BOOL bRedraw DEF_VAL(TRUE)) OVERRIDE;
     STDMETHOD_(IRegionS *, GetWindowRgn)(THIS) SCONST OVERRIDE;
@@ -378,20 +375,20 @@ class SOUI_EXP SWindow
 
     STDMETHOD_(IWindow *, FindIChildByName)(THIS_ LPCWSTR pszName) OVERRIDE;
 
-	STDMETHOD_(IWindow *, FindIChildByNameA)(THIS_ LPCSTR pszName) OVERRIDE;
+    STDMETHOD_(IWindow *, FindIChildByNameA)(THIS_ LPCSTR pszName) OVERRIDE;
 
     STDMETHOD_(ISwndContainer *, GetContainer)(THIS) OVERRIDE;
     STDMETHOD_(void, SetContainer)(THIS_ ISwndContainer *pContainer) OVERRIDE;
 
-    STDMETHOD_(void, GetChildrenLayoutRect)(THIS_ RECT* prc) SCONST OVERRIDE;
+    STDMETHOD_(void, GetChildrenLayoutRect)(THIS_ RECT *prc) SCONST OVERRIDE;
 
-    STDMETHOD_(void, GetDesiredSize)(THIS_ SIZE *psz,int nParentWid, int nParentHei) OVERRIDE;
+    STDMETHOD_(void, GetDesiredSize)(THIS_ SIZE *psz, int nParentWid, int nParentHei) OVERRIDE;
 
     STDMETHOD_(void, Move2)(THIS_ int x, int y, int cx DEF_VAL(-1), int cy DEF_VAL(-1)) OVERRIDE;
 
     STDMETHOD_(int, GetWindowText)(THIS_ TCHAR *pBuf, int nBufLen, BOOL bRawText) OVERRIDE;
 
-	STDMETHOD_(int, GetWindowTextA)(THIS_ IStringA *pStr, BOOL bRawText) OVERRIDE;
+    STDMETHOD_(int, GetWindowTextU8)(THIS_ IStringA *pStr, BOOL bRawText) OVERRIDE;
 
     STDMETHOD_(void, SetEventMute)(THIS_ BOOL bMute) OVERRIDE;
 
@@ -404,7 +401,7 @@ class SOUI_EXP SWindow
 
     STDMETHOD_(BOOL, CreateChildrenFromXml)(THIS_ LPCWSTR pszXml) OVERRIDE;
 
-	STDMETHOD_(BOOL, CreateChildrenFromResId)(THIS_ LPCTSTR pszResId) OVERRIDE;
+    STDMETHOD_(BOOL, CreateChildrenFromResId)(THIS_ LPCTSTR pszResId) OVERRIDE;
 
     STDMETHOD_(BOOL, InitFromXml)(THIS_ IXmlNode *pNode) OVERRIDE;
 
@@ -416,8 +413,7 @@ class SOUI_EXP SWindow
 
     STDMETHOD_(IWindow *, GetISelectedChildInGroup)(THIS) OVERRIDE;
 
-
-	STDMETHOD_(SWND, SwndFromPoint)(THIS_ POINT *pt, BOOL bIncludeMsgTransparent DEF_VAL(FALSE)) SCONST OVERRIDE;
+    STDMETHOD_(SWND, SwndFromPoint)(THIS_ POINT *pt, BOOL bIncludeMsgTransparent DEF_VAL(FALSE)) SCONST OVERRIDE;
 
     STDMETHOD_(BOOL, FireEvent)(THIS_ IEvtArgs *evt) OVERRIDE;
 
@@ -431,20 +427,20 @@ class SOUI_EXP SWindow
 
     STDMETHOD_(HRESULT, QueryInterface)(THIS_ REFGUID id, IObjRef **ppRet) OVERRIDE;
 
-	STDMETHOD_(BOOL,AddEvent)(THIS_ DWORD dwEventID, LPCWSTR pszEventHandlerName) OVERRIDE;
+    STDMETHOD_(BOOL, AddEvent)(THIS_ DWORD dwEventID, LPCWSTR pszEventHandlerName) OVERRIDE;
 
-	STDMETHOD_(BOOL,RemoveEvent)(THIS_ DWORD dwEventID) OVERRIDE;
+    STDMETHOD_(BOOL, RemoveEvent)(THIS_ DWORD dwEventID) OVERRIDE;
 
-	STDMETHOD_(BOOL, SwndProc)(THIS_ UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT *lResult) OVERRIDE;
+    STDMETHOD_(BOOL, SwndProc)(THIS_ UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT *lResult) OVERRIDE;
 
-	STDMETHOD_(void, SetSwndProc)(THIS_ FunSwndProc swndProc) OVERRIDE;
+    STDMETHOD_(void, SetSwndProc)(THIS_ FunSwndProc swndProc) OVERRIDE;
 
-	STDMETHOD_(HWND, GetHostHwnd)(THIS) OVERRIDE;
+    STDMETHOD_(HWND, GetHostHwnd)(THIS) OVERRIDE;
 
-	STDMETHOD_(ITimelineHandlersMgr *,GetTimelineHandlersMgr)(THIS) OVERRIDE;
+    STDMETHOD_(ITimelineHandlersMgr *, GetTimelineHandlersMgr)(THIS) OVERRIDE;
 
-	STDMETHOD_(BOOL,RegisterDragDrop)(THIS_ IDropTarget *pDragTarget) OVERRIDE;
-	STDMETHOD_(BOOL,UnregisterDragDrop)(THIS) OVERRIDE;
+    STDMETHOD_(BOOL, RegisterDragDrop)(THIS_ IDropTarget *pDragTarget) OVERRIDE;
+    STDMETHOD_(BOOL, UnregisterDragDrop)(THIS) OVERRIDE;
 
   public: // caret相关方法
     STDMETHOD_(BOOL, CreateCaret)(THIS_ HBITMAP pBmp, int nWid, int nHeight) OVERRIDE;
@@ -573,6 +569,7 @@ class SOUI_EXP SWindow
     CRect GetWindowRect() const;
 
     virtual CRect GetClientRect() const;
+
   public: //窗口树结构相关方法
     /**
      * FindChildByID
@@ -607,7 +604,7 @@ class SOUI_EXP SWindow
 
         if (!pTarget || !pTarget->IsClass(T::GetClassName()))
         {
-			SSLOGW()<<"FindChildByID2 Failed, no window of class "<<T::GetClassName()<<" with id of "<<nID<<" was found within "<< nDeep<<" levels";
+            SSLOGW() << "FindChildByID2 Failed, no window of class " << T::GetClassName() << " with id of " << nID << " was found within " << nDeep << " levels";
             return NULL;
         }
         return (T *)pTarget;
@@ -641,7 +638,7 @@ class SOUI_EXP SWindow
         SWindow *pTarget = FindChildByName(pszName, nDeep);
         if (!pTarget || !pTarget->IsClass(T::GetClassName()))
         {
-			SSLOGW()<<"FindChildByName2 Failed, no window of class "<<T::GetClassName()<<" with name of "<<pszName<<" was found within "<< nDeep<<" levels";
+            SSLOGW() << "FindChildByName2 Failed, no window of class " << T::GetClassName() << " with name of " << pszName << " was found within " << nDeep << " levels";
             return NULL;
         }
         return (T *)pTarget;
@@ -682,11 +679,12 @@ class SOUI_EXP SWindow
     }
 
   protected:
-	IScriptModule * GetScriptModule();
-    void InvalidateRect(const CRect &rect, BOOL bFromThis = TRUE,BOOL bClip=FALSE);
+    IScriptModule *GetScriptModule();
+    void InvalidateRect(const CRect &rect, BOOL bFromThis = TRUE, BOOL bClip = FALSE);
     STransformation GetTransformation() const;
     BOOL CreateChild(SXmlNode xmlChild);
-	void CreateChilds(SXmlNode xmlNode);
+    void CreateChilds(SXmlNode xmlNode);
+
   protected:
     STDMETHOD_(void, OnAnimationStart)(THIS_ IAnimation *animation);
     STDMETHOD_(void, OnAnimationStop)(THIS_ IAnimation *animation);
@@ -714,7 +712,7 @@ class SOUI_EXP SWindow
     virtual void OnStateChanging(DWORD dwOldState, DWORD dwNewState);
     virtual void OnStateChanged(DWORD dwOldState, DWORD dwNewState);
 
-	virtual void OnCaptureChanged(BOOL bCaptured);
+    virtual void OnCaptureChanged(BOOL bCaptured);
     /**
      * OnRelayout
      * @brief    窗口位置发生变化
@@ -727,7 +725,7 @@ class SOUI_EXP SWindow
 
   public: // Virtual functions
     virtual SIZE MeasureContent(int nParentWid, int nParentHei);
-	virtual SIZE MeasureChildren(int nParentWid, int nParentHei);
+    virtual SIZE MeasureChildren(int nParentWid, int nParentHei);
 
     /**
      * OnUpdateToolTip
@@ -924,12 +922,12 @@ class SOUI_EXP SWindow
      * @brief    画窗口的前景内容
      * @param    IRenderTarget * pRT --  目标RT
      * @param    LPRECT pRc --  目标位置
-	 * @param    SWindow *pStartFrom -- 绘制开始窗口,默认NULL从root开始
+     * @param    SWindow *pStartFrom -- 绘制开始窗口,默认NULL从root开始
      * @return   void
      *
      * Describe  目标位置必须在窗口位置内,不包括当前窗口的子窗口
      */
-    void PaintForeground(IRenderTarget *pRT, LPRECT pRc,SWindow *pStartFrom=NULL);
+    void PaintForeground(IRenderTarget *pRT, LPRECT pRc, SWindow *pStartFrom = NULL);
     /**
      * BeforePaintEx
      * @brief    为DC准备好当前窗口的绘图环境,从顶层窗口开始设置
@@ -1043,7 +1041,6 @@ class SOUI_EXP SWindow
     void GetScaleSkin(SAutoRefPtr<ISkinObj> &pSkin, int nScale);
 
   protected: // Message Handler
-
     int OnCreate(LPVOID);
 
     void OnSize(UINT nType, CSize size);
@@ -1066,6 +1063,8 @@ class SOUI_EXP SWindow
 
     void OnRButtonDown(UINT nFlags, CPoint point);
 
+    void OnRButtonUp(UINT nFlags, CPoint point);
+
     void OnMouseHover(UINT nFlags, CPoint ptPos);
 
     void OnMouseMove(UINT nFlags, CPoint pt);
@@ -1073,8 +1072,8 @@ class SOUI_EXP SWindow
     void OnMouseLeave();
 
     BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
-	
-	LRESULT OnMouseClick(UINT uMsg,WPARAM wParam,LPARAM lParam);
+
+    LRESULT OnMouseClick(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
     void OnSetFocus(SWND wndOld);
     void OnKillFocus(SWND wndFocus);
@@ -1093,10 +1092,11 @@ class SOUI_EXP SWindow
         MSG_WM_DESTROY(OnDestroy)
         MSG_WM_SHOWWINDOW(OnShowWindow)
         MSG_WM_ENABLE_EX(OnEnable)
-		MESSAGE_RANGE_HANDLER_EX(WM_LBUTTONDOWN,WM_MBUTTONDBLCLK,OnMouseClick)
+        MESSAGE_RANGE_HANDLER_EX(WM_LBUTTONDOWN, WM_MBUTTONDBLCLK, OnMouseClick)
         MSG_WM_LBUTTONDOWN(OnLButtonDown)
         MSG_WM_LBUTTONUP(OnLButtonUp)
         MSG_WM_RBUTTONDOWN(OnRButtonDown)
+        MSG_WM_RBUTTONUP(OnRButtonUp)
         MSG_WM_MOUSEMOVE(OnMouseMove)
         MSG_WM_MOUSEHOVER(OnMouseHover)
         MSG_WM_MOUSELEAVE(OnMouseLeave)
@@ -1120,7 +1120,7 @@ class SOUI_EXP SWindow
     HRESULT OnAttrLayout(const SStringW &strValue, BOOL bLoading);
     HRESULT OnAttrClass(const SStringW &strValue, BOOL bLoading);
     HRESULT OnAttrTrackMouseEvent(const SStringW &strValue, BOOL bLoading);
-	HRESULT OnAttrVideoCanvas(const SStringW &strValue, BOOL bLoading);
+    HRESULT OnAttrVideoCanvas(const SStringW &strValue, BOOL bLoading);
     HRESULT OnAttrID(const SStringW &strValue, BOOL bLoading);
     HRESULT OnAttrName(const SStringW &strValue, BOOL bLoading);
     HRESULT OnAttrTip(const SStringW &strValue, BOOL bLoading);
@@ -1148,14 +1148,14 @@ class SOUI_EXP SWindow
         ATTR_CUSTOM(L"alpha", OnAttrAlpha)
         ATTR_BOOL(L"layeredWindow", m_bLayeredWindow, TRUE)
         ATTR_CUSTOM(L"trackMouseEvent", OnAttrTrackMouseEvent)
-		ATTR_CUSTOM(L"videoCanvas",OnAttrVideoCanvas)
+        ATTR_CUSTOM(L"videoCanvas", OnAttrVideoCanvas)
         ATTR_CUSTOM(L"tip", OnAttrTip)
         ATTR_BOOL(L"msgTransparent", m_bMsgTransparent, FALSE)
         ATTR_LAYOUTSIZE(L"maxWidth", m_nMaxWidth, FALSE)
         ATTR_BOOL(L"clipClient", m_bClipClient, FALSE)
         ATTR_BOOL(L"focusable", m_bFocusable, FALSE)
         ATTR_BOOL(L"drawFocusRect", m_bDrawFocusRect, TRUE)
-		ATTR_BOOL(L"hoverAware",m_bHoverAware,FALSE)
+        ATTR_BOOL(L"hoverAware", m_bHoverAware, FALSE)
         ATTR_BOOL(L"float", m_bFloat, FALSE)
         ATTR_CHAIN(m_style, HRET_FLAG_STYLE)                   //交给SwndStyle处理
         ATTR_CHAIN_PTR(m_pLayout, HRET_FLAG_LAYOUT)            //交给Layout处理
@@ -1169,11 +1169,11 @@ class SOUI_EXP SWindow
 
     virtual void OnRebuildFont();
 
-	virtual void OnBeforeInsertChild(SWindow *pChild);
+    virtual void OnBeforeInsertChild(SWindow *pChild);
     virtual void OnAfterInsertChild(SWindow *pChild);
 
     virtual void OnBeforeRemoveChild(SWindow *pChild);
-	virtual void OnAfterRemoveChild(SWindow *pChild);
+    virtual void OnAfterRemoveChild(SWindow *pChild);
 
     virtual void OnContainerChanged(ISwndContainer *pOldContainer, ISwndContainer *pNewContainer);
 
@@ -1217,10 +1217,10 @@ class SOUI_EXP SWindow
     UINT m_uZorder;           /**< 窗口Zorder */
     int m_nUpdateLockCnt;     /**< 暂时锁定更新Count，锁定后，不向宿主发送Invalidate */
 
-    DWORD m_dwState;      /**< 窗口在渲染过程中的状态 */
-    DWORD m_bVisible : 1; /**< 窗口可见状态 */
-    DWORD m_bDisable : 1; /**< 窗口禁用状状态 */
-    DWORD m_bDisplay : 1; /**< 窗口隐藏时是否占位，不占位时启动重新布局 */
+    DWORD m_dwState;             /**< 窗口在渲染过程中的状态 */
+    DWORD m_bVisible : 1;        /**< 窗口可见状态 */
+    DWORD m_bDisable : 1;        /**< 窗口禁用状状态 */
+    DWORD m_bDisplay : 1;        /**< 窗口隐藏时是否占位，不占位时启动重新布局 */
     DWORD m_bClipClient : 1;     /**<窗口绘制时做clip客户区处理的标志,由于clip可能增加计算量，只在绘制可能走出客户区时才设置*/
     DWORD m_bMsgTransparent : 1; /**< 接收消息标志 TRUE-不处理消息 */
     DWORD m_bFocusable : 1;      /**< 窗口可获得焦点标志 */
@@ -1228,8 +1228,8 @@ class SOUI_EXP SWindow
     DWORD m_bCacheDraw : 1;      /**< 支持窗口内容的Cache标志 */
     DWORD m_bCacheDirty : 1;     /**< 缓存窗口脏标志 */
     DWORD m_bLayeredWindow : 1;  /**< 指示是否是一个分层窗口 */
-	DWORD m_isLoading:1;         /**< loading状态标志 */
-	DWORD m_bHoverAware:1;		 /**< 感知Hover状态标志 */
+    DWORD m_isLoading : 1;       /**< loading状态标志 */
+    DWORD m_bHoverAware : 1;     /**< 感知Hover状态标志 */
     DWORD m_bMsgHandled : 1;
 
     LayoutDirtyType m_layoutDirty;         /**< 布局脏标志 参见LayoutDirtyType */
@@ -1252,17 +1252,18 @@ class SOUI_EXP SWindow
 
     typedef struct GETRTDATA
     {
-        CRect rcRT;                /**< GETRT调用的有效范围 */
-        GrtFlag gdcFlags;          /**< GETRT绘制标志位 */
-        SAutoRefPtr<IRegionS> rgn; /**< 保存一个和rcRT对应的IRegion对象 */
-        SAutoRefPtr<IRenderTarget> rt;/**< 保存GetRenderTarget时创建的对象,重绘时使用它的缓存绘制 */
+        CRect rcRT;                    /**< GETRT调用的有效范围 */
+        GrtFlag gdcFlags;              /**< GETRT绘制标志位 */
+        SAutoRefPtr<IRegionS> rgn;     /**< 保存一个和rcRT对应的IRegion对象 */
+        SAutoRefPtr<IRenderTarget> rt; /**< 保存GetRenderTarget时创建的对象,重绘时使用它的缓存绘制 */
     } * PGETRTDATA;
 
     PGETRTDATA m_pGetRTData;
 
     SAutoRefPtr<IAttrStorage> m_attrStorage; /**< 属性保存对象 */
+    SAutoRefPtr<ICaret> m_caret;
 
-	FunSwndProc	m_funSwndProc;
+    FunSwndProc m_funSwndProc;
 #ifdef SOUI_ENABLE_ACC
     SAutoRefPtr<IAccessible> m_pAcc;
     SAutoRefPtr<IAccProxy> m_pAccProxy;
@@ -1272,4 +1273,21 @@ class SOUI_EXP SWindow
 #endif
 };
 
+class SOUI_EXP SAutoEnableHostPrivUiDef {
+  public:
+    SAutoEnableHostPrivUiDef(SWindow *pOwner)
+        : m_pOwner(pOwner)
+    {
+        m_pOwner->GetContainer()->EnableHostPrivateUiDef(TRUE);
+    }
+    ~SAutoEnableHostPrivUiDef()
+    {
+        m_pOwner->GetContainer()->EnableHostPrivateUiDef(FALSE);
+    }
+
+  protected:
+    SWindow *m_pOwner;
+};
+
 SNSEND
+#endif // __SWND__H__

@@ -2,8 +2,6 @@
 #ifndef __SBSTR_H__
 #define __SBSTR_H__
 
-#pragma once
-
 #include <windows.h>
 #include <oleauto.h>
 

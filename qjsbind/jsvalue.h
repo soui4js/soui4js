@@ -111,6 +111,10 @@ namespace qjsbind {
 			return JS_IsArray(context_, value_) != 0;
 		}
 
+		bool IsArrayBuffer() const {
+			return JS_IsArrayBuffer(context_, value_) != 0;
+		}
+
 		bool IsFunction()const {
 			if (!context_) return false;
 			return JS_IsFunction(context_, value_) != 0;

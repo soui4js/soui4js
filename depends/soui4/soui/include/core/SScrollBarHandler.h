@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __SSCROLLBARHANDLER__H__
+#define __SSCROLLBARHANDLER__H__
 SNSBEGIN
 
 struct IScrollBarHost
@@ -11,19 +12,19 @@ struct IScrollBarHost
         kTime_Go = 100,
     };
     STDMETHOD_(CRect, GetScrollBarRect)(CTHIS_ BOOL bVert) SCONST PURE;
-    STDMETHOD_(ISkinObj*,GetScrollBarSkin)(CTHIS_ BOOL bVert) SCONST PURE;
-    STDMETHOD_(const SCROLLINFO *,GetScrollBarInfo)(CTHIS_ BOOL bVert) SCONST PURE;
-    STDMETHOD_(int,GetScrollBarArrowSize)(CTHIS_ BOOL bVert) SCONST PURE;
-    STDMETHOD_(void,OnScrollUpdatePart)(THIS_ BOOL bVert, int iPart) PURE;
-    STDMETHOD_(void,OnScrollUpdateThumbTrack)(THIS_ BOOL bVert, int nPos) PURE;
-    STDMETHOD_(ISwndContainer*, GetScrollBarContainer)(THIS) PURE;
+    STDMETHOD_(ISkinObj *, GetScrollBarSkin)(CTHIS_ BOOL bVert) SCONST PURE;
+    STDMETHOD_(const SCROLLINFO *, GetScrollBarInfo)(CTHIS_ BOOL bVert) SCONST PURE;
+    STDMETHOD_(int, GetScrollBarArrowSize)(CTHIS_ BOOL bVert) SCONST PURE;
+    STDMETHOD_(void, OnScrollUpdatePart)(THIS_ BOOL bVert, int iPart) PURE;
+    STDMETHOD_(void, OnScrollUpdateThumbTrack)(THIS_ BOOL bVert, int nPos) PURE;
+    STDMETHOD_(ISwndContainer *, GetScrollBarContainer)(THIS) PURE;
     STDMETHOD_(BOOL, IsScrollBarEnable)(THIS_ BOOL bVertical) SCONST PURE;
-    STDMETHOD_(void,OnScrollCommand)(THIS_ BOOL bVert, int iCmd, int nPos) PURE;
-    STDMETHOD_(void,OnScrollSetTimer)(THIS_ BOOL bVert, char id, UINT uElapse) PURE;
-    STDMETHOD_(void,OnScrollKillTimer)(THIS_ BOOL bVert, char id) PURE;
-    STDMETHOD_(const IInterpolator *,GetScrollInterpolator)(CTHIS) SCONST PURE;
-    STDMETHOD_(int,GetScrollFadeFrames)(CTHIS) SCONST PURE;
-    STDMETHOD_(BYTE,GetScrollThumbTrackMinAlpha)(CTHIS) SCONST PURE;
+    STDMETHOD_(void, OnScrollCommand)(THIS_ BOOL bVert, int iCmd, int nPos) PURE;
+    STDMETHOD_(void, OnScrollSetTimer)(THIS_ BOOL bVert, char id, UINT uElapse) PURE;
+    STDMETHOD_(void, OnScrollKillTimer)(THIS_ BOOL bVert, char id) PURE;
+    STDMETHOD_(const IInterpolator *, GetScrollInterpolator)(CTHIS) SCONST PURE;
+    STDMETHOD_(int, GetScrollFadeFrames)(CTHIS) SCONST PURE;
+    STDMETHOD_(BYTE, GetScrollThumbTrackMinAlpha)(CTHIS) SCONST PURE;
 };
 
 class SOUI_EXP SScrollBarHandler : ITimelineHandler {
@@ -104,3 +105,5 @@ class SOUI_EXP SScrollBarHandler : ITimelineHandler {
 };
 
 SNSEND
+
+#endif // __SSCROLLBARHANDLER__H__

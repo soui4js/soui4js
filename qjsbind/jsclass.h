@@ -48,10 +48,16 @@ namespace qjsbind {
 	template<typename T, typename FUN>
 	JSValue MemFun(JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data)
 	{
-		FUN fun=0;
+		FUN fun = 0;
 		Value data(ctx, func_data[0]);
-		int64_t addr = data.ToInt64();
-		memcpy(&fun, &addr, sizeof(addr));
+		if (sizeof(fun) < sizeof(int64_t)) {
+			int32_t addr = data.ToInt32();
+			memcpy(&fun, &addr, sizeof(addr));
+		}
+		else {
+			int64_t addr = data.ToInt64();
+			memcpy(&fun, &addr, sizeof(addr));
+		}
 		JsProxy<T>* pThis;
 		if (!GetSafeThis(this_val, &pThis)) {
 			JS_ThrowTypeError(ctx, "no this pointer exist");

@@ -11,7 +11,8 @@
  * Describe    SOUI系统中使用的事件系统
  */
 
-#pragma once
+#ifndef __SEVENTS__H__
+#define __SEVENTS__H__
 
 #include <interface/SEvtArgs-i.h>
 #include <interface/sstring-i.h>
@@ -28,6 +29,7 @@ typedef enum _SOUI_EVENTS
     EVT_INIT = 8000,
     EVT_EXIT,
     EVT_TIMER,
+    EVT_GET_CARET,
 
     //基本窗口事件
     EVT_SETFOCUS = 8100,
@@ -38,13 +40,13 @@ typedef enum _SOUI_EVENTS
     EVT_SIZE,
     EVT_VISIBLECHANGED,
     EVT_STATECHANGED,
-	EVT_CAPTURECHANGED,
-	EVT_MOUSE_CLICK,
+    EVT_CAPTURECHANGED,
+    EVT_MOUSE_CLICK,
     EVT_UPDATE_TOOLTIP,
     EVT_ANIMATION_START,
     EVT_ANIMATION_STOP,
     EVT_ANIMATION_REPEAT,
-	EVT_POS,
+    EVT_POS,
 
     EVT_KEYDOWN = 8200,
 
@@ -53,6 +55,7 @@ typedef enum _SOUI_EVENTS
     EVT_MOUSE_LEAVE,
 
     EVT_CMD = 10000,
+    EVT_MENU_CMD,
     EVT_CTXMENU,
 
     //增加两个滚动VIEW的事件
@@ -130,7 +133,7 @@ typedef enum _SOUI_EVENTS
     //图片动画开始，结束事件
     EVT_IMAGE_ANI_START = 22100,
     EVT_IMAGE_ANI_STOP,
-	EVT_IMAGE_ANI_REPEAT,
+    EVT_IMAGE_ANI_REPEAT,
 
     EVT_SELECTMENU = 22150,
     EVT_POPMENU,
@@ -138,17 +141,18 @@ typedef enum _SOUI_EVENTS
     EVT_EXTERNAL_BEGIN = 10000000,
 } SOUI_EVENTS;
 
-typedef enum _MouseClickId{
-	MOUSE_LBTN_DOWN = 0,
-	MOUSE_LBTN_UP,
-	MOUSE_LBTN_DBCLICK,
-	MOUSE_RBTN_DOWN,
-	MOUSE_RBTN_UP,
-	MOUSE_RBTN_DBCLICK,
-	MOUSE_MBTN_DOWN,
-	MOUSE_MBTN_UP,
-	MOUSE_MBTN_DBCLICK,
-}MouseClickId;
+typedef enum _MouseClickId
+{
+    MOUSE_LBTN_DOWN = 0,
+    MOUSE_LBTN_UP,
+    MOUSE_LBTN_DBCLICK,
+    MOUSE_RBTN_DOWN,
+    MOUSE_RBTN_UP,
+    MOUSE_RBTN_DBCLICK,
+    MOUSE_MBTN_DOWN,
+    MOUSE_MBTN_UP,
+    MOUSE_MBTN_DBCLICK,
+} MouseClickId;
 
 #ifdef __cplusplus
 class SOUI_EXP SEvtArgs : public TObjRefImpl<SObjectImpl<IEvtArgs>> {
@@ -235,7 +239,7 @@ class SOUI_EXP SEvtArgs : public TObjRefImpl<SObjectImpl<IEvtArgs>> {
     class api evt                                      \
         : public SEvtArgs                              \
         , public evtData {                             \
-        DEF_SOBJECT(SEvtArgs, L#evt_name)              \
+        DEF_SOBJECT(SEvtArgs, WIDESTR(evt_name))       \
       public:                                          \
         STDMETHOD_(int, GetID)(THIS) const             \
         {                                              \
@@ -279,7 +283,12 @@ DEF_EVT(EventInit, EVT_INIT, on_init, { int fake; })
 
 DEF_EVT(EventExit, EVT_EXIT, on_exit, { int fake; })
 
-DEF_EVT(EventTimer, EVT_TIMER, on_timer, { UINT uID; LPARAM uData; })
+DEF_EVT(EventTimer, EVT_TIMER, on_timer, {
+    UINT uID;
+    LPARAM uData;
+})
+
+DEF_EVT(EventGetCaret, EVT_GET_CARET, on_get_caret, { IStringW *strCaret; })
 
 DEF_EVT(EventScroll, EVT_SCROLL, on_scroll, {
     int nSbCode;
@@ -312,7 +321,7 @@ inline BOOL EventSwndStateChanged_CheckState(EventSwndStateChanged *pEvt, DWORD 
 }
 #endif
 
-DEF_EVT(EventSwndCaptureChanged, EVT_CAPTURECHANGED, on_capture_changed, {BOOL bCaptured;})
+DEF_EVT(EventSwndCaptureChanged, EVT_CAPTURECHANGED, on_capture_changed, { BOOL bCaptured; })
 
 DEF_EVT(EventSwndVisibleChanged, EVT_VISIBLECHANGED, on_visible_changed, { BOOL bVisible; })
 
@@ -371,14 +380,16 @@ DEF_EVT(EventItemPanelHover, EVT_ITEMPANEL_HOVER, on_itempanel_hover, {
 //注：在EventItemPanelLeave中从IItemPanel中通过GetItemIndex获取表项索引时需要检查索引有效性。
 DEF_EVT(EventItemPanelLeave, EVT_ITEMPANEL_LEAVE, on_itempanel_leave, { int fake; })
 
-DEF_EVT(EventMouseClick, EVT_MOUSE_CLICK, on_mouse_click, { 
-	POINT pt;
-	UINT uFlags; 
-	MouseClickId clickId;
-	BOOL bHover;
+DEF_EVT(EventMouseClick, EVT_MOUSE_CLICK, on_mouse_click, {
+    POINT pt;
+    UINT uFlags;
+    MouseClickId clickId;
+    BOOL bHover;
 })
 
 DEF_EVT(EventCmd, EVT_CMD, on_command, { int fake; })
+
+DEF_EVT(EventMenuCmd, EVT_MENU_CMD, on_menu_command, { int menuId; })
 
 DEF_EVT(EventCtxMenu, EVT_CTXMENU, on_conext_menu, {
     POINT pt;
@@ -464,7 +475,16 @@ DEF_EVT(EventRENotify, EVT_RE_NOTIFY, on_richedit_notify, {
 
 DEF_EVT(EventREMenu, EVT_RE_MENU, on_richedit_menu, { UINT uCmd; })
 
-DEF_EVT(EventSliderPos, EVT_SLIDER_POS, on_slider_pos, { int nPos; })
+typedef enum _SliderBarAction
+{
+    SBA_MOUSE_DOWN = 0,
+    SBA_MOUSE_MOVING,
+    SBA_MOUSE_UP
+} SliderBarAction;
+DEF_EVT(EventSliderPos, EVT_SLIDER_POS, on_slider_pos, {
+    int nPos;
+    SliderBarAction action;
+})
 
 //点击表头
 DEF_EVT(EventHeaderClick, EVT_HEADER_CLICK, on_header_click, { int iItem; })
@@ -579,3 +599,5 @@ DEF_EVT(EventSetHotKey, EVT_HOT_KEY_SET, on_hot_key_set_event, {
 })
 
 SNSEND
+
+#endif // __SEVENTS__H__

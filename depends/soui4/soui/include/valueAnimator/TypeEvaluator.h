@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2010 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,19 +23,29 @@
  * @see ValueAnimator#setEvaluator(TypeEvaluator)
  */
 
-#pragma once
+#ifndef __TYPEEVALUATOR__H__
+#define __TYPEEVALUATOR__H__
 #include <math.h>
 #include <helper/obj-ref-impl.hpp>
 
 SNSBEGIN
+
 template <typename T>
-class TypeEvaluator : public TObjRefImpl<IObjRef>{
+inline T Evalulate(float fraction, const T &start, const T &end)
+{
+    return (T)(start + fraction * (end - start));
+}
+
+template <typename T>
+class TypeEvaluator : public TObjRefImpl<IObjRef> {
   public:
     T mStart;
     T mEnd;
 
   public:
-	TypeEvaluator(){}
+    TypeEvaluator()
+    {
+    }
     TypeEvaluator(T start, T end)
     {
         mStart = start;
@@ -46,6 +56,12 @@ class TypeEvaluator : public TObjRefImpl<IObjRef>{
     {
         mStart = start;
         mEnd = end;
+    }
+
+    void copy(const TypeEvaluator<T> *src)
+    {
+        mStart = src->mStart;
+        mEnd = src->mEnd;
     }
 
     /**
@@ -59,10 +75,9 @@ class TypeEvaluator : public TObjRefImpl<IObjRef>{
      * @return A linear interpolation between the start and end values, given the
      *         <code>fraction</code> parameter.
      */
-  public:
-    virtual T evaluate(float fraction) const
+    T evaluate(float fraction) const
     {
-        return (T)(mStart + fraction * (mEnd - mStart));
+        return Evalulate(fraction, mStart, mEnd);
     }
 };
 
@@ -146,74 +161,56 @@ class TypeEvaluator<COLORREF> {
 
         return RGBA(round(r), round(g), round(b), round(a));
     }
+
+    void copy(const TypeEvaluator<COLORREF> *src)
+    {
+
+        startA = src->startA;
+        startR = src->startR;
+        startG = src->startG;
+        startB = src->startB;
+
+        endA = src->endA;
+        endR = src->endR;
+        endG = src->endG;
+        endB = src->endB;
+    }
+
+    void setRange(COLORREF from, COLORREF to)
+    {
+        setStart(from);
+        setEnd(to);
+    }
 };
 
 template <>
-class TypeEvaluator<RECT> {
-	RECT mStart;
-	RECT mEnd;
-
-public:
-	TypeEvaluator(){}
-	TypeEvaluator(RECT start, RECT end):mStart(start),mEnd(end){
-
-	}
-
-	virtual RECT evaluate(float fraction) const
-	{
-		RECT ret;
-		ret.left = (LONG)(mStart.left + fraction * (mEnd.left - mStart.left));
-		ret.top = (LONG)(mStart.top + fraction * (mEnd.top - mStart.top));
-		ret.right = (LONG)(mStart.right + fraction * (mEnd.right - mStart.right));
-		ret.bottom = (LONG)(mStart.bottom + fraction * (mEnd.bottom - mStart.bottom));
-		return ret;
-	}
-
-	void setRange(RECT start, RECT end)
-	{
-		mStart = start;
-		mEnd = end;
-	}
-};
+inline RECT Evalulate(float fraction, const RECT &mStart, const RECT &mEnd)
+{
+    RECT ret;
+    ret.left = Evalulate(fraction, mStart.left, mEnd.left);
+    ret.top = Evalulate(fraction, mStart.top, mEnd.top);
+    ret.right = Evalulate(fraction, mStart.right, mEnd.right);
+    ret.bottom = Evalulate(fraction, mStart.bottom, mEnd.bottom);
+    return ret;
+}
 
 template <>
-class TypeEvaluator<POINT> {
-	POINT mStart;
-	POINT mEnd;
-
-public:
-	TypeEvaluator(){}
-	TypeEvaluator(POINT start, POINT end):mStart(start),mEnd(end){
-
-	}
-
-	virtual POINT evaluate(float fraction) const
-	{
-		POINT ret;
-		ret.x = (LONG)(mStart.x + fraction * (mEnd.x - mStart.x));
-		ret.y = (LONG)(mStart.y + fraction * (mEnd.y - mStart.y));
-		return ret;
-	}
-};
+inline POINT Evalulate(float fraction, const POINT &mStart, const POINT &mEnd)
+{
+    POINT ret;
+    ret.x = Evalulate(fraction, mStart.x, mEnd.x);
+    ret.y = Evalulate(fraction, mStart.y, mEnd.y);
+    return ret;
+}
 
 template <>
-class TypeEvaluator<SIZE> {
-	SIZE mStart;
-	SIZE mEnd;
-
-public:
-	TypeEvaluator(){}
-	TypeEvaluator(SIZE start, SIZE end):mStart(start),mEnd(end){
-
-	}
-
-	virtual SIZE evaluate(float fraction) const
-	{
-		SIZE ret;
-		ret.cx = (LONG)(mStart.cx + fraction * (mEnd.cx - mStart.cx));
-		ret.cy = (LONG)(mStart.cy + fraction * (mEnd.cy - mStart.cy));
-		return ret;
-	}
-};
+inline SIZE Evalulate(float fraction, const SIZE &mStart, const SIZE &mEnd)
+{
+    SIZE ret;
+    ret.cx = Evalulate(fraction, mStart.cx, mEnd.cx);
+    ret.cy = Evalulate(fraction, mStart.cy, mEnd.cy);
+    return ret;
+}
 
 SNSEND
+#endif // __TYPEEVALUATOR__H__

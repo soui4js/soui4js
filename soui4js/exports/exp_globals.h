@@ -135,7 +135,7 @@ BOOL SetXmlTranslator(IApplication * pApp,LPCSTR xmlId) {
 	ITranslatorMgr* pTransMgr = pApp->GetTranslator();
 	if (!pTransMgr || !pTransMgr->IsValid())
 		return FALSE;
-	IXmlDoc * xmlLang = pApp->LoadXmlDocmentA(xmlId);
+	IXmlDoc * xmlLang = pApp->LoadXmlDocmentU8(xmlId);
 	if (!xmlLang)
 		return FALSE;
 	SAutoRefPtr<ITranslator> langCN;
@@ -349,6 +349,12 @@ BOOL IsX64() {
 #endif
 }
 
+void NotifySettingChange(LPCSTR settingName,int timeout) {
+	SStringT str = S_CA2T(settingName, CP_UTF8);
+	DWORD_PTR msgResult;
+	SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE, 0, LPARAM(str.c_str()), SMTO_ABORTIFHUNG, timeout, &msgResult);
+}
+
 void Exp_Global(qjsbind::Module* module)
 {
 	module->ExportFunc("log", &Slog);
@@ -377,4 +383,5 @@ void Exp_Global(qjsbind::Module* module)
 	module->ExportFunc("RunAsAdmin", &RunAsAdmin);
 	module->ExportFunc("MkPath", &MkPath);
 	module->ExportFunc("IsX64", &IsX64);
+	module->ExportFunc("NotifySettingChange", &NotifySettingChange);
 }

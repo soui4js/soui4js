@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef __SSKINOBJBASE__H__
+#define __SSKINOBJBASE__H__
 
 #include <interface/Sskinobj-i.h>
 #include <helper/obj-ref-impl.hpp>
@@ -43,6 +44,7 @@ class SOUI_EXP SSkinObjBase : public TObjRefImpl<SObjectImpl<ISkinObj>> {
     STDMETHOD_(BYTE, GetAlpha)(THIS) SCONST OVERRIDE;
     STDMETHOD_(void, SetAlpha)(THIS_ BYTE byAlpha) OVERRIDE;
     STDMETHOD_(int, GetScale)(THIS) SCONST OVERRIDE;
+    STDMETHOD_(void, SetScale)(THIS_ int scale) OVERRIDE;
     STDMETHOD_(ISkinObj *, Scale)(THIS_ int nScale) OVERRIDE;
     STDMETHOD_(void, OnColorize)(THIS_ COLORREF cr) OVERRIDE;
 
@@ -74,3 +76,4 @@ class SOUI_EXP SSkinObjBase : public TObjRefImpl<SObjectImpl<ISkinObj>> {
 };
 
 SNSEND
+#endif // __SSKINOBJBASE__H__
