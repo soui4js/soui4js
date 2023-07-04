@@ -42,9 +42,8 @@ class MainDialog extends soui4.JsHostWnd{
 		let workDir = g_workDir.substring(0,pos);
 		os.mkdir(strDest+"\\.vscode");
 		{
-
-		let soui4js_host = workDir+"/bin/soui4js-host.exe";
-		let launch={
+			let soui4js_host = workDir+"/bin/soui4js-host.exe";
+			let launch={
 		    "version": "0.2.0",
 		    "configurations": [
 		        {
@@ -59,10 +58,28 @@ class MainDialog extends soui4.JsHostWnd{
 		        ]
 		    };
 
-		let luanchStr = JSON.stringify(launch);
-		let f = std.open(strDest+"\\.vscode\\launch.json", "w");
-		f.puts(luanchStr);
-		f.close();
+			let luanchStr = JSON.stringify(launch,null,4);
+			let f = std.open(strDest+"\\.vscode\\launch.json", "w");
+			f.puts(luanchStr);
+			f.close();
+		}
+		{
+			let uiresbuilder = workDir+"/bin/uiresbuilder.exe";
+			let task={
+				"version": "2.0.0",
+				"tasks": [
+					{
+						"label": "build R.js",
+						"type": "shell",
+						"command": uiresbuilder+" -p uires -i uires\\uires.idx -j uires\\R.js",
+						"problemMatcher": []
+					}
+				]
+			}
+			let taskStr = JSON.stringify(task,null,4);
+			let f = std.open(strDest+"\\.vscode\\tasks.json", "w");
+			f.puts(taskStr);
+			f.close();
 		}
 		//luanch vscode
 		soui4.ShellExecute(this.GetHwnd(),"open","code.cmd", "-n --new-window "+strDest,strDest,soui4.SW_SHOWNORMAL);
