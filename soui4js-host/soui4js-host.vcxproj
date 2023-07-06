@@ -105,7 +105,7 @@
       <SubSystem>Windows</SubSystem>
     </Link>
     <Manifest>
-      <EnableDpiAwareness>true</EnableDpiAwareness>
+      <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
     </Manifest>
     <PostBuildEvent>
       <Command>copy $(TargetPath) ..\bin</Command>
@@ -136,7 +136,7 @@
       <SubSystem>Windows</SubSystem>
     </Link>
     <Manifest>
-      <EnableDpiAwareness>true</EnableDpiAwareness>
+      <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
     </Manifest>
     <PostBuildEvent>
       <Command>copy $(TargetPath) ..\bin64</Command>
@@ -165,7 +165,7 @@
       <SubSystem>Windows</SubSystem>
     </Link>
     <Manifest>
-      <EnableDpiAwareness>true</EnableDpiAwareness>
+      <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
     </Manifest>
     <PostBuildEvent>
       <Command>copy $(TargetPath) ..\bin</Command>
@@ -194,7 +194,7 @@
       <SubSystem>Windows</SubSystem>
     </Link>
     <Manifest>
-      <EnableDpiAwareness>true</EnableDpiAwareness>
+      <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
     </Manifest>
     <PostBuildEvent>
       <Command>copy $(TargetPath) ..\bin64</Command>
