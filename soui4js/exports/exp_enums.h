@@ -4,6 +4,8 @@
 #include <event/SEvents.h>
 #include <core/SDefine.h>
 #include "exp_SRegKey.h"
+#include "exp_SValueAnimator.h"
+
 using namespace SOUI;
 
 #define SEnumInt(x) module->ExportEnumInt32(#x, x)
@@ -188,5 +190,15 @@ SEnumInt(GSW_PREVSIBLING);
 SEnumInt(GSW_NEXTSIBLING);
 SEnumInt(GSW_OWNER);
 SEnumInt(GSW_PARENT);
+
+
+SEnumInt(Ani_None);
+SEnumInt(Ani_Int);
+SEnumInt(Ani_Float);
+SEnumInt(Ani_Color);
+SEnumInt(Ani_Point);
+SEnumInt(Ani_Size);
+SEnumInt(Ani_Rect);
+SEnumInt(Ani_Unknown);
 
 }

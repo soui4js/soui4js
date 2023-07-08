@@ -5,6 +5,9 @@ enum {
 	Ani_Int,
 	Ani_Float,
 	Ani_Color,
+	Ani_Point,
+	Ani_Size,
+	Ani_Rect,
 	Ani_Unknown=1000
 };
 
@@ -41,6 +44,13 @@ public:
 			return Ani_Float;
 		if (m_animator->IsClass(SColorAnimator::GetClassName()))
 			return Ani_Color;
+		if (m_animator->IsClass(SPointAnimator::GetClassName()))
+			return Ani_Point;
+		if (m_animator->IsClass(SSizeAnimator::GetClassName()))
+			return Ani_Size;
+		if (m_animator->IsClass(SRectAnimator::GetClassName()))
+			return Ani_Rect;
+
 		return Ani_Unknown;
 	}
 
