@@ -284,7 +284,6 @@ public:
 		pThis->m_onAnimationEnd.Mark(mark_fun);
 		pThis->m_onAnimationRepeat.Mark(mark_fun);
 		pThis->m_cbHandler.Mark(mark_fun);
-		pThis->m_jsUserData.Mark(mark_fun);
 	}
 
 public:
@@ -293,7 +292,6 @@ public:
 	Value m_onAnimationRepeat;
 	Value m_onAnimationUpdate;
 	Value m_cbHandler;
-	Value m_jsUserData;
 	int   m_aniType;
 protected:
 	SAutoRefPtr<IValueAnimator> m_animator;
@@ -327,12 +325,10 @@ public:
 
 
 	Value m_cbHandler;
-	Value m_jsUserData;
 	Value m_onAnimatorGroupEnd;
 
 	static void Mark(JsAnimatorGroup* pThis, JS_MarkFunc* mark_fun) {
 		pThis->m_cbHandler.Mark(mark_fun);
-		pThis->m_jsUserData.Mark(mark_fun);
 		pThis->m_onAnimatorGroupEnd.Mark(mark_fun);
 	}
 protected:
@@ -396,7 +392,6 @@ void Exp_SValueAnimator(qjsbind::Module* module) {
 		jsCls.Init<JsValueAnimator::Mark>();
 		jsCls.AddCtor<constructor<JsValueAnimator>>(TRUE);
 		jsCls.AddGetSet("cbHandler", &JsValueAnimator::m_cbHandler);
-		jsCls.AddGetSet("jsUserData", &JsValueAnimator::m_jsUserData);
 		jsCls.AddGetSet("onAnimationStart", &JsValueAnimator::m_onAnimationStart);
 		jsCls.AddGetSet("onAnimationEnd", &JsValueAnimator::m_onAnimationEnd);
 		jsCls.AddGetSet("onAnimationRepeat", &JsValueAnimator::m_onAnimationRepeat);
@@ -414,7 +409,6 @@ void Exp_SValueAnimator(qjsbind::Module* module) {
 		jsCls.Init<JsAnimatorGroup::Mark>(JsClass<IAnimatorGroup>::class_id());
 		jsCls.AddCtor<constructor<JsAnimatorGroup>>(TRUE);
 		jsCls.AddGetSet("cbHandler", &JsAnimatorGroup::m_cbHandler);
-		jsCls.AddGetSet("jsUserData", &JsAnimatorGroup::m_jsUserData);
 		jsCls.AddGetSet("onAnimatorGroupEnd", &JsAnimatorGroup::m_onAnimatorGroupEnd);
 	}
 }
