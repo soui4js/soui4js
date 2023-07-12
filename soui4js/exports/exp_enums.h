@@ -201,4 +201,9 @@ SEnumInt(Ani_Size);
 SEnumInt(Ani_Rect);
 SEnumInt(Ani_Unknown);
 
+SEnumInt(CP_UTF8);
+SEnumInt(CP_ACP);
+SEnumInt(CP_OEMCP);
+SEnumInt(CP_MACCP);
+
 }
