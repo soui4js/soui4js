@@ -16,6 +16,9 @@ using namespace qjsbind;
 //	return undefined_value;
 //}
 
+#define SEnumInt(x) module->ExportEnumInt32(#x, x)
+#define SEnumUint(x) module->ExportEnumUint32(#x, x)
+#define SEnumUint64(x) module->ExportEnumUint64(#x, x)
 
 void Exp_Utils(qjsbind::Module* module)
 {
@@ -39,4 +42,10 @@ void Exp_Utils(qjsbind::Module* module)
 	module->ExportFunc("WString2String", &WString2String);
 	module->ExportFunc("String2WString", &String2WString);
 	module->ExportFunc("Buffer2String", &Buffer2String);
+
+	SEnumInt(CP_UTF8);
+	SEnumInt(CP_ACP);
+	SEnumInt(CP_OEMCP);
+	SEnumInt(CP_MACCP);
+
 }
