@@ -66,11 +66,11 @@ void Exp_IApp(qjsbind::Module* module)
 	jsCls.AddFunc("GetRenderFactory", &IApplication::GetRenderFactory);
 	jsCls.AddFunc("SetScriptFactory", &IApplication::SetScriptFactory);
 	jsCls.AddCFunc("InitXmlNamedID", &IApplication_InitXmlNamedID);
-	jsCls.AddFunc("LoadXmlDocment", &IApplication::LoadXmlDocmentA);
-	jsCls.AddFunc("LoadAnimation", &IApplication::LoadAnimationA);
-	jsCls.AddFunc("LoadValueAnimator", &IApplication::LoadValueAnimatorA);
-	jsCls.AddFunc("LoadImage", &IApplication::LoadImageA);
-	jsCls.AddFunc("LoadTranslator", &IApplication::LoadTranslatorA);
+	jsCls.AddFunc("LoadXmlDocment", &IApplication::LoadXmlDocmentU8);
+	jsCls.AddFunc("LoadAnimation", &IApplication::LoadAnimationU8);
+	jsCls.AddFunc("LoadValueAnimator", &IApplication::LoadValueAnimatorU8);
+	jsCls.AddFunc("LoadImage", &IApplication::LoadImageU8);
+	jsCls.AddFunc("LoadTranslator", &IApplication::LoadTranslatorU8);
 	jsCls.AddFunc("InstallTranslator", &IApplication::InstallTranslator);
 	jsCls.AddCFunc("UninstallTranslator", &IApplication_UnnstallTranslator);
 

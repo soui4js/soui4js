@@ -6,7 +6,7 @@ void Exp_IMenuEx(qjsbind::Module* module)
 	JsClass<IMenuEx> jsCls = module->ExportClass<IMenuEx>("IMenuEx");
 	jsCls.Init(JsClass<IObjRef>::class_id());
 
-	jsCls.AddFunc( "LoadMenu", &IMenuEx::LoadMenuA);
+	jsCls.AddFunc( "LoadMenu", &IMenuEx::LoadMenuU8);
 	jsCls.AddFunc( "LoadMenu2", &IMenuEx::LoadMenu2);
 	jsCls.AddFunc( "InsertMenu", &IMenuEx::InsertMenu);
 	jsCls.AddFunc( "AppendMenu", &IMenuEx::AppendMenu);

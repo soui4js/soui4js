@@ -9,7 +9,7 @@ void Exp_IMenu(qjsbind::Module* module)
 	jsCls.AddFunc("Attach", &IMenu::Attach);
 	jsCls.AddFunc("Detach", &IMenu::Detach);
 	jsCls.AddFunc("GetHMenu", &IMenu::GetHMenu);
-	jsCls.AddFunc("LoadMenu", &IMenu::LoadMenuA);
+	jsCls.AddFunc("LoadMenu", &IMenu::LoadMenuU8);
 	jsCls.AddFunc("LoadMenu2", &IMenu::LoadMenu2);
 	jsCls.AddFunc("SetIconSkin", &IMenu::SetIconSkin);
 	jsCls.AddFunc("InsertMenu", &IMenu::InsertMenu);

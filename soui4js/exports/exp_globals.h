@@ -135,7 +135,7 @@ BOOL SetXmlTranslator(IApplication * pApp,LPCSTR xmlId) {
 	ITranslatorMgr* pTransMgr = pApp->GetTranslator();
 	if (!pTransMgr || !pTransMgr->IsValid())
 		return FALSE;
-	IXmlDoc * xmlLang = pApp->LoadXmlDocmentA(xmlId);
+	IXmlDoc * xmlLang = pApp->LoadXmlDocmentU8(xmlId);
 	if (!xmlLang)
 		return FALSE;
 	SAutoRefPtr<ITranslator> langCN;
