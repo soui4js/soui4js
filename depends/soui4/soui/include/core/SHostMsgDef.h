@@ -1,6 +1,7 @@
 ﻿// SOUI自定义窗口消息ID
 // 2015年12月3日
-#pragma once
+#ifndef __SHOSTMSGDEF__H__
+#define __SHOSTMSGDEF__H__
 
 #define HOSTMSG_BASE (WM_USER + 10000)
 
@@ -14,3 +15,5 @@
 #define SPYMSG_SWNDINFO (SPYMSG_BASE + 2) //获取窗口属性，wparam:swnd
 
 #define SPYMSG_HITTEST (SPYMSG_BASE + 3) // lparam:pos
+
+#endif // __SHOSTMSGDEF__H__
