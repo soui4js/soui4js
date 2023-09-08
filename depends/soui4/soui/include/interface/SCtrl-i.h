@@ -625,7 +625,7 @@ DECLARE_INTERFACE_IID_(IScrollView, IPanel, "49B024D6-221D-42d4-902B-AFAAC5AFFE4
      * @brief 获取视图尺寸
      * @return SIZE-视图尺寸
      */
-    STDMETHOD_(SIZE, GetViewSize)(CTHIS) SCONST PURE;
+    STDMETHOD_(void, GetViewSize)(CTHIS_ SIZE *szView) SCONST PURE;
 
     /**
      * @brief 设置视图尺寸
@@ -638,7 +638,7 @@ DECLARE_INTERFACE_IID_(IScrollView, IPanel, "49B024D6-221D-42d4-902B-AFAAC5AFFE4
      * @brief 获取视图原点坐标
      * @return POINT-原点坐标
      */
-    STDMETHOD_(POINT, GetViewOrigin)(CTHIS) SCONST PURE;
+    STDMETHOD_(void, GetViewOrigin)(CTHIS_ POINT *ptOri) SCONST PURE;
 
     /**
      * @brief 设置视图原点坐标
@@ -3072,7 +3072,7 @@ DECLARE_INTERFACE_IID_(ITabCtrl, ICtrl, "CAD40CB4-A0E5-4bea-9CE6-8DFC45DEFFD4")
      *
      * Describe  获取当前选中
      */
-    STDMETHOD_(ITabPage *, GetPage)(THIS_ int nIndex) PURE;
+    STDMETHOD_(IWindow *, GetPage)(THIS_ int nIndex) PURE;
 
     /**
      * ITabCtrl::RemoveItem

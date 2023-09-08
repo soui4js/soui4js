@@ -301,7 +301,7 @@ class SOUI_EXP SWindow
     STDMETHOD_(void, LockUpdate)(THIS) OVERRIDE;
     STDMETHOD_(void, UnlockUpdate)(THIS) OVERRIDE;
     STDMETHOD_(BOOL, IsUpdateLocked)(CTHIS_ BOOL bCheckParent DEF_VAL(FALSE)) SCONST OVERRIDE;
-    STDMETHOD_(void, Update)(THIS) OVERRIDE;
+    STDMETHOD_(void, Update)(THIS_ BOOL bForce DEF_VAL(FALSE)) OVERRIDE;
     STDMETHOD_(void, Move)(THIS_ LPCRECT prect) OVERRIDE;
     STDMETHOD_(void, SetWindowRgn)(THIS_ IRegionS *pRgn, BOOL bRedraw DEF_VAL(TRUE)) OVERRIDE;
     STDMETHOD_(IRegionS *, GetWindowRgn)(THIS) SCONST OVERRIDE;
@@ -1095,7 +1095,7 @@ class SOUI_EXP SWindow
         MSG_WM_LBUTTONDOWN(OnLButtonDown)
         MSG_WM_LBUTTONUP(OnLButtonUp)
         MSG_WM_RBUTTONDOWN(OnRButtonDown)
-        MSG_WM_RBUTTONDOWN(OnRButtonUp)
+        MSG_WM_RBUTTONUP(OnRButtonUp)
         MSG_WM_MOUSEMOVE(OnMouseMove)
         MSG_WM_MOUSEHOVER(OnMouseHover)
         MSG_WM_MOUSELEAVE(OnMouseLeave)

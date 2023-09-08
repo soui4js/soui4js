@@ -266,6 +266,7 @@ class SOUI_EXP SHostWnd
     STDMETHOD_(void, EnableDragDrop)(THIS) OVERRIDE;
 
     STDMETHOD_(void, ShowHostWnd)(THIS_ int uShowCmd, BOOL bWaitAniDone) OVERRIDE;
+	STDMETHOD_(void, EnablePrivateUiDef)(THIS_ BOOL bEnable) OVERRIDE;
 
   public:
     SWindow *FindChildByName(LPCWSTR strName, int nDeep = -1)
@@ -396,7 +397,7 @@ class SOUI_EXP SHostWnd
     void OnKillFocus(HWND wndFocus);
 
     void UpdateAlpha(BYTE byAlpha);
-    void UpdatePresenter(HDC dc, IRenderTarget *pRT, LPCRECT rc, BYTE byAlpha = 255);
+	void UpdatePresenter(HDC dc, IRenderTarget *pRT, LPCRECT rc, BYTE byAlpha = 255,UINT uFlag=0);
 
     void OnCaptureChanged(HWND wnd);
 
@@ -443,7 +444,7 @@ class SOUI_EXP SHostWnd
 
     STDMETHOD_(BOOL, IsSendWheel2Hover)() const OVERRIDE;
 
-    STDMETHOD_(BOOL, UpdateWindow)() OVERRIDE;
+    STDMETHOD_(BOOL, UpdateWindow)(BOOL bForce DEF_VAL(TRUE)) OVERRIDE;
 
     STDMETHOD_(void, UpdateTooltip)() OVERRIDE;
 

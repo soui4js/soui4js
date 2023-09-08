@@ -13,8 +13,23 @@
 
 SNSBEGIN
 
+enum 
+{
+    UDI_GLOBAL = 1 << 0,
+    UDI_SKIN = 1 << 1,
+    UDI_STYLE = 1 << 2,
+    UDI_TEMPLATE = 1 << 3,
+    UDI_COLOR = 1 << 4,
+    UDI_STRING = 1 << 5,
+    UDI_DIMENSION = 1 << 6,
+    UDI_FONT = 1 << 7,
+};
+
 struct IUiDefInfo : IObjRef
 {
+    virtual UINT Init(IResProvider *pResProvide, LPCTSTR pszUidef) =0;
+    virtual UINT Init2(IXmlNode *pNode, BOOL bGlobalDomain, IResProvider *pResProvider = NULL)=0;
+
     virtual SSkinPool *GetSkinPool() = 0;
     virtual SStylePool *GetStylePool() = 0;
     virtual STemplatePool *GetTemplatePool() = 0;
@@ -30,54 +45,6 @@ struct IUiDefInfo : IObjRef
     virtual SObjDefAttr *GetObjDefAttr() = 0;
 };
 
-class SOUI_EXP SUiDefInfo : public TObjRefImpl<IUiDefInfo> {
-  public:
-    enum
-    {
-        UDI_GLOBAL = 1 << 0,
-        UDI_SKIN = 1 << 1,
-        UDI_STYLE = 1 << 2,
-        UDI_TEMPLATE = 1 << 3,
-        UDI_COLOR = 1 << 4,
-        UDI_STRING = 1 << 5,
-        UDI_DIMENSION = 1 << 6,
-        UDI_FONT = 1 << 7,
-    };
-
-  public:
-    SUiDefInfo()
-    {
-    }
-
-    UINT Init(IResProvider *pResProvide, LPCTSTR pszUidef);
-    UINT Init(IXmlNode *pNode, BOOL bGlobalDomain, IResProvider *pResProvider = NULL);
-
-    virtual SSkinPool *GetSkinPool() override;
-    virtual SStylePool *GetStylePool() override;
-    virtual STemplatePool *GetTemplatePool() override;
-    virtual SObjDefAttr *GetObjDefAttr() override;
-    virtual SNamedColor &GetNamedColor() override;
-    virtual SNamedString &GetNamedString() override;
-    virtual SNamedDimension &GetNamedDimension() override;
-    virtual SNamedFont &GetNamedFont() override;
-    virtual SStringW GetDefFontInfo() override;
-    virtual SXmlNode GetCaretInfo() override;
-
-  protected:
-    SAutoRefPtr<SSkinPool> pSkinPool;
-    SAutoRefPtr<SStylePool> pStylePool;
-    SAutoRefPtr<SObjDefAttr> objDefAttr;
-    SAutoRefPtr<STemplatePool> templatePool;
-
-    SNamedColor namedColor;
-    SNamedString namedString;
-    SNamedDimension namedDim;
-    SNamedFont namedFont;
-
-    SStringW defFontInfo;
-    SXmlDoc xmlCaret;
-};
-
 #define GETUIDEF SOUI::SUiDef::getSingletonPtr()
 
 #define GETSTYLE(p)                GETUIDEF->GetStyle(p)
@@ -88,13 +55,15 @@ class SOUI_EXP SUiDefInfo : public TObjRefImpl<IUiDefInfo> {
 #define GETSTRING(x)               GETUIDEF->GetString(x)
 #define GETLAYOUTSIZE(x)           GETUIDEF->GetLayoutSize(x)
 
-class SOUI_EXP SUiDef : public SSingleton2<SUiDef> {
+class SOUI_EXP SUiDef : public SSingleton2<SUiDef>, public SFontPool {
     SINGLETON2_TYPE(SINGLETON_UIDEF)
   public:
-    SUiDef(void);
+    SUiDef(IRenderFactory *fac);
     ~SUiDef(void);
 
   public:
+    static IUiDefInfo * CreateUiDefInfo();
+
     /**
      * InitDefUiDef
      * @brief    初始化默认UiDef
@@ -131,15 +100,15 @@ class SOUI_EXP SUiDef : public SSingleton2<SUiDef> {
      * @return   void
      * Describe soui的uidef对象是一个列表,每一个界面可以有自己的uidef对象
      */
-    void PushUiDefInfo(IUiDefInfo *pUiDefInfo);
+    void PushUiDefInfo(IUiDefInfo *pUiDefInfo,BOOL bPreivate=FALSE);
 
-    /** PushUiDefInfo
+    /** PopUiDefInfo
      * @brief    Pop一个UiDef对象
-     * @param    IUiDefInfo * --新的uidef
+     * @param    IUiDefInfo * --待删除的uidef, 为NULL时删除最后一个uidef
      * @return   BOOL, TRUE--成功
      * Describe soui的uidef对象是一个列表,每一个界面可以有自己的uidef对象
      */
-    BOOL PopUiDefInfo(IUiDefInfo *pUiDefInfo);
+    BOOL PopUiDefInfo(IUiDefInfo *pUiDefInfo,BOOL bPreivate=FALSE);
 
     /**
      * PushSkinPool
@@ -225,6 +194,11 @@ class SOUI_EXP SUiDef : public SSingleton2<SUiDef> {
     //(something是在资源包中的font表定义的命名字符串)
     SStringW GetFontDesc(const SStringW &strFont);
     SStringW GetFontDesc(int idx);
+
+  public:
+		IFontPtr GetFont(const SStringW &strFont, int scale) override;
+
+		void SetDefFontInfo(const SStringW &strFontInfo) override;
 
   protected:
     SAutoRefPtr<IUiDefInfo> m_defUiDefInfo;

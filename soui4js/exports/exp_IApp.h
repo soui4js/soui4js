@@ -64,6 +64,7 @@ void Exp_IApp(qjsbind::Module* module)
 	jsCls.AddFunc("GetResProviderMgr", &IApplication::GetResProviderMgr);
 	jsCls.AddFunc("SetRealWndHandler", &IApplication::SetRealWndHandler);
 	jsCls.AddFunc("GetRenderFactory", &IApplication::GetRenderFactory);
+	jsCls.AddFunc("SetRenderFactory", &IApplication::SetRenderFactory);
 	jsCls.AddFunc("SetScriptFactory", &IApplication::SetScriptFactory);
 	jsCls.AddCFunc("InitXmlNamedID", &IApplication_InitXmlNamedID);
 	jsCls.AddFunc("LoadXmlDocment", &IApplication::LoadXmlDocmentU8);

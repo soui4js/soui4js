@@ -26,7 +26,6 @@ typedef enum _SingletonType
     SINGLETON_UIDEF = 0,
     SINGLETON_SWNDMGR,
     SINGLETON_TIMERGENERATOR,
-    SINGLETON_FONTPOOL,
     SINGLETON_WINDOWFINDER,
     SINGLETON_TEXTSERVICEHELPER,
     SINGLETON_RICHEDITMENUDEF,
@@ -216,6 +215,16 @@ DECLARE_INTERFACE_(IApplication, IObjRef)
      * Describe
      */
     STDMETHOD_(IRenderFactory *, GetRenderFactory)(THIS) PURE;
+
+	/**
+     * SetRenderFactory
+     * @brief    设置渲染模块
+	 * @param IRenderFactory * renderFac 渲染模块指针
+     * @return   TRUE-成功
+     *
+     * Describe 只在IApp初始化时调用，renderFac不支持动态切换
+     */
+	STDMETHOD_(BOOL, SetRenderFactory)(THIS_ IRenderFactory * renderFac) PURE;
 
     /**
      * SetScriptModule

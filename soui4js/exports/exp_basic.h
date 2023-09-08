@@ -1,5 +1,68 @@
 #pragma once
 
+namespace qjsbind {
+	template<>
+	CRect* constructor(ArgList& args)
+	{
+		if(args.size()==1)
+		{
+			RECT* pSrc = (RECT*)args[0];
+			if (pSrc) return new CRect(pSrc);
+		}
+		else if (args.size() == 2) {
+			POINT* pt = (POINT*)args[0];
+			SIZE* sz = (SIZE*)args[1];
+			if (pt && sz)
+				return new CRect(*pt,*sz);
+		}
+		else if (args.size() == 4) {
+			return new CRect(
+				(int)args[0],
+				(int)args[1],
+				(int)args[2],
+				(int)args[3]
+			);
+		}
+		return new CRect();
+	}
+
+	template<>
+	CSize* constructor(ArgList& args)
+	{
+		if (args.size() == 1)
+		{
+			SIZE* sz = (SIZE*)args[0];
+			if (sz)
+				return new CSize(*sz);
+		}		
+		else if (args.size() == 2) {
+			return new CSize(
+				(int)args[0],
+				(int)args[1]
+			);
+		}
+		return new CSize();
+	}
+
+	template<>
+	CPoint* constructor(ArgList& args)
+	{
+		if (args.size() == 1)
+		{
+			POINT* pt = (POINT*)args[0];
+			if (pt)
+				return new CPoint(*pt);
+		}
+		else if (args.size() == 2) {
+			return new CPoint(
+				(int)args[0],
+				(int)args[1]
+			);
+		}
+		return new CPoint();
+	}
+}
+
 void Exp_Basic(qjsbind::Module* module) {
 	{
 		JsClass<POINT> jsCls = module->ExportClass<POINT>("POINT");
@@ -10,7 +73,7 @@ void Exp_Basic(qjsbind::Module* module) {
 	{
 		JsClass<CPoint> jsCls = module->ExportClass<CPoint>("CPoint");
 		jsCls.Init(JsClass<POINT>::class_id());
-		jsCls.AddCtor<qjsbind::constructor<CPoint, int, int>>();
+		jsCls.AddCtor<qjsbind::constructor<CPoint>>();
 	}
 	{
 		JsClass<RECT> jsCls = module->ExportClass<RECT>("RECT");
@@ -23,8 +86,7 @@ void Exp_Basic(qjsbind::Module* module) {
 	{
 		JsClass<CRect> jsCls = module->ExportClass<CRect>("CRect");
 		jsCls.Init(JsClass<RECT>::class_id());
-		jsCls.AddCtor<qjsbind::constructor<CRect, int, int,int,int>>();
-		jsCls.AddCtor<qjsbind::constructor<CRect, RECT>>(FALSE,"CRect2");
+		jsCls.AddCtor<qjsbind::constructor<CRect>>();
 		jsCls.AddFunc("CenterPoint", &CRect::CenterPoint);
 		jsCls.AddFunc("Width", &CRect::Width);
 		jsCls.AddFunc("Height", &CRect::Height);
@@ -50,8 +112,7 @@ void Exp_Basic(qjsbind::Module* module) {
 	{
 		JsClass<CSize> jsCls = module->ExportClass<CSize>("CSize");
 		jsCls.Init(JsClass<SIZE>::class_id());
-		jsCls.AddCtor<qjsbind::constructor<CSize, int, int>>();
-		jsCls.AddCtor<qjsbind::constructor<CSize, SIZE>>(FALSE, "CSize2");
+		jsCls.AddCtor<qjsbind::constructor<CSize>>();
 	}
 	{
 		JsClass<SYSTEMTIME> jsCls = module->ExportClass<SYSTEMTIME>("SYSTEMTIME");
