@@ -219,7 +219,7 @@ DECLARE_INTERFACE_(IWindow, IObject)
      * @param lParam LPARAM--参数2
      * @return
      */
-    STDMETHOD_(void, SDispatchMessage)(THIS_ UINT uMsg, WPARAM wParam, LPARAM lParam) PURE;
+    STDMETHOD_(void, SDispatchMessage)(THIS_ UINT uMsg, WPARAM wParam DEF_VAL(0), LPARAM lParam DEF_VAL(0)) PURE;
 
     /**
      * @brief 获取窗口是否允许设置为焦点
@@ -279,7 +279,7 @@ DECLARE_INTERFACE_(IWindow, IObject)
 
     /**
      * @brief 请求立即更新窗口
-	 * @param BOOL bForce, TRUE-强制刷新，FALSE-有invalid region才刷新
+     * @param BOOL bForce, TRUE-强制刷新，FALSE-有invalid region才刷新
      * @return
      * @remark 通常要刷新一个窗口，应该使用Invalidate/InvalidateRect，这样系统中所有请求都会在
      下一次刷新的时候被重新绘制。但是这可能会出现延时。为了能够立即重新绘制，可以调用Update
