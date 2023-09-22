@@ -1,6 +1,7 @@
 #pragma once
 #include <core/SHostDialog.h>
 #include <helper/SDpiHelper.hpp>
+#include <set>
 
 template<class T>
 class JsHostWnd : public T, public JsThisOwner ,public SDpiHandler< JsHostWnd<T> >
@@ -15,8 +16,19 @@ public:
 	int WINAPI GetScale() const {
 		return T::GetScale();
 	}
+
+	void SetEventMask(int evt,bool bSet) {
+		if (bSet)
+			m_cbEvts.insert(evt);
+		else
+			m_cbEvts.erase(evt);
+	}
 protected:
 	BOOL _HandleEvent(IEvtArgs* pEvt) override {
+		if (!m_cbEvts.empty()) {
+			if (m_cbEvts.find(pEvt->GetID())== m_cbEvts.end())
+				return FALSE;
+		}
 		if (!m_onEvent.IsFunction()) {
 			return T::_HandleEvent(pEvt);
 		}
@@ -61,6 +73,7 @@ protected:
 		else
 			return JsThisOwner::GetJsThis();
 	}
+
 public:
 	static void Mark(JsHostWnd<T>* pThis, JS_MarkFunc* mark_fun) {
 		pThis->m_cbHandler.Mark(mark_fun);
@@ -71,12 +84,14 @@ public:
 	Value m_cbHandler;
 	Value m_onMsg;
 	Value m_onEvent;
+	std::set<int> m_cbEvts;
 };
 
 void Exp_JsHostWnd(qjsbind::Module* module) {
 	JsClass<JsHostWnd<SHostWnd> > jsCls = module->ExportClass<JsHostWnd<SHostWnd>>("JsHostWnd");
 	jsCls.Init<JsHostWnd<SHostWnd>::Mark>(JsClass<IHostWnd>::class_id());
 	jsCls.AddCtor<qjsbind::constructor<JsHostWnd<SHostWnd>, LPCSTR>>(TRUE);
+	jsCls.AddFunc("SetEventMask", &JsHostWnd<SHostWnd>::SetEventMask);
 	jsCls.AddFunc("SetPresenter", &JsHostWnd<SHostWnd>::SetPresenter);
 	jsCls.AddFunc("GetScale", &JsHostWnd<SHostWnd>::GetScale);
 	jsCls.AddGetSet("cbHandler", &JsHostWnd<SHostWnd>::m_cbHandler);
@@ -88,6 +103,7 @@ void Exp_JsHostDialog(qjsbind::Module* module) {
 	JsClass<JsHostWnd<SHostDialog> > jsCls = module->ExportClass<JsHostWnd<SHostDialog>>("JsHostDialog");
 	jsCls.Init<JsHostWnd<SHostDialog>::Mark>(JsClass<IHostDialog>::class_id());
 	jsCls.AddCtor<qjsbind::constructor<JsHostWnd<SHostDialog>, LPCSTR>>(TRUE);
+	jsCls.AddFunc("SetEventMask", &JsHostWnd<SHostDialog>::SetEventMask);
 	jsCls.AddFunc("SetPresenter", &JsHostWnd<SHostDialog>::SetPresenter);
 	jsCls.AddFunc("GetScale", &JsHostWnd<SHostDialog>::GetScale);
 	jsCls.AddGetSet("cbHandler", &JsHostWnd<SHostDialog>::m_cbHandler);
