@@ -1,15 +1,16 @@
 ﻿//SOUI组件配置
+#ifndef _SOUI_COM_CFG_H_
+#define _SOUI_COM_CFG_H_
 
-#pragma  once
-
-#include <com-def.h>
+#include <config.h>
 #include <string/tstring.h>
 
 #define COM_IMGDECODER  _T("imgdecoder-gdip")
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && !defined(NO_DEBUG_SUFFIX)
 #define COM_RENDER_GDI  _T("render-gdid.dll")
 #define COM_RENDER_SKIA _T("render-skiad.dll")
+#define COM_RENDER_D2D  _T("render-d2dd.dll")
 #define COM_SCRIPT_LUA _T("scriptmodule-luad.dll")
 #define COM_TRANSLATOR _T("translatord.dll")
 #define COM_ZIPRESPROVIDER _T("resprovider-zipd.dll")
@@ -19,6 +20,7 @@
 #else
 #define COM_RENDER_GDI  _T("render-gdi.dll")
 #define COM_RENDER_SKIA _T("render-skia.dll")
+#define COM_RENDER_D2D  _T("render-d2d.dll")
 #define COM_SCRIPT_LUA _T("scriptmodule-lua.dll")
 #define COM_TRANSLATOR _T("translator.dll")
 #define COM_ZIPRESPROVIDER _T("resprovider-zip.dll")
@@ -34,12 +36,13 @@
 #pragma comment(lib,"Usp10")
 #pragma comment(lib,"opengl32")
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && !defined(NO_DEBUG_SUFFIX)
 #pragma comment(lib,"skiad")
 #pragma comment(lib,"zlibd")
 #pragma comment(lib,"pngd")
 #pragma comment(lib,"render-gdid")
 #pragma comment(lib,"render-skiad")
+#pragma comment(lib,"render-d2dd")
 #pragma comment(lib,"imgdecoder-wicd")
 #pragma comment(lib,"imgdecoder-stbd")
 #pragma comment(lib,"imgdecoder-pngd")
@@ -50,7 +53,7 @@
 #pragma comment(lib,"resprovider-7zipd")
 #pragma comment(lib,"log4zd")
 #pragma comment(lib,"taskloopd")
-#else//_DEBUG
+#else//defined(_DEBUG) && !defined(NO_DEBUG_SUFFIX)
 
 #pragma comment(lib,"skia")
 #pragma comment(lib,"zlib")
@@ -61,6 +64,7 @@
 #pragma comment(lib,"imgdecoder-gdip")
 #pragma comment(lib,"render-gdi")
 #pragma comment(lib,"render-skia")
+#pragma comment(lib,"render-d2d")
 #pragma comment(lib,"translator")
 #pragma comment(lib,"resprovider-zip")
 #pragma comment(lib,"7z")
@@ -93,6 +97,10 @@ namespace SOUI
 		BOOL SCreateInstance(IObjRef **);
 	}
 	namespace RENDER_SKIA
+	{
+		BOOL SCreateInstance(IObjRef **);
+	}
+	namespace RENDER_D2D
 	{
 		BOOL SCreateInstance(IObjRef **);
 	}
@@ -157,6 +165,11 @@ namespace SOUI
 		{
 			return RENDER_SKIA::SCreateInstance(ppObj);
 		}
+		BOOL CreateRender_D2D(IObjRef **ppObj)
+		{
+			return RENDER_D2D::SCreateInstance(ppObj);
+		}
+
 		BOOL CreateScrpit_Lua(IObjRef **ppObj)
 		{
 			return SCRIPT_LUA::SCreateInstance(ppObj);
@@ -185,6 +198,10 @@ namespace SOUI
 		BOOL CreateTaskLoop(IObjRef **ppObj)
 		{
 			return TASKLOOP::SCreateInstance(ppObj);
+		}
+
+		HMODULE GetRenderModule() {
+			return NULL;
 		}
 
 		SStringT    m_strImgDecoder;
@@ -220,7 +237,7 @@ namespace SOUI {
 
 		BOOL CreateImgDecoder(IObjRef ** ppObj)
 		{
-#ifdef _DEBUG
+#if defined(_DEBUG) && !defined(NO_DEBUG_SUFFIX)
 			SStringT strImgDecoder = m_strImgDecoder + _T("d.dll");
 #else
 			SStringT strImgDecoder = m_strImgDecoder + _T(".dll");
@@ -237,6 +254,11 @@ namespace SOUI {
 		{
 			return renderLoader.CreateInstance(m_strDllPath + COM_RENDER_SKIA, ppObj);
 		}
+		BOOL CreateRender_D2D(IObjRef **ppObj)
+		{
+			return renderLoader.CreateInstance(m_strDllPath + COM_RENDER_D2D, ppObj);
+		}
+
 		BOOL CreateScrpit_Lua(IObjRef **ppObj)
 		{
 			return scriptLoader.CreateInstance(m_strDllPath + COM_SCRIPT_LUA, ppObj);
@@ -265,6 +287,10 @@ namespace SOUI {
 		{
 			return taskLoopLoader.CreateInstance(m_strDllPath + COM_TASKLOOP, ppObj);
 		}
+
+		HMODULE GetRenderModule() {
+			return renderLoader.GetModule();
+		}
 	protected:
 		//SComLoader实现从DLL的指定函数创建符号SOUI要求的类COM组件。
 		SComLoader imgDecLoader;
@@ -282,3 +308,5 @@ namespace SOUI {
 
 }//end of soui
 #endif
+
+#endif//_SOUI_COM_CFG_H_

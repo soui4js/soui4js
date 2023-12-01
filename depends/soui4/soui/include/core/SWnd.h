@@ -17,6 +17,7 @@
 #include <interface/SwndContainer-i.h>
 #include <interface/slayout-i.h>
 #include <interface/saccproxy-i.h>
+#include <interface/scaret-i.h>
 #include <helper/SwndMsgCracker.h>
 #include <layout/SLayoutSize.h>
 #include <event/SEventSlot.h>
@@ -1260,6 +1261,7 @@ class SOUI_EXP SWindow
     PGETRTDATA m_pGetRTData;
 
     SAutoRefPtr<IAttrStorage> m_attrStorage; /**< 属性保存对象 */
+    SAutoRefPtr<ICaret> m_caret;
 
     FunSwndProc m_funSwndProc;
 #ifdef SOUI_ENABLE_ACC
@@ -1269,6 +1271,22 @@ class SOUI_EXP SWindow
 #ifdef _DEBUG
     DWORD m_nMainThreadId; /**< 窗口宿线程ID */
 #endif
+};
+
+class SOUI_EXP SAutoEnableHostPrivUiDef {
+  public:
+    SAutoEnableHostPrivUiDef(SWindow *pOwner)
+        : m_pOwner(pOwner)
+    {
+        m_pOwner->GetContainer()->EnableHostPrivateUiDef(TRUE);
+    }
+    ~SAutoEnableHostPrivUiDef()
+    {
+        m_pOwner->GetContainer()->EnableHostPrivateUiDef(FALSE);
+    }
+
+  protected:
+    SWindow *m_pOwner;
 };
 
 SNSEND

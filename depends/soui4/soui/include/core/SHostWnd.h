@@ -175,7 +175,7 @@ class SOUI_EXP SHostWnd
     SAutoRefPtr<IRegionS> m_rgnInvalidate;      /**<脏区域*/
     SAutoRefPtr<IRenderTarget> m_memRT;         /**<绘制缓存*/
     SAutoRefPtr<IUiDefInfo> m_privateUiDefInfo; /** 局部uidefinfo*/
-
+    int m_cEnableUiDefCount;                    /** 局部uidefinfo enable count*/
     SAutoRefPtr<IScriptModule> m_pScriptModule; /**<脚本模块*/
     SAutoRefPtr<SNcPainter> m_pNcPainter;       /**<非客户区绘制模块*/
 
@@ -194,10 +194,24 @@ class SOUI_EXP SHostWnd
     EventHandlerInfo m_evtHandler;
     SAutoRefPtr<IHostPresenter> m_presenter;
 
+    //几个异步任务相关的对象，由于msgloop的异步任务依赖msgloop，在dll中使用soui可能没有soui自己的msgloop
+    SCriticalSection m_cs;
+    SList<IRunnable *> m_runnables;
+    SCriticalSection m_csRunningQueue;
+    SList<IRunnable *> m_runningQueue;
+
+    static BOOL s_HideLocalUiDef;  /**<隐藏局部uidef对象全局标志  */
+    static int s_TaskQueueBufSize; /**<异步任务等待长度,默认为5  */
   public:
     SHostWnd(LPCWSTR pszResName = NULL);
     SHostWnd(LPCSTR pszResName);
     virtual ~SHostWnd();
+
+    /************************************************************************/
+    /*用来设置是否隐藏窗口的局部布局属性，整个程序只应在窗口初始化前调用一次*/
+    /************************************************************************/
+    static void SetHideLocalUiDef(BOOL bHide);
+    static void SetTaskQueueBufSize(int nBufSize);
 
   public:
     enum
@@ -206,6 +220,8 @@ class SOUI_EXP SHostWnd
         kPulseInterval = 10,
         kNcCheckTimer = 4322,
         kNcCheckInterval = 50,
+        kTaskTimer = 4323,
+        kTaskInterval = 100,
     };
 
   public:
@@ -450,6 +466,7 @@ class SOUI_EXP SHostWnd
 
     STDMETHOD_(BOOL, RegisterTimelineHandler)(THIS_ ITimelineHandler *pHandler) OVERRIDE;
     STDMETHOD_(BOOL, UnregisterTimelineHandler)(THIS_ ITimelineHandler *pHandler) OVERRIDE;
+    STDMETHOD_(void, EnableHostPrivateUiDef)(THIS_ BOOL bEnable) OVERRIDE;
 
     // STDMETHOD_(IMessageLoop *, GetMsgLoop)(); same as IHostWnd::GetMsgLoop
 
@@ -458,7 +475,12 @@ class SOUI_EXP SHostWnd
     STDMETHOD_(int, GetScale)() const OVERRIDE;
 
     STDMETHOD_(void, EnableIME)(BOOL bEnable) OVERRIDE;
+
     STDMETHOD_(void, OnUpdateCursor)() OVERRIDE;
+
+    STDMETHOD_(BOOL, PostTask)(THIS_ IRunnable *runable, BOOL bAsync DEF_VAL(TRUE)) OVERRIDE;
+
+    STDMETHOD_(int, RemoveTasksForObject)(THIS_ void *pObj) OVERRIDE;
 
   protected:
     virtual IToolTip *CreateTooltip() const;
@@ -476,6 +498,7 @@ class SOUI_EXP SHostWnd
 
   protected:
     LRESULT OnUpdateFont(UINT uMsg, WPARAM wp, LPARAM lp);
+    LRESULT OnRunTasks(UINT uMsg, WPARAM wp, LPARAM lp);
 
     BEGIN_MSG_MAP_EX(SHostWnd)
         MSG_WM_SIZE(OnSize)
@@ -507,6 +530,7 @@ class SOUI_EXP SHostWnd
         MSG_WM_COMMAND(OnCommand)
         MSG_WM_SYSCOMMAND(OnSysCommand)
         MESSAGE_HANDLER_EX(UM_UPDATEFONT, OnUpdateFont)
+        MESSAGE_HANDLER_EX(UM_RUN_TASKS, OnRunTasks)
         CHAIN_MSG_MAP_MEMBER(*m_pNcPainter)
 #if (!DISABLE_SWNDSPY)
         MESSAGE_HANDLER_EX(SPYMSG_SETSPY, OnSpyMsgSetSpy)

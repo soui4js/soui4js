@@ -61,13 +61,13 @@ DECLARE_INTERFACE_(IMessageLoop, IObjRef)
 
     STDMETHOD_(void, OnMsg)(THIS_ LPMSG pMsg) PURE;
 
-    STDMETHOD_(void, Quit)(THIS) PURE;
+    STDMETHOD_(void, Quit)(THIS_ int exitCode DEF_VAL(0)) PURE;
 
     STDMETHOD_(BOOL, PostTask)(THIS_ IRunnable * runable) PURE;
 
     STDMETHOD_(int, RemoveTasksForObject)(THIS_ void *pObj) PURE;
 
-    STDMETHOD_(void, ExecutePendingTask)() PURE;
+    STDMETHOD_(void, ExecutePendingTask)(THIS) PURE;
 
     STDMETHOD_(BOOL, PeekMsg)(THIS_ LPMSG pMsg, UINT wMsgFilterMin, UINT wMsgFilterMax, BOOL bRemove) PURE;
 
