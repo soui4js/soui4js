@@ -30,7 +30,7 @@ SIZE IWindow_GetDesiredSize(Context* ctx, IWindow* _this, ArgList& args) {
 	SIZE ret = { 0,0 };
 	int nWid = -1, nHei = -1;
 	if (args.size() >= 1) nWid = args[0];
-	if (args.size() >= 2) nHei = args[2];
+	if (args.size() >= 2) nHei = args[1];
 
 	_this->GetDesiredSize(&ret, nWid, nHei);
 	return ret;
