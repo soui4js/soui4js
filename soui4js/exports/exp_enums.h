@@ -206,4 +206,8 @@ SEnumInt(CP_ACP);
 SEnumInt(CP_OEMCP);
 SEnumInt(CP_MACCP);
 
+SEnumInt(SBA_MOUSE_DOWN);
+SEnumInt(SBA_MOUSE_MOVING);
+SEnumInt(SBA_MOUSE_UP);
+
 }

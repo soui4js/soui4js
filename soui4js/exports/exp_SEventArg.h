@@ -256,6 +256,7 @@ void Exp_SEventArg(qjsbind::Module* module) {
 
 	{JsClass<EventSliderPos> jsCls = module->ExportClass<EventSliderPos>("EventSliderPos");
 	jsCls.Init(JsClass<IEvtArgs>::class_id());
+	jsCls.AddGetSet("action", &EventSliderPos::action);
 	jsCls.AddGetSet("nPos", &EventSliderPos::nPos);
 	DEF_CAST_IOBJ(module, EventSliderPos); }
 
