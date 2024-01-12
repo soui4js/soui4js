@@ -121,7 +121,8 @@ Context::Context(Runtime* runtime)
 	, log_func_(NULL)
 	, is_attach_(false)
 {
-	Init();
+	JS_SetContextOpaque(context_, this);
+	js_std_set_worker_new_context_func(JS_NewCustomContext);
 }
 
 Context::Context(JSContext* context)
@@ -129,7 +130,10 @@ Context::Context(JSContext* context)
 	, log_func_(NULL)
 	, is_attach_(true)
 {
-	if(context_)Init();
+	if (context_)
+	{
+		JS_SetContextOpaque(context_, this);
+	}
 }
 
 Context::~Context() {
@@ -152,12 +156,6 @@ JSClassID Context::GetParentClassId(JSClassID classid) {
 	}
 	return 0;
 }
-
-void Context::Init() {
-	JS_SetContextOpaque(context_, this);
-	if(!is_attach_) js_std_set_worker_new_context_func(JS_NewCustomContext);
-}
-
 
 void Context::ExecuteJobs() {
 	JSContext* ctx1;
