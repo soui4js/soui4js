@@ -160,6 +160,29 @@ namespace qjsbind {
 			return Value(context_, rslt);
 		}
 
+		static JSValue JSJobFunc(JSContext* ctx, int argc, JSValueConst* argv) {
+			if(argc<2)
+				return Value(ctx, JS_EXCEPTION);
+			return JS_Call(ctx, argv[0], argv[1], argc - 2, argv + 2);
+		}
+
+		int EnqueueJob(const WeakValue& thisObj, const Value& fun, int cArg, Value* pArg) const {
+			if (!fun.IsFunction())
+				return -2;
+			JSValue* pArgValue =  new JSValue[cArg + 2];
+			pArgValue[0] = fun;
+			pArgValue[1] = thisObj;
+			for (int i = 0; i < cArg; i++) {
+				pArgValue[i+2] = (JSValue)pArg[i];
+			}
+
+			int rslt = JS_EnqueueJob(context_, JSJobFunc,  cArg+2, pArgValue);
+			if (pArgValue) {
+				delete[]pArgValue;
+			}
+			return rslt;
+		}
+
 		Value Invoke(Value thiz,const char* func_name,int cArg, Value *pArg) const {
 			auto atom = JS_NewAtom(context_, func_name);
 			JSValue* pArgValue = NULL;
