@@ -37,8 +37,6 @@ void WsConnListener::onDataRecv(const void* data, int len, bool bBinary)
 WsClient::WsClient(LPCSTR url, LPCSTR protocol,int opt,LPCSTR ca):m_connListener(this)
 {
 	m_wsLoader = new WsLoader();
-	m_msgLoop = SApplication::getSingletonPtr()->GetMsgLoop();
-	SASSERT(m_msgLoop);
 	m_wsClient.Attach(m_wsLoader->CreateWsClient(&m_connListener));
 	UrlInfo urlInfo;
 	parseUrl(url, urlInfo);
@@ -50,7 +48,7 @@ WsClient::WsClient(LPCSTR url, LPCSTR protocol,int opt,LPCSTR ca):m_connListener
 		option.skipServerCertHostnameCheck = !!(opt & skipServerCertHostnameCheck);
 		option.ca_u8 = ca;
 	}
-	m_wsClient->connectTo(urlInfo.addr.c_str(), urlInfo.addr.c_str(), urlInfo.port, protocol, option);
+	m_wsClient->connectTo(urlInfo.addr.c_str(), urlInfo.path.c_str(), urlInfo.port, protocol, option);
 }
 
 WsClient::~WsClient()
@@ -74,7 +72,7 @@ void WsClient::_onConnected()
 		return ;
 	}
 	Context* ctx = m_onConnected.context();
-	ctx->Call(GetJsThis(), m_onConnected, 0, nullptr);
+	ctx->EnqueueJob(GetJsThis(), m_onConnected, 0, nullptr);
 }
 
 void WsClient::_onConnError(const std::string & errStr)
@@ -86,7 +84,7 @@ void WsClient::_onConnError(const std::string & errStr)
 	qjsbind::Value args[] = {
 		NewValue(*ctx, errStr)
 	};
-	ctx->Call(GetJsThis(), m_onError, ARRAYSIZE(args), args);
+	ctx->EnqueueJob(GetJsThis(), m_onError, ARRAYSIZE(args), args);
 }
 
 void WsClient::_onDisconnect()
@@ -95,7 +93,7 @@ void WsClient::_onDisconnect()
 		return;
 	}
 	Context* ctx = m_onClose.context();
-	ctx->Call(GetJsThis(), m_onClose, 0, nullptr);
+	ctx->EnqueueJob(GetJsThis(), m_onClose, 0, nullptr);
 }
 
 void WsClient::_onDataSent(int nMsgId)
@@ -107,7 +105,7 @@ void WsClient::_onDataSent(int nMsgId)
 	qjsbind::Value args[] = {
 		NewValue(*ctx, nMsgId)
 	};
-	ctx->Call(GetJsThis(), m_onDataSent, ARRAYSIZE(args), args);
+	ctx->EnqueueJob(GetJsThis(), m_onDataSent, ARRAYSIZE(args), args);
 }
 
 void WsClient::_onDataRecv(const std::string &buf, bool bBinary)
@@ -121,40 +119,40 @@ void WsClient::_onDataRecv(const std::string &buf, bool bBinary)
 		qjsbind::Value args[] = {
 				ctx->NewArrayBuffer((const uint8_t*)buf.data(), buf.length() * sizeof(wchar_t))
 		};
-		ctx->Call(GetJsThis(), cb, ARRAYSIZE(args), args);
+		ctx->EnqueueJob(GetJsThis(), cb, ARRAYSIZE(args), args);
 	}
 	else
 	{
 		qjsbind::Value args[] = {
 			NewValue(*ctx, buf)
 		};
-		ctx->Call(GetJsThis(), cb, ARRAYSIZE(args), args);
+		ctx->EnqueueJob(GetJsThis(), cb, ARRAYSIZE(args), args);
 	}
 }
 
 void WsClient::onConnected()
 {
-	STaskHelper::post(m_msgLoop, this, &WsClient::_onConnected);
+	WsClient::_onConnected();
 }
 
 void WsClient::onConnError(const char* errStr)
 {
-	STaskHelper::post(m_msgLoop, this, &WsClient::_onConnError, std::string(errStr));
+	_onConnError( std::string(errStr));
 }
 
 void WsClient::onDisconnect()
 {
-	STaskHelper::post(m_msgLoop, this, &WsClient::_onDisconnect);
+	_onDisconnect();
 }
 
 void WsClient::onDataSent(int nMsgId)
 {
-	STaskHelper::post(m_msgLoop, this, &WsClient::_onDataSent, nMsgId);
+	_onDataSent(nMsgId);
 }
 
 void WsClient::onDataRecv(const void* data, int len, bool bBinary)
 {
-	STaskHelper::post(m_msgLoop, this, &WsClient::_onDataRecv, std::string((const char*)data, len), bBinary);
+	_onDataRecv(std::string((const char*)data, len), bBinary);
 }
 
 void WsClient::parseUrl(std::string url, UrlInfo& info)
@@ -176,7 +174,7 @@ void WsClient::parseUrl(std::string url, UrlInfo& info)
 	else
 	{
 		addr = url.substr(0, pos);
-		info.path = url.substr(pos + 1);
+		info.path = url.substr(pos);
 	}
 	pos = addr.find(':');
 	if (pos != -1) {

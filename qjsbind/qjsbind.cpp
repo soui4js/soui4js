@@ -121,6 +121,7 @@ Context::Context(Runtime* runtime)
 	, log_func_(NULL)
 	, is_attach_(false)
 {
+	m_tid = GetCurrentThreadId();
 	JS_SetContextOpaque(context_, this);
 	js_std_set_worker_new_context_func(JS_NewCustomContext);
 }
@@ -130,6 +131,7 @@ Context::Context(JSContext* context)
 	, log_func_(NULL)
 	, is_attach_(true)
 {
+	m_tid = GetCurrentThreadId();
 	if (context_)
 	{
 		JS_SetContextOpaque(context_, this);

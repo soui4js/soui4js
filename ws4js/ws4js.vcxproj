@@ -117,6 +117,7 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>.;..\depends\quickjs\include;..\qjsbind;..\depends\soui4\config;..\depends\soui4\components;..\depends\soui4\SOUI\include;..\depends\soui4\utilities\include;..\depends\ws\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -185,6 +186,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="WsClient.h" />
     <ClInclude Include="WsLoader.h" />
+    <ClInclude Include="WsSever.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -197,12 +199,10 @@
     <ClCompile Include="ws4js.cpp" />
     <ClCompile Include="WsClient.cpp" />
     <ClCompile Include="WsLoader.cpp" />
+    <ClCompile Include="WsSever.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ws4js.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -61,10 +61,10 @@ namespace SOUI
         }
 
         BOOL WINAPI WaitMsg() override{
-            HANDLE handles[64] = { 0 };
+            HANDLE handles[MAXIMUM_WAIT_OBJECTS-1] = { 0 };
             int rws = 0, msgs = 0;
             uint32_t waitTime = INFINITE;
-            int nCount = js_prepare_waitlist(m_ctx->context(), handles, 64, &rws, &msgs,&waitTime);
+            int nCount = js_prepare_waitlist(m_ctx->context(), handles, MAXIMUM_WAIT_OBJECTS - 1, &rws, &msgs,&waitTime);
             int nObjects = nCount;
             if (nCount == 0)
             {
