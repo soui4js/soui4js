@@ -21,48 +21,26 @@ static inline int hex2dec(const char ch)
 }
 #endif
 
-
-/*
-int main()
+// utf8编码转url编码
+std::string urlencode(const char* cszSrc) // 编码
 {
-	char str[] = "http://www.baidu.com/s?ie=utf-8&f=8&tn=baidu&wd=临时邮箱";
-	char *pUrl = NULL; // 存储url编码首地址
-	char *pSrc = NULL; // 存储解码后元素首地址
-
-	printf("编码前：%s\n", str);
-
-	urlencode(&pUrl, str, strlen(str)); // 编码
-	printf("编码后：%s\n", pUrl);
-
-	urldecode(&pSrc, pUrl, strlen(pUrl)); // 解码
-	printf("解码后：%s\n", pSrc);
-
-	if (pUrl)
-		free(pUrl); // 释放内存
-	if (pSrc)
-		free(pSrc); // 释放内存
-	_getch();
-	return 0;
-}
-*/
-
-// GB2312编码转url编码
-std::string urlencode(const char* cszSrc, size_t nLen) // 编码
-{
+	int nLen = strlen(cszSrc);
 	size_t i = 0, nIndex = 0;
-	size_t len = nLen;
-	char hex[] = "0123456789ABCDEF";
+	const char* reserved = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		"abcdefghijklmnopqrstuvwxyz"
+		"0123456789"
+		"-._~:/?=&";
+	const char hex[] = "0123456789ABCDEF";
+
+	size_t j = 0;
 	char ch;
 	char* pNew = NULL;
 
-	char * lpszDest = (char *)malloc(nLen *3 * sizeof(char) + 1); // 增加一个长度存储'\0'
+	char* lpszDest = (char*)malloc(nLen * 3 * sizeof(char) + 1); // 增加一个长度存储'\0'
 
 	for (i = 0; i < nLen; i++) {
 		ch = cszSrc[i];
-		if ((ch >= '0' && ch <= '9') ||
-			(ch >= 'a' && ch <= 'z') ||
-			(ch >= 'A' && ch <= 'Z') ||
-			ch == '-' || ch == '_' || ch == '.' || ch == '~') {
+		if (isalnum(ch) || strchr(reserved, ch) != NULL) {
 			lpszDest[nIndex++] = ch;
 		}
 		else if (ch == ' ') {
@@ -84,13 +62,14 @@ std::string urlencode(const char* cszSrc, size_t nLen) // 编码
 
 
 // url解码函数
-std::string urldecode(const char* pszUrl, size_t nLen) // 解码
+std::string urldecode(const char* pszUrl) // 解码
 {
 	size_t i = 0, nIndex = 0;
 	char ch;
 	char* pNew = NULL;
 
-	char *lpszDest = (char *)malloc(nLen * sizeof(char));
+	int nLen = strlen(pszUrl);
+	char* lpszDest = (char*)malloc(nLen * sizeof(char));
 	memset(lpszDest, '\0', nLen);
 
 	for (i = 0; i < nLen; ++i) {
@@ -113,6 +92,5 @@ std::string urldecode(const char* pszUrl, size_t nLen) // 解码
 
 	std::string ret(lpszDest, nIndex);
 	free(lpszDest);
-
 	return ret;
 }
