@@ -8,21 +8,30 @@ SvrListener::SvrListener(WsServer* pOwner) :m_pOwner(pOwner)
 {
 }
 
-IConnGroup* SvrListener::onNewGroup(int id, IWsServer* pSvr)
+bool SvrListener::onConnected(ISvrConnection* pConn, const char* uriPath, const char* uriArgs)
 {
-	return m_pOwner->onNewGroup(id);
+	return m_pOwner->onConnected(pConn,uriPath,uriArgs);
 }
 
-void SvrListener::onDelGroup(IConnGroup* pGroup)
+void SvrListener::onConnError(ISvrConnection* pConn, const char* errStr)
 {
-	m_pOwner->onDelGroup(pGroup);
+	m_pOwner->onConnError(pConn, errStr);
 }
 
-bool SvrListener::parseConnId(const char* uriPath, const char* uriArgs, int* groupId, int* connId)
+void SvrListener::onDisconnect(ISvrConnection* pConn)
 {
-	return m_pOwner->parseConnId(uriPath, uriArgs, groupId, connId);
+	m_pOwner->onDisconnect(pConn);
 }
 
+void SvrListener::onDataSent(ISvrConnection* pConn, int nMsgId)
+{
+	m_pOwner->onDataSent(pConn, nMsgId);
+}
+
+void SvrListener::onDataRecv(ISvrConnection* pConn, const void* data, int len, bool bBinary)
+{
+	m_pOwner->onDataRecv(pConn, data,len,bBinary);
+}
 
 ///////////////////////////////////////////////////////////
 WsServer::WsServer() :m_svrListener(this)
@@ -43,48 +52,76 @@ int WsServer::start(LPCSTR protocol, int port, bool bSecure, LPCSTR cert, LPCSTR
 	return m_wsServer->start(port, protocol, option);
 }
 
-bool WsServer::parseConnId(const char* uriPath, const char* uriArgs, int* groupId, int* connId)
+void WsServer::onConnError(ISvrConnection* pConn, const char* errStr)
 {
-	if (m_onParseConnId.IsFunction()) {
-		Context* ctx = m_onParseConnId.context();
-		qjsbind::Value args[] = {
-			NewValue(*ctx, uriPath),
-			NewValue(*ctx, uriArgs)
-		};
-		Value ids = ctx->AsynCall(GetJsThis(), m_onParseConnId, ARRAYSIZE(args), args);
-		if (ids.IsObject() && ids.length() >= 2) {
-			Value gid = ids.GetProperty(0u);
-			Value cId = ids.GetProperty(1u);
-			*connId = cId;
-			*groupId = gid;
-			return true;
-		}
-	}
-	return false;
-}
-
-IConnGroup* WsServer::onNewGroup(int id)
-{
-	if (!m_onNewGroup.IsFunction()) {
-		return nullptr;
-	}
-	Context* ctx = m_onNewGroup.context();
-	Value args[] = {
-		NewValue(*ctx,id)
-	};
-	Value ret = ctx->AsynCall(GetJsThis(), m_onNewGroup, ARRAYSIZE(args), args);
-	return ret;
-}
-
-void WsServer::onDelGroup(IConnGroup* pGroup)
-{
-	if (!m_onDelGroup.IsFunction()) {
-		SLOGW() << "onDelGroup not set";
+	if (!m_onConnError.IsFunction())
 		return;
+	Context* ctx = m_onConnError.context();
+	Value args[] = {
+		NewValue(*ctx,pConn),
+		NewValue(*ctx,errStr)
+	};
+	ctx->EnqueueJob(GetJsThis(), m_onConnError, ARRAYSIZE(args), args);
+}
+
+bool WsServer::onConnected(ISvrConnection* pConn, const char* uriPath, const char* uriArgs)
+{
+	if (!m_onConnected.IsFunction())
+		return false;
+	Context* ctx = m_onConnected.context();
+	Value args[] = {
+		NewValue(*ctx,pConn),
+		NewValue(*ctx,uriPath),
+		NewValue(*ctx,uriArgs)
+	};
+	return ctx->SyncCall(GetJsThis(), m_onConnected, ARRAYSIZE(args), args);
+}
+
+void WsServer::onDisconnect(ISvrConnection* pConn)
+{
+	if (!m_onDisconnect.IsFunction())
+		return;
+	Context* ctx = m_onDisconnect.context();
+	Value args[] = {
+		NewValue(*ctx,pConn)
+	};
+	ctx->EnqueueJob(GetJsThis(), m_onDisconnect, ARRAYSIZE(args), args);
+}
+
+void WsServer::onDataSent(ISvrConnection* pConn, int nMsgId)
+{
+	if (!m_onDataSent.IsFunction())
+		return;
+	Context* ctx = m_onDataSent.context();
+	Value args[] = {
+		NewValue(*ctx,pConn),
+		NewValue(*ctx,nMsgId)
+	};
+	ctx->EnqueueJob(GetJsThis(), m_onDataSent, ARRAYSIZE(args), args);
+}
+
+void WsServer::onDataRecv(ISvrConnection* pConn, const void* data, int len, bool bBinary)
+{
+	if (bBinary) {
+		if (!m_onBinary.IsFunction())
+			return;
+		Context* ctx = m_onBinary.context();
+		Value args[] = {
+			ctx->NewValue(pConn->getId()),
+			ctx->NewArrayBuffer((const uint8_t*)data,len)
+		};
+		ctx->EnqueueJob(GetJsThis(), m_onBinary, ARRAYSIZE(args), args);
 	}
-	Context* ctx = m_onNewGroup.context();
-	Value arg = NewValue(*ctx,pGroup);
-	ctx->AsynCall(GetJsThis(), m_onDelGroup, 1, &arg);
+	else {
+		if (!m_onText.IsFunction())
+			return;
+		Context* ctx = m_onText.context();
+		Value args[] = {
+			NewValue(*ctx,pConn->getId()),
+			NewValue(*ctx,std::string((const char*)data,len))
+		};
+		ctx->EnqueueJob(GetJsThis(), m_onText, ARRAYSIZE(args), args);
+	}
 }
 
 

@@ -213,7 +213,7 @@ namespace qjsbind {
 			return EnqueueJob2(thisObj, fun, cArg, pArg, nullptr);
 		}
 
-		Value AsynCall(const WeakValue& thisObj, const Value& fun, int cArg, Value* pArg,DWORD timeout=1000) const {
+		Value SyncCall(const WeakValue& thisObj, const Value& fun, int cArg, Value* pArg,DWORD timeout=1000) const {
 			if (m_tid == GetCurrentThreadId()) {
 				return Call(thisObj, fun, cArg, pArg);
 			}

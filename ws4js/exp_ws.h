@@ -59,25 +59,9 @@ void Exp_Ws(qjsbind::Module* module) {
 		jsCls.Init(JsClass<IConnection>::class_id());
 		jsCls.AddFunc("getId", &ISvrConnection::getId);
 		jsCls.AddFunc("getGroupId", &ISvrConnection::getGroupId);
-	}
-	{
-		JsClass<IConnGroup> jsCls = module->ExportClass<IConnGroup>("IConnGroup");
-		jsCls.Init(JsClass<IObjRef>::class_id());
-		jsCls.AddFunc("boardcast", &IConnGroup::boardcast);
-		jsCls.AddFunc("isEmpty", &IConnGroup::isEmpty);
-		jsCls.AddFunc("getId", &IConnGroup::getId);
-	}
-	{
-		JsClass<ConnGroup> jsCls = module->ExportClass<ConnGroup>("ConnGroup");
-		jsCls.Init(JsClass<IConnGroup>::class_id());
-		jsCls.AddCtor<qjsbind::constructor<ConnGroup,int>>(TRUE);
-		jsCls.AddGetSet("cbHandler", &ConnGroup::m_cbHandler);
-		jsCls.AddGetSet("onConnError", &ConnGroup::m_onConnError);
-		jsCls.AddGetSet("onConnected", &ConnGroup::m_onConnected);
-		jsCls.AddGetSet("onDisconnect", &ConnGroup::m_onDisconnect);
-		jsCls.AddGetSet("onText", &ConnGroup::m_onText);
-		jsCls.AddGetSet("onBinary", &ConnGroup::m_onBinary);
-		jsCls.AddGetSet("IsEmpty", &ConnGroup::m_onIsEmpty);
+		jsCls.AddFunc("setId", &ISvrConnection::setId);
+		jsCls.AddFunc("setGroupId", &ISvrConnection::setGroupId);
+		jsCls.AddFunc("close", &ISvrConnection::close);
 	}
 	{
 		JsClass<WsServer> jsCls = module->ExportClass<WsServer>("WsServer");
@@ -85,8 +69,10 @@ void Exp_Ws(qjsbind::Module* module) {
 		jsCls.AddCtor<qjsbind::constructor>(TRUE);
 		jsCls.AddCFunc("start",&WsServer_Start);
 		jsCls.AddGetSet("cbHandler", &WsServer::m_cbHandler);
-		jsCls.AddGetSet("onParseConnId", &WsServer::m_onParseConnId);
-		jsCls.AddGetSet("onNewGroup", &WsServer::m_onNewGroup);
-		jsCls.AddGetSet("onDelGroup", &WsServer::m_onDelGroup);
+		jsCls.AddGetSet("onConnError", &WsServer::m_onConnError);
+		jsCls.AddGetSet("onConnected", &WsServer::m_onConnected);
+		jsCls.AddGetSet("onDisconnect", &WsServer::m_onDisconnect);
+		jsCls.AddGetSet("onText", &WsServer::m_onText);
+		jsCls.AddGetSet("onBinary", &WsServer::m_onBinary);
 	}
 }
