@@ -80,7 +80,6 @@ private:
 private:
 	WsConnListener  m_connListener;
 	SAutoRefPtr<IWsClient> m_wsClient;
-	SAutoRefPtr<IMessageLoop> m_msgLoop;
 
 public:
 	Value m_cbHandler;

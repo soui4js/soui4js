@@ -37,8 +37,6 @@ void WsConnListener::onDataRecv(const void* data, int len, bool bBinary)
 WsClient::WsClient(LPCSTR url, LPCSTR protocol,int opt,LPCSTR ca):m_connListener(this)
 {
 	m_wsLoader = new WsLoader();
-	m_msgLoop = SApplication::getSingletonPtr()->GetMsgLoop();
-	SASSERT(m_msgLoop);
 	m_wsClient.Attach(m_wsLoader->CreateWsClient(&m_connListener));
 	UrlInfo urlInfo;
 	parseUrl(url, urlInfo);
