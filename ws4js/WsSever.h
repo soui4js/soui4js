@@ -29,7 +29,7 @@ public:
 	~WsServer();
 
     int start(LPCSTR protocol, int port, bool bSecure = false, LPCSTR cert = NULL, LPCSTR priv_key = NULL);
-
+    void quit();
 private:
     void onConnError(ISvrConnection* pConn, const char* errStr);
 

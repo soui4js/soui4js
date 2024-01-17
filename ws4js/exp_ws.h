@@ -68,6 +68,7 @@ void Exp_Ws(qjsbind::Module* module) {
 		jsCls.Init<WsServer::Mark>();
 		jsCls.AddCtor<qjsbind::constructor>(TRUE);
 		jsCls.AddCFunc("start",&WsServer_Start);
+		jsCls.AddFunc("quit", &WsServer::quit);
 		jsCls.AddGetSet("cbHandler", &WsServer::m_cbHandler);
 		jsCls.AddGetSet("onConnError", &WsServer::m_onConnError);
 		jsCls.AddGetSet("onConnected", &WsServer::m_onConnected);

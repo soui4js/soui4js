@@ -52,6 +52,11 @@ int WsServer::start(LPCSTR protocol, int port, bool bSecure, LPCSTR cert, LPCSTR
 	return m_wsServer->start(port, protocol, option);
 }
 
+void WsServer::quit()
+{
+	m_wsServer->quit();
+}
+
 void WsServer::onConnError(ISvrConnection* pConn, const char* errStr)
 {
 	if (!m_onConnError.IsFunction())
