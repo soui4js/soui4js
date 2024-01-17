@@ -676,7 +676,6 @@ static inline JS_BOOL JS_IsObject(JSValueConst v)
 QJS_API int JS_IsArray(JSContext *ctx, JSValueConst val);
 QJS_API int JS_IsArrayBuffer(JSContext* ctx, JSValueConst val);
 QJS_API int JS_IsTypedArrayBuffer(JSContext* ctx, JSValueConst val);
-
 QJS_API JSClassID JS_GetClassID(JSValueConst v);
 QJS_API JSValue JS_Throw(JSContext *ctx, JSValue obj);
 QJS_API JSValue JS_GetException(JSContext *ctx);
@@ -885,9 +884,9 @@ QJS_API JSAtom JS_GetModuleName(JSContext *ctx, JSModuleDef *m);
 
 /* JS Job support */
 
-typedef JSValue JSJobFunc(JSContext *ctx, int argc, JSValueConst *argv);
+typedef JSValue JSJobFunc(JSContext *ctx, int argc, JSValueConst *argv,void* opaque);
 QJS_API int JS_EnqueueJob(JSContext *ctx, JSJobFunc *job_func, int argc, JSValueConst *argv);
-
+QJS_API int JS_EnqueueJob2(JSContext *ctx, JSJobFunc *job_func, int argc, JSValueConst *argv, void* opaque);
 QJS_API JS_BOOL JS_IsJobPending(JSRuntime *rt);
 QJS_API int JS_ExecutePendingJob(JSRuntime *rt, JSContext **pctx);
 QJS_API void JS_ExecuteTimer(JSContext* ctx);

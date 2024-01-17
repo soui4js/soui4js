@@ -3,6 +3,10 @@
 #include <functional>
 #include <memory>
 #include <stack>
+#include <mutex>
+#include <atomic>
+#include <Windows.h>
+
 #include "jsvalue.h"
 #include "jsarglist.h"
 
@@ -28,6 +32,40 @@ namespace qjsbind {
 	};
 
 	typedef void (*LogFun)(const char* log);
+
+	class JobEvent{
+		HANDLE hEvent;
+		std::atomic_int nRef;
+	public:
+		Value ret;
+	public:
+		JobEvent():nRef(1) {
+			hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+		}
+		~JobEvent() {
+			CloseHandle(hEvent);
+		}
+
+		DWORD Wait(DWORD ms) {
+			return WaitForSingleObject(hEvent, ms);
+		}
+
+		void Signal() {
+			SetEvent(hEvent);
+		}
+
+		int AddRef() {
+			return ++nRef;
+		}
+
+		int Release() {
+			int ret = --nRef;
+			if (ret == 0) {
+				delete this;
+			}
+			return ret;
+		}
+	};
 
 	class Context {
 	public:
@@ -160,13 +198,38 @@ namespace qjsbind {
 			return Value(context_, rslt);
 		}
 
-		static JSValue JSJobFunc(JSContext* ctx, int argc, JSValueConst* argv) {
-			if(argc<2)
-				return Value(ctx, JS_EXCEPTION);
-			return JS_Call(ctx, argv[0], argv[1], argc - 2, argv + 2);
+		static JSValue JSJobFunc(JSContext* ctx, int argc, JSValueConst* argv,void * opaque) {
+			JobEvent* evt = (JobEvent*)opaque;
+			JSValue ret = JS_Call(ctx, argv[0], argv[1], argc - 2, argv + 2);
+			if (evt) {
+				evt->ret = Value(ctx,ret);
+				evt->Signal();
+				evt->Release();
+			}
+			return ret;
 		}
 
 		int EnqueueJob(const WeakValue& thisObj, const Value& fun, int cArg, Value* pArg) const {
+			return EnqueueJob2(thisObj, fun, cArg, pArg, nullptr);
+		}
+
+		Value AsynCall(const WeakValue& thisObj, const Value& fun, int cArg, Value* pArg,DWORD timeout=1000) const {
+			if (m_tid == GetCurrentThreadId()) {
+				return Call(thisObj, fun, cArg, pArg);
+			}
+			else {
+				JobEvent* evt = new JobEvent();
+				EnqueueJob2(thisObj, fun, cArg, pArg, evt);
+				Value ret;
+				if (WAIT_OBJECT_0 == evt->Wait(timeout)) {
+					ret = evt->ret;
+				}
+				evt->Release();
+				return ret;
+			}
+		}
+
+		int EnqueueJob2(const WeakValue& thisObj, const Value& fun, int cArg, Value* pArg,JobEvent *evt) const {
 			if (!fun.IsFunction())
 				return -2;
 			JSValue* pArgValue =  new JSValue[cArg + 2];
@@ -175,8 +238,10 @@ namespace qjsbind {
 			for (int i = 0; i < cArg; i++) {
 				pArgValue[i+2] = (JSValue)pArg[i];
 			}
-
-			int rslt = JS_EnqueueJob(context_, JSJobFunc,  cArg+2, pArgValue);
+			if (evt) {
+				evt->AddRef();
+			}
+			int rslt = JS_EnqueueJob2(context_, JSJobFunc,  cArg+2, pArgValue,evt);
 			if (pArgValue) {
 				delete[]pArgValue;
 			}
@@ -238,6 +303,7 @@ namespace qjsbind {
 
 		std::unique_ptr<Module> GetModule(JSModuleDef* m);
 
+		int m_tid;
 		JSContext* context_;
 		std::map<JSModuleDef*, std::unique_ptr<Module>> modules_;
 
