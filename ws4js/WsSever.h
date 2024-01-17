@@ -30,7 +30,6 @@ public:
 
     int start(LPCSTR protocol, int port, bool bSecure = false, LPCSTR cert = NULL, LPCSTR priv_key = NULL);
 
-    IWsServer* getIWsServer() { return m_wsServer; }
 private:
     void onConnError(ISvrConnection* pConn, const char* errStr);
 
