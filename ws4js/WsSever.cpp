@@ -79,7 +79,7 @@ bool WsServer::onConnected(ISvrConnection* pConn, const char* uriPath, const cha
 		NewValue(*ctx,uriPath),
 		NewValue(*ctx,uriArgs)
 	};
-	return ctx->SyncCall(GetJsThis(), m_onConnected, ARRAYSIZE(args), args);
+	return ctx->SyncCall(GetJsThis(), m_onConnected, ARRAYSIZE(args), args,-1);
 }
 
 void WsServer::onDisconnect(ISvrConnection* pConn)
@@ -112,17 +112,17 @@ void WsServer::onDataRecv(ISvrConnection* pConn, const void* data, int len, bool
 			return;
 		Context* ctx = m_onBinary.context();
 		Value args[] = {
-			ctx->NewValue(pConn->getId()),
+			ctx->NewValue(pConn),
 			ctx->NewArrayBuffer((const uint8_t*)data,len)
 		};
-		ctx->EnqueueJob(GetJsThis(), m_onBinary, ARRAYSIZE(args), args);
+		ctx->Call(GetJsThis(), m_onBinary, ARRAYSIZE(args), args);
 	}
 	else {
 		if (!m_onText.IsFunction())
 			return;
 		Context* ctx = m_onText.context();
 		Value args[] = {
-			NewValue(*ctx,pConn->getId()),
+			NewValue(*ctx,pConn),
 			NewValue(*ctx,std::string((const char*)data,len))
 		};
 		ctx->EnqueueJob(GetJsThis(), m_onText, ARRAYSIZE(args), args);
