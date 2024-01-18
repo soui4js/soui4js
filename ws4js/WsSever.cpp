@@ -115,7 +115,7 @@ void WsServer::onDataRecv(ISvrConnection* pConn, const void* data, int len, bool
 			ctx->NewValue(pConn),
 			ctx->NewArrayBuffer((const uint8_t*)data,len)
 		};
-		ctx->Call(GetJsThis(), m_onBinary, ARRAYSIZE(args), args);
+		ctx->EnqueueJob(GetJsThis(), m_onBinary, ARRAYSIZE(args), args);
 	}
 	else {
 		if (!m_onText.IsFunction())
