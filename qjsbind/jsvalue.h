@@ -523,13 +523,13 @@ namespace qjsbind {
 		{
 		}
 
-		Value(const Value& value)
-			:WeakValue(value.context_, JS_DupValue(context_, value.value_))
+		Value(const Value& value) 
+			:WeakValue(value.context_, JS_DupValue(value.context_, value.value_))
 		{
 		}
 
 		Value(const WeakValue& value)
-			:WeakValue(value.context_, JS_DupValue(context_, value.value_))
+			:WeakValue(value.context_, JS_DupValue(value.context_, value.value_))
 		{
 		}
 
@@ -546,8 +546,8 @@ namespace qjsbind {
 		}
 
 		Value& operator=(const Value& value) {
-			JSValue temp = JS_DupValue(context_, value.value_);
-			JS_FreeValue(context_, value_);
+			JSValue temp = JS_DupValue(value.context_, value.value_);
+			JS_FreeValue(value.context_, value_);
 			context_ = value.context_;
 			value_ = temp;
 			return *this;

@@ -201,6 +201,10 @@ namespace qjsbind {
 		static JSValue JSJobFunc(JSContext* ctx, int argc, JSValueConst* argv,void * opaque) {
 			JobEvent* evt = (JobEvent*)opaque;
 			JSValue ret = JS_Call(ctx, argv[0], argv[1], argc - 2, argv + 2);
+			if (JS_IsException(ret)) {
+				Context *ctx2 =  Context::get(ctx);
+				ctx2->DumpError();
+			}
 			if (evt) {
 				evt->ret = Value(ctx,ret);
 				evt->Signal();
