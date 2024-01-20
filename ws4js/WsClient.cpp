@@ -48,11 +48,13 @@ WsClient::WsClient(LPCSTR url, LPCSTR protocol,int opt,LPCSTR ca):m_connListener
 		option.skipServerCertHostnameCheck = !!(opt & skipServerCertHostnameCheck);
 		option.ca_u8 = ca;
 	}
+	m_bQuit = false;
 	m_wsClient->connectTo(urlInfo.addr.c_str(), urlInfo.path.c_str(), urlInfo.port, protocol, option);
 }
 
 WsClient::~WsClient()
 {
+	m_bQuit = true;
 	delete m_wsLoader;
 }
 
@@ -132,26 +134,31 @@ void WsClient::_onDataRecv(const std::string &buf, bool bBinary)
 
 void WsClient::onConnected()
 {
+	if (m_bQuit) return;
 	WsClient::_onConnected();
 }
 
 void WsClient::onConnError(const char* errStr)
 {
+	if (m_bQuit) return;
 	_onConnError( std::string(errStr));
 }
 
 void WsClient::onDisconnect()
 {
+	if (m_bQuit) return;
 	_onDisconnect();
 }
 
 void WsClient::onDataSent(int nMsgId)
 {
+	if (m_bQuit) return;
 	_onDataSent(nMsgId);
 }
 
 void WsClient::onDataRecv(const void* data, int len, bool bBinary)
 {
+	if (m_bQuit) return;
 	_onDataRecv(std::string((const char*)data, len), bBinary);
 }
 
