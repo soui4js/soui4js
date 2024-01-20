@@ -48,7 +48,7 @@ WsClient::WsClient(LPCSTR url, LPCSTR protocol,int opt,LPCSTR ca):m_connListener
 		option.skipServerCertHostnameCheck = !!(opt & skipServerCertHostnameCheck);
 		option.ca_u8 = ca;
 	}
-	m_wsClient->connectTo(urlInfo.addr.c_str(), urlInfo.addr.c_str(), urlInfo.port, protocol, option);
+	m_wsClient->connectTo(urlInfo.addr.c_str(), urlInfo.path.c_str(), urlInfo.port, protocol, option);
 }
 
 WsClient::~WsClient()
@@ -174,7 +174,7 @@ void WsClient::parseUrl(std::string url, UrlInfo& info)
 	else
 	{
 		addr = url.substr(0, pos);
-		info.path = url.substr(pos + 1);
+		info.path = url.substr(pos);
 	}
 	pos = addr.find(':');
 	if (pos != -1) {
