@@ -42,6 +42,32 @@ CRect IWindow_GetChildrenLayoutRect(Context* ctx, IWindow* _this, ArgList& args)
 	return rc;
 }
 
+LRESULT IWindow_SSendMessage(Context* ctx, IWindow* _this, ArgList& args) {
+	if (args.size() == 0)
+		return -1;
+	int msg = args[0];
+	WPARAM wp = 0;
+	LPARAM lp = 0;
+	if (args.size() > 1)
+		wp = args[1];
+	if (args.size() > 2)
+		lp = args[2];
+	return _this->SSendMessage(msg, wp, lp, NULL);
+}
+
+void IWindow_SDispatchMessage(Context* ctx, IWindow* _this, ArgList& args) {
+	if (args.size() == 0)
+		return;
+	int msg = args[0];
+	WPARAM wp = 0;
+	LPARAM lp = 0;
+	if (args.size() > 1)
+		wp = args[1];
+	if (args.size() > 2)
+		lp = args[2];
+	_this->SDispatchMessage(msg, wp, lp);
+}
+
 void Exp_IWindow(qjsbind::Module* module)
 {
 	JsClass<IWindow> jsCls = module->ExportClass<IWindow>("IWindow");
@@ -69,8 +95,8 @@ void Exp_IWindow(qjsbind::Module* module)
 	jsCls.AddFunc("SetUserData", &IWindow::SetUserData);
 	jsCls.AddFunc("DoColorize", &IWindow::DoColorize);
 	jsCls.AddFunc("GetColorizeColor", &IWindow::GetColorizeColor);
-	jsCls.AddFunc("SSendMessage", &IWindow::SSendMessage);
-	jsCls.AddFunc("SDispatchMessage", &IWindow::SDispatchMessage);
+	jsCls.AddCFunc("SSendMessage", &IWindow_SSendMessage);
+	jsCls.AddCFunc("SDispatchMessage", &IWindow_SDispatchMessage);
 	jsCls.AddFunc("IsFocusable", &IWindow::IsFocusable);
 	jsCls.AddFunc("IsFocused", &IWindow::IsFocused);
 	jsCls.AddFunc("SetFocus", &IWindow::SetFocus);
