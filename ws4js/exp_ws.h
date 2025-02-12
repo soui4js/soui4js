@@ -8,7 +8,7 @@ Value IConn_SendBinary(Context* ctx, IConnection* pConn, ArgList& args) {
 		return exception_value;
 	size_t size=0;
 	const uint8_t * buf= args[0].GetArrayBuffer(&size);
-	int ret = pConn->sendBinary(buf, size);
+	int ret = pConn->sendBinary(buf, (int)size);
 	return NewValue(*ctx, ret);
 }
 
@@ -55,20 +55,20 @@ void Exp_Ws(qjsbind::Module* module) {
 	}
 	{
 		JsClass<IObjRef> jsCls = module->ExportClass<IObjRef>("IObjRef");
-		jsCls.Init();
+		jsCls.Init2();
 		jsCls.AddFunc("AddRef", &IObjRef::AddRef);
 		jsCls.AddFunc("Release", &IObjRef::Release);
 	}
 	{
 		JsClass<IConnection> jsCls = module->ExportClass<IConnection>("IConnection");
-		jsCls.Init(JsClass<IObjRef>::class_id());
+		jsCls.Init2(JsClass<IObjRef>::class_id());
 		jsCls.AddFunc("isValid", &IConnection::isValid);
 		jsCls.AddCFunc("sendText", &IConn_SendText);
 		jsCls.AddCFunc("sendBinary", &IConn_SendBinary);
 	}
 	{
 		JsClass<ISvrConnection> jsCls = module->ExportClass<ISvrConnection>("ISvrConnection");
-		jsCls.Init(JsClass<IConnection>::class_id());
+		jsCls.Init2(JsClass<IConnection>::class_id());
 		jsCls.AddFunc("getId", &ISvrConnection::getId);
 		jsCls.AddFunc("getGroupId", &ISvrConnection::getGroupId);
 		jsCls.AddFunc("setId", &ISvrConnection::setId);

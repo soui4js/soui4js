@@ -165,7 +165,7 @@ void WsClient::parseUrl(std::string url, UrlInfo& info)
 		info.bSecure = false;
 		url = url.substr(5);
 	}
-	int pos = url.find('/');
+	int pos = (int)url.find('/');
 	std::string addr;
 	if (pos == -1) {
 		addr = url;
@@ -176,7 +176,7 @@ void WsClient::parseUrl(std::string url, UrlInfo& info)
 		addr = url.substr(0, pos);
 		info.path = url.substr(pos);
 	}
-	pos = addr.find(':');
+	pos = (int)addr.find(':');
 	if (pos != -1) {
 		info.addr = addr.substr(0, pos);
 		std::string strPort = addr.substr(pos + 1);
@@ -224,7 +224,7 @@ Value WsClient_SendBinary(Context * ctx,WsClient* _this, ArgList& args)
 	uint8_t* pInput = args[0].ToBuffer(&szInput);
 	if (!pInput)
 		return exception_value;
-	int ret = _this->sendBinary(pInput, szInput);
+	int ret = _this->sendBinary(pInput, (int)szInput);
 	return NewValue(*ctx, ret);
 }
 

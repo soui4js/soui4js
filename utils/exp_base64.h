@@ -12,7 +12,7 @@ std::string Base64Encode(Value &v) {
 		return"";
 	}
 	char* buf = new char[BASE64_ENCODE_OUT_SIZE(szSrc)+1];
-	int len = (int)base64_encode(src, szSrc, buf);
+	int len = (int)base64_encode(src, (int)szSrc, buf);
 	std::string ret(buf, len);
 	delete[]buf;
 	return ret;
@@ -21,7 +21,7 @@ std::string Base64Encode(Value &v) {
 Value Base64Decode(Value& v) {
 	std::string src = v.ToStdString();
 	unsigned char* buf = new unsigned char[BASE64_DECODE_OUT_SIZE(src.length())];
-	size_t len = (size_t)base64_decode(src.c_str(), src.length(), buf);
+	size_t len = (size_t)base64_decode(src.c_str(), (int)src.length(), buf);
 	Value ret = v.context()->NewArrayBuffer(buf, len);
 	delete[]buf;
 

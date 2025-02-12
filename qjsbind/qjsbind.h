@@ -31,25 +31,6 @@ JSValue CallCFun(JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* 
 	return CFun(*context,fun, arg_list).Release();
 }
 
-template<typename T,typename FUN>
-JSValue CallCFun2(JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
-	ArgList arg_list(ctx, argc, argv);
-	FUN fun;
-	Value data(ctx, func_data[0]);
-	int64_t addr = data.ToInt64();
-	memcpy(&fun, &addr, sizeof(fun));
-
-	JsProxy<T>* pThis;
-	if (!GetSafeThis(this_val, &pThis)) {
-		JS_ThrowTypeError(ctx, "no this pointer exist");
-		return JS_EXCEPTION;
-	}
-
-	ContextState ctxState(ctx);
-	Context* context = Context::get(ctx);
-	return CFun2(*context, fun, pThis->GetObj(), arg_list).Release();
-}
-
 //用于导出模块
 class Module {
 public:
