@@ -1,13 +1,22 @@
-#pragma once
+﻿#ifndef __EXP_IIMAGE__H__
+#define __EXP_IIMAGE__H__
 #include <interface/SRender-i.h>
 
+SStringW getExtension(const SStringW& filename) {
+    size_t pos = filename.ReverseFind(L'.');
+    if (pos != -1) {
+        return filename.Left(pos);
+    } else {
+        return L"";
+    }
+}
 
 BOOL IBitmapS_Save(Context* ctx, IBitmapS* _this, ArgList& args) {
 	if (args.size() < 1)
 		return FALSE;
 	SStringW strPath = S_CA2W((const char*)args[0], CP_UTF8);
-	wchar_t ext[20] = { 0 };
-	_wsplitpath(strPath, NULL, NULL, NULL, ext);
+	SStringW strExt = getExtension(strPath);
+	strExt.MakeLower();
 	static GUID fmts[] = {
 		ImageFormatBMP,
 		ImageFormatJPEG,
@@ -17,8 +26,7 @@ BOOL IBitmapS_Save(Context* ctx, IBitmapS* _this, ArgList& args) {
 		ImageFormatWEBP
 	};
 	int idx = -1;
-	SStringW strExt(ext);
-	strExt.MakeLower();
+
 	if (strExt == L"bmp") idx = 0;
 	else if (strExt == L"jpg" || strExt == L"jpeg") idx = 1;
 	else if (strExt == L"gif") idx = 2;
@@ -37,3 +45,4 @@ void Exp_IImage(Module* module) {
 	jsCls.AddFunc("Clone", &IBitmapS::Clone);
 	jsCls.AddCFunc("Save", &IBitmapS_Save);
 }
+#endif // __EXP_IIMAGE__H__

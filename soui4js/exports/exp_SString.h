@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_SSTRING__H__
+#define __EXP_SSTRING__H__
 #include <string/sstringa.h>
 #include <string/sstringw.h>
 
@@ -10,9 +11,11 @@ SStringW* newStringW(ArgList& args)
 		SStringA str((const char*)args[0], (int)args[1]);
 		return new SStringW(S_CA2W(str, CP_UTF8));
 	}
-	else {
+	else if(args.size()==1){
 		SStringA str((const char*)args[0]);
 		return new SStringW(S_CA2W(str, CP_UTF8));
+	}else{
+		return new SStringW();
 	}
 }
 
@@ -22,8 +25,10 @@ SStringA* newStringA(ArgList& args)
 	{
 		return new SStringA((const char*)args[0], (int)args[1]);
 	}
-	else {
+	else if(args.size()==1){
 		return new SStringA((const char*)args[0]);
+	}else{
+		return new SStringA();
 	}
 }
 
@@ -40,3 +45,5 @@ void Exp_SStringW(qjsbind::Module* module)
 	jsCls.Init(JsClass<IStringW>::class_id());
 	jsCls.AddCtor<newStringW>();
 }
+
+#endif // __EXP_SSTRING__H__

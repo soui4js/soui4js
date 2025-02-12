@@ -90,6 +90,7 @@ public:
 	Value m_onText;
 	Value m_onBinary;
 	Value m_onDataSent;
+	std::atomic_bool m_bQuit;
 };
 
 WsClient* WsClientCtor(ArgList& args);

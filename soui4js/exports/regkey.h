@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __REGKEY__H__
+#define __REGKEY__H__
 
 /////////////////////////////////////////////////////////////////////////////
 // CRegKey
@@ -548,3 +549,5 @@ inline LONG CRegKey::RecurseDeleteKey(LPCTSTR lpszKey) throw()
 
 }	// namespace ATL
 
+
+#endif // __REGKEY__H__

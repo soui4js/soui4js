@@ -1,5 +1,6 @@
-#pragma once
-#include <interface/SApp-i.h>
+﻿#ifndef __EXP_IAPP__H__
+#define __EXP_IAPP__H__
+#include <interface/sapp-i.h>
 
 BOOL ITranslatorMgr_UninstallTranslator(Context* ctx, ITranslatorMgr* _this, ArgList& args);
 
@@ -11,13 +12,13 @@ BOOL IApplication_InitXmlNamedID(Context* ctx, IApplication* _this, ArgList& arg
 	BOOL bRet = FALSE;
 	if (args.size() >= 2) {
 		if (args[0].IsArray() && args[1].IsArray()) {
-			uint32_t lenName = args[0].length();
-			uint32_t lenId = args[1].length();
+			uint32_t lenName = (uint32_t)args[0].length();
+			uint32_t lenId = (uint32_t)args[1].length();
 			if (lenName == lenId) {
 				wchar_t (*name)[MAX_NAME] = (wchar_t(*)[MAX_NAME])malloc(sizeof(wchar_t) * lenName * MAX_NAME);
 				LPCWSTR* arrNames = new LPCWSTR[lenName];
 				int* ids = (int*)malloc(sizeof(int) * lenId);
-				for (int i = 0; i < lenId; i++) {
+				for (uint32_t i = 0; i < lenId; i++) {
 					std::string strName = args[0].GetProperty(i).ToStdString();
 					SStringW strWname = S_CA2W(strName.c_str(), CP_UTF8);
 					if (strWname.GetLength() < MAX_NAME) {
@@ -80,3 +81,5 @@ void Exp_IApp(qjsbind::Module* module)
 	jsCls.AddFunc("CreateObject", &IApplication::CreateObject);
 	jsCls.AddFunc("SetCreateObjectCallback", &IApplication::SetCreateObjectCallback);
 }
+
+#endif // __EXP_IAPP__H__

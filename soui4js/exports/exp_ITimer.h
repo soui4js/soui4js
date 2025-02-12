@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_ITIMER__H__
+#define __EXP_ITIMER__H__
 #include <interface/STimer-i.h>
 
 void Exp_ITimer(qjsbind::Module* module)
@@ -8,3 +9,5 @@ void Exp_ITimer(qjsbind::Module* module)
 	jsCls.AddFunc("StartTimer", &ITimer::StartTimer);
 	jsCls.AddFunc("KillTimer", &ITimer::KillTimer);
 }
+
+#endif // __EXP_ITIMER__H__

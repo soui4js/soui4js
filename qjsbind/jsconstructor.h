@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __JSCONSTRUCTOR__H__
+#define __JSCONSTRUCTOR__H__
 #include "jsarglist.h"
 
 namespace qjsbind {
@@ -60,3 +61,4 @@ namespace qjsbind {
     }
 
 }
+#endif // __JSCONSTRUCTOR__H__

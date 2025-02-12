@@ -1,1 +1,0 @@
-start .\bin\soui4js-host.exe .\wizard

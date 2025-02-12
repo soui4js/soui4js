@@ -1,8 +1,9 @@
-#pragma once
+ï»¿#ifndef __EXP_IADAPTER__H__
+#define __EXP_IADAPTER__H__
 #include <interface/SAdapter-i.h>
 
 namespace qjsbind {
-	//ÏÂÃæ¼¸¸öadapterÖ¸Õë£¬Ç¿ÖÆ×ª»»³Énumber£¬ÓÃÀ´×÷ÎªjsadapterµÄid
+	//ä¸‹é¢å‡ ä¸ªadapteræŒ‡é’ˆï¼Œå¼ºåˆ¶è½¬æ¢æˆnumberï¼Œç”¨æ¥ä½œä¸ºjsadapterçš„id
 	template<>
 	inline Value NewValue(Context& context, ILvAdapter* v)
 	{
@@ -104,3 +105,4 @@ void Exp_IAdapter(qjsbind::Module* module)
 		jsCls.AddFunc("QueryInterface", &ITvAdapter::QueryInterface);
 	}
 }
+#endif // __EXP_IADAPTER__H__

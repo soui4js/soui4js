@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __JSNEWVALUE__H__
+#define __JSNEWVALUE__H__
 #include "jsvalue.h"
 #include "jscontext.h"
 
@@ -41,7 +42,7 @@ namespace qjsbind {
 #ifdef _WIN64
 		return Value(context.context(), JS_NewBigUint64(context.context(), (uint64_t)v));
 #else
-		return Value(context.context(), JS_NewUint32(context.context(), (uint32_t)v));
+		return Value(context.context(), JS_NewUint32(context.context(), (uint32_t)(uintptr_t)v));
 #endif
 	}
 
@@ -63,6 +64,7 @@ namespace qjsbind {
 		return NewValue(context, (void*)v);
 	}
 
+	#ifdef _WIN32
 	template<>
 	inline Value NewValue(Context& context, long v)
 	{
@@ -74,7 +76,8 @@ namespace qjsbind {
 	{
 		return Value(context.context(), JS_NewUint32(context.context(), v));
 	}
-
+	#endif//_WIN32
+	
 	template<>
 	inline Value NewValue(Context& context, bool v) {
 		return Value(context.context(), JS_NewBool(context.context(), v));
@@ -124,3 +127,4 @@ namespace qjsbind {
 	}
 
 }
+#endif // __JSNEWVALUE__H__

@@ -1,9 +1,10 @@
-﻿#pragma  once
+﻿#ifndef __SOUI4JS__H__
+#define __SOUI4JS__H__
 
 #include <interface/SScriptModule-i.h>
 #include <helper/obj-ref-impl.hpp>
 #include <qjsbind.h>
-#include <interface/smsgloop-i.h>
+#include <interface/SMsgLoop-i.h>
 
 SNSBEGIN
 
@@ -104,3 +105,5 @@ SNSEND
 
 EXTERN_C BOOL SOUI_COM_API Soui4Js_SCreateInstance(IObjRef ** ppScript);
 
+
+#endif // __SOUI4JS__H__

@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_INATIVEWND__H__
+#define __EXP_INATIVEWND__H__
 #include <interface/SNativeWnd-i.h>
 
 void Exp_INativeWnd(qjsbind::Module* module)
@@ -66,3 +67,5 @@ void Exp_INativeWnd(qjsbind::Module* module)
 	jsCls.AddFunc("SetMsgHandler", &INativeWnd::SetMsgHandler);
 	jsCls.AddFunc("GetMsgHandler", &INativeWnd::GetMsgHandler);
 }
+
+#endif // __EXP_INATIVEWND__H__

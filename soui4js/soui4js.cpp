@@ -5,29 +5,16 @@
 #include <event/SEventSlot.h>
 #include <string/strcpcvt.h>
 #include <commgr2.h>
+#ifdef WIN32
 #include <Winsock2.h>
 //#include <souistd.h>
 #pragma comment(lib,"Ws2_32.lib")
-
+#endif
 #include "soui4js.h"
 using namespace qjsbind;
 using namespace SOUI;
 
-void Slog(const char* szLog);
-extern "C" void js_printer(const char* szLog, int len) {
-    if (len < 0) len = (int)strlen(szLog);
-    SOUI::SStringW str = SOUI::S_CA2W(SOUI::SStringA(szLog, len), CP_UTF8);
-    if (str.GetLength() > SOUI::Log::MAX_LOGLEN) {
-        int pos = 0;
-        while (pos < str.GetLength()) {
-            SLOGI2("log") << (pos==0?"":"--continue")<<str.Mid(pos, SOUI::Log::MAX_LOGLEN - 50).c_str();
-            pos += SOUI::Log::MAX_LOGLEN;
-        }
-    }
-    else {
-        SLOGI2("log") << str.c_str();
-    }
-}
+extern "C" void soui4js_printer(const char* szLog,int len);
 
 static void Soui4jsLog(const char* tag, const char* pLogStr, int level, const char* file, int line, const char* fun, void* retAddr)
 {
@@ -41,7 +28,8 @@ static void Soui4jsLog(const char* tag, const char* pLogStr, int level, const ch
     {
         DWORD tid = GetCurrentThreadId();
         int nLen = printf("tid=%u,%s,%s %s %s:%d\n", tid, tag, pLogStr, fun, file, line);
-        flushall();
+        //flushall();
+        fflush(stdout);
     }
 }
 
@@ -50,29 +38,23 @@ namespace SOUI
     class QjsMsgLoop : public SMessageLoop
     {
         qjsbind::Context* m_ctx;
-        HANDLE m_hEvt;
     public:
         QjsMsgLoop(qjsbind::Context *ctx, IMessageLoop* pParentLoop) :SMessageLoop(pParentLoop),m_ctx(ctx) {
-            m_hEvt = CreateEvent(NULL, FALSE, FALSE, NULL);
         }
 
         ~QjsMsgLoop() {
-            CloseHandle(m_hEvt);
         }
 
         BOOL WINAPI WaitMsg() override{
+            RunIdle();
+            if(m_bQuit)
+                return FALSE;
             HANDLE handles[MAXIMUM_WAIT_OBJECTS-1] = { 0 };
             int rws = 0, msgs = 0;
             uint32_t waitTime = INFINITE;
-            int nCount = js_prepare_waitlist(m_ctx->context(), handles, MAXIMUM_WAIT_OBJECTS - 1, &rws, &msgs,&waitTime);
-            int nObjects = nCount;
-            if (nCount == 0)
-            {
-                handles[nCount] = m_hEvt;//add a fake event object to wait.
-                nObjects++;
-            }
+            int nObjects = js_prepare_waitlist(m_ctx->context(), handles, MAXIMUM_WAIT_OBJECTS - 1, &rws, &msgs,&waitTime);
             int nRet = MsgWaitForMultipleObjects(nObjects, handles, FALSE, waitTime, QS_ALLINPUT | QS_ALLEVENTS);
-            if (nRet == WAIT_TIMEOUT || (nRet >= WAIT_OBJECT_0 && nRet < WAIT_OBJECT_0 + nCount)) {
+            if (nRet == WAIT_TIMEOUT || (nRet >= WAIT_OBJECT_0 && nRet < WAIT_OBJECT_0 + nObjects)) {
                 //signal by waitable objects.
                 js_handle_waitresult(m_ctx->context(), nRet, rws, msgs);
                 return FALSE;
@@ -88,7 +70,7 @@ namespace SOUI
     Soui4Js::Soui4Js(qjsbind::Runtime* pRuntime)
     {
         m_context = new qjsbind::Context(pRuntime);
-        m_context->SetLogFunc(Slog);
+        m_context->SetLogFunc(soui4js_printer);
 
         ExportSoui(m_context);
     }
@@ -177,11 +159,13 @@ namespace SOUI
 
 	int Soui4Js::executeMain(THIS_ HINSTANCE hInst,LPCSTR pszWorkDir, LPCSTR pszArgs)
 	{
+#ifdef WIN32
         WORD wVersionRequested;
         WSADATA wsaData;
         int err;
         wVersionRequested = MAKEWORD(2, 2);
         err = WSAStartup(wVersionRequested, &wsaData);
+#endif // WIN32       
 
         qjsbind::Value args[3];
         args[0] = NewValue(*m_context, hInst);
@@ -200,7 +184,9 @@ namespace SOUI
         
         pApp->CreateTaskLoop(1,Normal,TRUE);
         qjsbind::Value ret = m_context->Invoke(m_context->Global(), "main", 3, args);
+#ifdef WIN32
         WSACleanup();
+#endif // WIN32
 
         if (ret.IsException())
         {
@@ -211,7 +197,6 @@ namespace SOUI
 	}
 
     SScriptFactory::SScriptFactory() {
-        js_set_printer(js_printer);
         m_runtime = new qjsbind::Runtime();
     }
 

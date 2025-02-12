@@ -30,17 +30,17 @@ class MainDialog extends soui4.JsHostWnd{
 		}
 		//*
 		//copy template files
-		if(!utiles.CopyDir(g_workDir+"\\template\\*.*",strDest)){
+		if(!utiles.CopyDir(g_workDir+"/template/*.*",strDest)){
 			soui4.SMessageBox(this.GetHwnd(),"复制向导文件失败,请检查目标位置写入权限!","提示",soui4.MB_OK|soui4.MB_ICONWARNING);
 			return;			
 		}
 		//code node_modules
-		utiles.CopyDir(g_workDir+"\\..\\node_modules",strDest);
+		utiles.CopyDir(g_workDir+"/../node_modules",strDest);
 		//*/
 		//prepare task.json
-		let pos = g_workDir.lastIndexOf("\\");
+		let pos = g_workDir.lastIndexOf("/");
 		let workDir = g_workDir.substring(0,pos);
-		os.mkdir(strDest+"\\.vscode");
+		os.mkdir(strDest+"/.vscode");
 		{
 			let soui4js_host = workDir+"/bin/soui4js-host.exe";
 			let launch={
@@ -59,7 +59,7 @@ class MainDialog extends soui4.JsHostWnd{
 		    };
 
 			let luanchStr = JSON.stringify(launch,null,4);
-			let f = std.open(strDest+"\\.vscode\\launch.json", "w");
+			let f = std.open(strDest+"/.vscode/launch.json", "w");
 			f.puts(luanchStr);
 			f.close();
 		}
@@ -71,13 +71,13 @@ class MainDialog extends soui4.JsHostWnd{
 					{
 						"label": "build R.js",
 						"type": "shell",
-						"command": uiresbuilder+" -p uires -i uires\\uires.idx -j uires\\R.js",
+						"command": uiresbuilder+" -p uires -i uires/uires.idx -j uires/R.js",
 						"problemMatcher": []
 					}
 				]
 			}
 			let taskStr = JSON.stringify(task,null,4);
-			let f = std.open(strDest+"\\.vscode\\tasks.json", "w");
+			let f = std.open(strDest+"/.vscode/tasks.json", "w");
 			f.puts(taskStr);
 			f.close();
 		}
@@ -118,17 +118,22 @@ class MainDialog extends soui4.JsHostWnd{
 
 function main(inst,workDir,args)
 {
+	workDir.replaceAll("\\","/");
+	if(workDir.endsWith("/"))
+	{
+		workDir=workDir.substr(0,workDir.length-1);
+	}
 	soui4.log(workDir);
 	g_workDir = workDir;
 	let theApp = soui4.GetApp();
 	let souiFac = soui4.CreateSouiFactory();
 	//*
 	let resProvider = souiFac.CreateResProvider(1);
-	soui4.InitFileResProvider(resProvider,workDir + "\\uires");
+	soui4.InitFileResProvider(resProvider,workDir + "/uires");
 	//*/
 	/*
 	// show how to load resource from a zip file
-	let resProvider = soui4.CreateZipResProvider(theApp,workDir +"\\uires.zip","souizip");
+	let resProvider = soui4.CreateZipResProvider(theApp,workDir +"/uires.zip","souizip");
 	if(resProvider === 0){
 		soui4.log("load res from uires.zip failed");
 		return -1;

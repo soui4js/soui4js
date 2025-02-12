@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __SFUNCSLOT__H__
+#define __SFUNCSLOT__H__
 #include <qjsbind.h>
 using namespace qjsbind;
 SNSBEGIN
@@ -50,3 +51,4 @@ private:
 };
 
 SNSEND
+#endif // __SFUNCSLOT__H__

@@ -78,10 +78,14 @@ struct IWsClient : IConnection
     virtual bool wait(int timeoutMs) = 0;
 };
 
+
+typedef void(*WS_LogCallback)(int level, const char *log);
+
 struct IWebsocket : IObjRef
 {
     virtual IWsClient *CreateWsClient(IConnListener *pListener) = 0;
     virtual IWsServer *CreateWsServer(ISvrListener *pListener) = 0;
+    virtual void SetWsLogCallback(WS_LogCallback cbLog) = 0;
 };
 
 namespace WS

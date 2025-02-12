@@ -27,9 +27,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#ifdef _WIN32
-typedef void * HANDLE;
-#endif
+#include <windows.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -1056,12 +1054,8 @@ QJS_API int JS_SetModuleExportList(JSContext *ctx, JSModuleDef *m,
                            const JSCFunctionListEntry *tab, int len);
 
 
-#ifdef _WIN32
 QJS_API int js_prepare_waitlist(JSContext* ctx, HANDLE* handles, int length, int* rwsize, int* msgSize, uint32_t*waitTime);
 QJS_API void js_handle_waitresult(JSContext* ctx, int ret, int osrw_cnt, int msg_cnt);
-
-#endif
-
 typedef void (*fun_printer)(const char* buf, int len);
 QJS_API void js_set_printer(fun_printer fun);
 

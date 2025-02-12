@@ -80,48 +80,7 @@ public:
 		return false;
 	}
 
-	template<>
-	bool setRange(int from, int to) {
-		SIntAnimator* ani = sobj_cast<SIntAnimator>(m_animator);
-		if (!ani) return false;
-		ani->setRange(from, to);
-		return true;
-	}
-	template<>
-	bool setRange(float from, float to) {
-		SFloatAnimator* ani = sobj_cast<SFloatAnimator>(m_animator);
-		if (!ani) return false;
-		ani->setRange(from, to);
-		return true;
-	}
-	template<>
-	bool setRange(COLORREF from, COLORREF to) {
-		SColorAnimator* ani = sobj_cast<SColorAnimator>(m_animator);
-		if (!ani) return false;
-		ani->setRange(from, to);
-		return true;
-	}
-	template<>
-	bool setRange(POINT from, POINT to) {
-		SPointAnimator* ani = sobj_cast<SPointAnimator>(m_animator);
-		if (!ani) return false;
-		ani->setRange(from, to);
-		return true;
-	}
-	template<>
-	bool setRange(SIZE from, SIZE to) {
-		SSizeAnimator* ani = sobj_cast<SSizeAnimator>(m_animator);
-		if (!ani) return false;
-		ani->setRange(from, to);
-		return true;
-	}
-	template<>
-	bool setRange(RECT from, RECT to) {
-		SRectAnimator* ani = sobj_cast<SRectAnimator>(m_animator);
-		if (!ani) return false;
-		ani->setRange(from, to);
-		return true;
-	}
+	
 protected:
 	int _GetAniType(IValueAnimator* ani) const {
 		if (!ani)
@@ -146,60 +105,6 @@ protected:
 	bool GetValue(T& value) const {
 		return false;
 	}
-	template<>
-	bool GetValue(int& value) const {
-		SIntAnimator* ani = sobj_cast<SIntAnimator>(m_animator);
-		if (!ani)
-			return false;
-		value = ani->getValue();
-		return true;
-	}
-
-	template<>
-	bool GetValue(float& value) const {
-		SFloatAnimator* ani = sobj_cast<SFloatAnimator>(m_animator);
-		if (!ani)
-			return false;
-		value = ani->getValue();
-		return true;
-	}
-
-	template<>
-	bool GetValue(COLORREF& value) const {
-		SColorAnimator* ani = sobj_cast<SColorAnimator>(m_animator);
-		if (!ani)
-			return false;
-		value = ani->getValue();
-		return true;
-	}
-
-	template<>
-	bool GetValue(POINT& value) const {
-		SPointAnimator* ani = sobj_cast<SPointAnimator>(m_animator);
-		if (!ani)
-			return false;
-		value = ani->getValue();
-		return true;
-	}
-
-	template<>
-	bool GetValue(SIZE& value) const {
-		SSizeAnimator* ani = sobj_cast<SSizeAnimator>(m_animator);
-		if (!ani)
-			return false;
-		value = ani->getValue();
-		return true;
-	}
-
-	template<>
-	bool GetValue(RECT& value) const {
-		SRectAnimator* ani = sobj_cast<SRectAnimator>(m_animator);
-		if (!ani)
-			return false;
-		value = ani->getValue();
-		return true;
-	}
-
 
 	template<typename T>
 	Value GetJsValue(Context& ctx) {
@@ -296,6 +201,104 @@ public:
 protected:
 	SAutoRefPtr<IValueAnimator> m_animator;
 };
+
+template<>
+bool JsValueAnimator::GetValue(int& value) const {
+	SIntAnimator* ani = sobj_cast<SIntAnimator>(m_animator);
+	if (!ani)
+		return false;
+	value = ani->getValue();
+	return true;
+}
+
+template<>
+bool JsValueAnimator::GetValue(float& value) const {
+	SFloatAnimator* ani = sobj_cast<SFloatAnimator>(m_animator);
+	if (!ani)
+		return false;
+	value = ani->getValue();
+	return true;
+}
+
+template<>
+bool JsValueAnimator::GetValue(COLORREF& value) const {
+	SColorAnimator* ani = sobj_cast<SColorAnimator>(m_animator);
+	if (!ani)
+		return false;
+	value = ani->getValue();
+	return true;
+}
+
+template<>
+bool JsValueAnimator::GetValue(POINT& value) const {
+	SPointAnimator* ani = sobj_cast<SPointAnimator>(m_animator);
+	if (!ani)
+		return false;
+	value = ani->getValue();
+	return true;
+}
+
+template<>
+bool JsValueAnimator::GetValue(SIZE& value) const {
+	SSizeAnimator* ani = sobj_cast<SSizeAnimator>(m_animator);
+	if (!ani)
+		return false;
+	value = ani->getValue();
+	return true;
+}
+
+template<>
+bool JsValueAnimator::GetValue(RECT& value) const {
+	SRectAnimator* ani = sobj_cast<SRectAnimator>(m_animator);
+	if (!ani)
+		return false;
+	value = ani->getValue();
+	return true;
+}
+
+template<>
+bool JsValueAnimator::setRange(int from, int to) {
+	SIntAnimator* ani = sobj_cast<SIntAnimator>(m_animator);
+	if (!ani) return false;
+	ani->setRange(from, to);
+	return true;
+}
+template<>
+bool JsValueAnimator::setRange(float from, float to) {
+	SFloatAnimator* ani = sobj_cast<SFloatAnimator>(m_animator);
+	if (!ani) return false;
+	ani->setRange(from, to);
+	return true;
+}
+template<>
+bool JsValueAnimator::setRange(COLORREF from, COLORREF to) {
+	SColorAnimator* ani = sobj_cast<SColorAnimator>(m_animator);
+	if (!ani) return false;
+	ani->setRange(from, to);
+	return true;
+}
+template<>
+bool JsValueAnimator::setRange(POINT from, POINT to) {
+	SPointAnimator* ani = sobj_cast<SPointAnimator>(m_animator);
+	if (!ani) return false;
+	ani->setRange(from, to);
+	return true;
+}
+template<>
+bool JsValueAnimator::setRange(SIZE from, SIZE to) {
+	SSizeAnimator* ani = sobj_cast<SSizeAnimator>(m_animator);
+	if (!ani) return false;
+	ani->setRange(from, to);
+	return true;
+}
+template<>
+bool JsValueAnimator::setRange(RECT from, RECT to) {
+	SRectAnimator* ani = sobj_cast<SRectAnimator>(m_animator);
+	if (!ani) return false;
+	ani->setRange(from, to);
+	return true;
+}
+
 
 class JsAnimatorGroup : public SAnimatorGroup, public JsThisOwner, public IAnimatorGroupListerer {
 public:

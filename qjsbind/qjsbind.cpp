@@ -91,7 +91,7 @@ int Module::OnInit(JSContext* ctx, JSModuleDef* m) {
 		return -1;
 	}
 
-	//µ¼³övalue
+	//ï¿½ï¿½ï¿½ï¿½value
 	for (auto itr = module->exports_.begin(); itr != module->exports_.end();itr++) {
 		JS_SetModuleExport(ctx, m, itr->first.c_str(),
 			itr->second.CopyValue());
@@ -193,7 +193,7 @@ std::unique_ptr<Module> Context::GetModule(JSModuleDef* m) {
 }
 
 
-//¼ÓÔØ×Ö½ÚÂë
+//ï¿½ï¿½ï¿½ï¿½ï¿½Ö½ï¿½ï¿½ï¿½
 bool Context::LoadByteCode(const uint8_t* buf, size_t buf_len) {
 
 	Value obj(context_,JS_ReadObject(context_, buf, buf_len, JS_READ_OBJ_BYTECODE));
@@ -240,7 +240,7 @@ void Context::DumpError() const{
 	JS_FreeValue(context_, exception_val);
 
 	if (log_func_) {
-		log_func_(error.c_str());
+		log_func_(error.c_str(),error.length());
 	} else {
 		printf("%s", error.c_str());
 	}

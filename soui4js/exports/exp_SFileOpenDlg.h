@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_SFILEOPENDLG__H__
+#define __EXP_SFILEOPENDLG__H__
 #include "souidlgs.h"
 
 typedef HRESULT (WINAPI * FunSHCreateItemFromParsingName)(PCWSTR, IBindCtx*, REFIID, void**);
@@ -79,11 +80,11 @@ public:
 			}
 			else {
 				for (auto it : filterPairs) {
-					strFilter += SStringT().Format(L"%s|%s|",it.first.c_str(),it.second.c_str());
+					strFilter += SStringW().Format(L"%s|%s|",it.first.c_str(),it.second.c_str());
 				}
 			}
 			strFilter += L"|";
-			SStringW strFilter2 = S_CW2T(strFilter);
+			SStringT strFilter2 = S_CW2T(strFilter);
 			oldDlg = new CFileDialog(bSave, strExt2.c_str(), strName2.c_str(), flag, strFilter2.c_str());
 			//if (!defaultFolder.empty());
 			return (int)oldDlg->DoModal(hOwner);
@@ -149,3 +150,4 @@ void Exp_FileOpenDlg(Module* module) {
 	jsCls.AddFunc("DoModal2", &SFileOpenDlg::DoModal2);
 
 }
+#endif // __EXP_SFILEOPENDLG__H__

@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_SMATRIX__H__
+#define __EXP_SMATRIX__H__
 #include <matrix/SMatrix.h>
 
 Value IMatrix_Data(Context* ctx, IMatrix* _this, ArgList& args) {
@@ -67,3 +68,5 @@ void Exp_SMatrix(qjsbind::Module* module)
         jsCls.AddCFunc("shear", &SMatrix_shear);
     }
 }
+
+#endif // __EXP_SMATRIX__H__

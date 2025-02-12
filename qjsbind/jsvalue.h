@@ -1,4 +1,5 @@
-#pragma once
+ï»¿#ifndef __JSVALUE__H__
+#define __JSVALUE__H__
 extern "C" {
 #include <quickjs.h>
 #include <quickjs-libc.h>
@@ -15,7 +16,6 @@ namespace qjsbind {
 	class Value;
 	class Context;
 
-	//ÈõÒýÓÃÖµ
 	class WeakValue {
 	public:
 		WeakValue()
@@ -202,15 +202,13 @@ namespace qjsbind {
 			}
 		}
 
-		//todo: x86ÏÂ£¬ÓÉÓÚuint64_tºÍJSValueÀàÐÍÏàÍ¬£¬»áµ¼ÖÂ³ÌÐò¶¨Òå³åÍ»¡£
-		//uint64_tÈç¹ûÒªÔÚº¯ÊýµÄ²ÎÊýÖÐÊ¹ÓÃ£¬Ö»ÄÜÊÇÔÚ64Î»ÏÂ¡£
 #ifdef _WIN64
 		operator uint64_t() const {
 			return ToUint64();
 		}
 #endif
 		template<typename T>
-		operator T*() {
+		operator T*() const{
 			if (IsObject()) {
 				JSClassID id = JS_GetClassID(value_);
 				JsProxy<T>* pThis;
@@ -250,10 +248,11 @@ namespace qjsbind {
 			JS_ToInt64(context_, &value, value_);
 			return (uint64_t)value;
 		}
-
+#ifdef _WIN32
 		operator long() const {
 			return ToInt32();
 		}
+#endif//_WIN32
 		operator int64_t() const {
 			return ToInt64();
 		}
@@ -310,6 +309,19 @@ namespace qjsbind {
 			return JS_ToCStringLen(context_, NULL, value_);
 		}
 
+		operator wchar_t const*() const{
+			if (!IsString())
+				return NULL;
+			const char *str = JS_ToCStringLen(context_, NULL, value_);
+			if(!str)
+				return NULL;
+			static std::wstring strW;
+			int len = MultiByteToWideChar(CP_UTF8,0,str,-1,NULL,0);
+			strW.resize(len);
+			MultiByteToWideChar(CP_UTF8,0,str,-1,(wchar_t*)strW.c_str(),len);
+			return strW.c_str();
+		}
+
 		uint8_t* ToBuffer(size_t* psize) const;
 
 		void SetOpaque(void* opaque) {
@@ -321,7 +333,6 @@ namespace qjsbind {
 		}
 
 
-		//proto½Ó¿Ú
 		void SetPropertyFunctionList(const JSCFunctionListEntry* tab,
 			int len) {
 			JS_SetPropertyFunctionList(context_, value_, tab, len);
@@ -332,7 +343,6 @@ namespace qjsbind {
 			JS_SetConstructor(context_, func_obj, value_);
 		}
 
-		//gc±ê¼Ç
 		void Mark(JS_MarkFunc* mark_func) {
 			if (context_) {
 				JSRuntime* rt = JS_GetRuntime(context_);
@@ -341,11 +351,9 @@ namespace qjsbind {
 			}
 		}
 
-		//»ñÈ¡ÊôÐÔ
 		Value GetProperty(const char* prop) const;
 		Value GetProperty(uint32_t idx) const;
 
-		//»ñÈ¡Êý×éµÄ³¤¶È
 		size_t length() const;
 
 		std::map<std::string, Value>
@@ -499,7 +507,7 @@ namespace qjsbind {
 	};
 
 
-	//Ç¿ÒýÓÃÖµ
+
 	class Value :public WeakValue {
 	public:
 		Value()
@@ -612,3 +620,4 @@ namespace qjsbind {
 	};
 
 }
+#endif // __JSVALUE__H__

@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_ISKINOBJ__H__
+#define __EXP_ISKINOBJ__H__
 #include <interface/SSkinobj-i.h>
 
 void Exp_ISkinObj(qjsbind::Module* module){
@@ -15,3 +16,4 @@ void Exp_ISkinObj(qjsbind::Module* module){
     jsCls.AddFunc("GetScale", &ISkinObj::GetScale);
     jsCls.AddFunc("Scale", &ISkinObj::Scale);
 }
+#endif // __EXP_ISKINOBJ__H__

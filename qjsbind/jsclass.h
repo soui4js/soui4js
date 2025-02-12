@@ -1,9 +1,30 @@
-﻿#pragma once
+﻿#ifndef __JSCLASS__H__
+#define __JSCLASS__H__
 #include "jscontext.h"
 #include "jsmemfunc.h"
 #include "jsproxy.h"
+#include "jsmodule.h"
+
 namespace qjsbind {
 
+	template<typename T, typename FUN>
+	JSValue CallCFun2(JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int magic, JSValue* func_data) {
+		ArgList arg_list(ctx, argc, argv);
+		FUN fun;
+		Value data(ctx, func_data[0]);
+		int64_t addr = data.ToInt64();
+		memcpy(&fun, &addr, sizeof(fun));
+
+		JsProxy<T>* pThis;
+		if (!GetSafeThis(this_val, &pThis)) {
+			JS_ThrowTypeError(ctx, "no this pointer exist");
+			return JS_EXCEPTION;
+		}
+
+		ContextState ctxState(ctx);
+		Context* context = Context::get(ctx);
+		return CFun2(*context, fun, pThis->GetObj(), arg_list).Release();
+	}
 	template<class T>
 	bool GetSafeThis(Context* context, JSValueConst this_val, JsProxy<T>** ptr, JSClassID cid) {
 		if (!JS_IsObject(this_val)) {
@@ -74,7 +95,8 @@ namespace qjsbind {
 	template<typename T, typename MEM>
 	JSValue MemGet(JSContext* ctx, JSValueConst this_val, int magic)
 	{
-		MEM T::* member = NULL;
+		MEM T::* member;
+		memset(&member,0,sizeof(member));
 		memcpy(&member, &magic, 4);
 		JsProxy<T> * pThis;
 		if (!GetSafeThis(this_val, &pThis)) {
@@ -95,7 +117,8 @@ namespace qjsbind {
 	template<typename T, typename MEM>
 	JSValue MemSet(JSContext* ctx, JSValueConst this_val, JSValueConst val, int magic)
 	{
-		MEM T::* member = NULL;
+		MEM T::* member;
+		memset(&member,0,sizeof(member));
 		memcpy(&member, &magic, 4);
 
 		JsProxy<T> * pThis;
@@ -179,12 +202,22 @@ namespace qjsbind {
 			assert(class_inited_);
 		}
 
-		template<void Mark(T*,JS_MarkFunc* markFun)=0>
+		template<void Mark(T*,JS_MarkFunc* markFun)=nullptr>
 		void Init(JSClassID parent_id = 0) {
 			assert(!class_inited_);
 
 			JSClassDef class_def = {
 				class_name_,ObjFinalizer<T>,ObjMark<T,Mark>,nullptr,nullptr
+			};
+
+			NewClass(&class_def, parent_id);
+		}
+
+		void Init2(JSClassID parent_id = 0) {
+			assert(!class_inited_);
+
+			JSClassDef class_def = {
+				class_name_,ObjFinalizer<T>,ObjMark<T,nullptr>,nullptr,nullptr
 			};
 
 			NewClass(&class_def, parent_id);
@@ -219,7 +252,7 @@ namespace qjsbind {
 			uint64_t magic = 0;
 			memcpy(&magic, &fun, sizeof(fun));
 			JSValue data = JS_NewInt64(context_, magic);
-			JSCFunctionData* cfunc = &CallCFun2<T,Fun>;
+			JSCFunctionData* cfunc = &CallCFun2<T, Fun>;
 			JSValue func_value = JS_NewCFunctionData(context_, cfunc, 0, 0, 1, &data);
 			JS_DefinePropertyValueStr(context_, prototype_, name, func_value, 0);
 			JS_FreeValue(context_, data);
@@ -302,3 +335,5 @@ namespace qjsbind {
 }//namespace
 
 
+
+#endif // __JSCLASS__H__

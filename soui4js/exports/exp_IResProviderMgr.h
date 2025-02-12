@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_IRESPROVIDERMGR__H__
+#define __EXP_IRESPROVIDERMGR__H__
 #include <interface/SResProviderMgr-i.h>
 
 void Exp_IResProviderMgr(qjsbind::Module* module)
@@ -23,3 +24,5 @@ void Exp_IResProviderMgr(qjsbind::Module* module)
 	jsCls.AddFunc("GetRawBufferSize", &IResProviderMgr::GetRawBufferSize);
 	jsCls.AddFunc("GetRawBuffer", &IResProviderMgr::GetRawBuffer);
 }
+
+#endif // __EXP_IRESPROVIDERMGR__H__

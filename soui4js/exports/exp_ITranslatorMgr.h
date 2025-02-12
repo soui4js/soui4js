@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_ITRANSLATORMGR__H__
+#define __EXP_ITRANSLATORMGR__H__
 #include <interface/STranslator-i.h>
 
 BOOL ITranslator_tr(Context* ctx, ITranslator* _this, ArgList& args) {
@@ -55,3 +56,5 @@ void Exp_ITranslator(qjsbind::Module* module)
         jsCls.AddFunc("tr", &ITranslatorMgr::tr);
     }
 }
+
+#endif // __EXP_ITRANSLATORMGR__H__

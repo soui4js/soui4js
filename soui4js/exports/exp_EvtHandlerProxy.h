@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_EVTHANDLERPROXY__H__
+#define __EXP_EVTHANDLERPROXY__H__
 #include <qjsbind.h>
 
 using namespace qjsbind;
@@ -61,3 +62,4 @@ void Exp_EvtHandlerProxy(qjsbind::Module *module) {
 	jsCls.AddFunc("InstallHook", &EvtHandlerProxy::InstallHook);
 	jsCls.AddFunc("UninstallHook", &EvtHandlerProxy::UninstallHook);
 }
+#endif // __EXP_EVTHANDLERPROXY__H__

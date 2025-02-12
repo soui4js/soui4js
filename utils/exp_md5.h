@@ -2,6 +2,7 @@
 #include <string>
 #include <stdint.h>
 #include "md5.h"
+#include <sysapi.h>
 
 std::string MDPrint(unsigned char digest[16])
 {
@@ -36,7 +37,7 @@ std::string FileMd5Ex(LPCSTR pszFileName, int64_t maxLen) {
 		{
 			if (maxLen > 0 && pos >= maxLen)
 				break;
-			int nReaded = fread(buf, 1, 1024, f);
+			int nReaded = (int)fread(buf, 1, 1024, f);
 			pos += nReaded;
 			if (nReaded > 0) {
 				MD5Update(&context, buf, nReaded);

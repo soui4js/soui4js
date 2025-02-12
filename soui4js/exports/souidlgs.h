@@ -13,7 +13,8 @@
 
 #include <commdlg.h>
 #include <shlobj.h>
-#include <core\SNativeWnd.h>
+#include <core/SNativeWnd.h>
+#include <atl.mini/SComCli.h>
 
 #ifndef _Post_writable_byte_size_
 #define _Post_writable_byte_size_(x)
@@ -354,16 +355,14 @@ public: \
 			ATLASSERT(m_hWnd == NULL);
 
 			//ModuleHelper::AddCreateWndData(&m_thunk.cd, (ATL::CDialogImplBase*)this);
-			SNativeWndHelper::getSingletonPtr()->LockSharePtr(this);
-			m_pThunk = (tagThunk*)HeapAlloc(SNativeWndHelper::getSingletonPtr()->GetHeap(), HEAP_ZERO_MEMORY, sizeof(tagThunk));
+			SNativeWndHelper::instance()->LockSharePtr(this);
 			BOOL bRet;
 			if (m_bOpenFileDialog)
 				bRet = ::GetOpenFileName(&m_ofn);
 			else
 				bRet = ::GetSaveFileName(&m_ofn);
-			SNativeWndHelper::getSingletonPtr()->UnlockSharePtr();
+			SNativeWndHelper::instance()->UnlockSharePtr();
 			m_hWnd = NULL;
-			HeapFree(SNativeWndHelper::getSingletonPtr()->GetHeap(), 0, m_pThunk);
 			return bRet ? IDOK : IDCANCEL;
 		}
 		// Attributes
@@ -632,7 +631,7 @@ public: \
 			{
 				// On NT platforms, GetOpenFileNameA thunks to GetOpenFileNameW and there 
 				// is absolutely nothing we can do except to start off with a large buffer.
-				ATLVERIFY(ResizeFilenameBuffer(_WTL_FIXED_OFN_BUFFER_LENGTH));
+				ResizeFilenameBuffer(_WTL_FIXED_OFN_BUFFER_LENGTH);
 			}
 #endif
 		}
@@ -1755,7 +1754,7 @@ public: \
 		{
 			if (uMsg != WM_INITDIALOG)
 				return 0;
-			CCommonDialogImplBase* pT = (CCommonDialogImplBase*)SNativeWndHelper::getSingletonPtr()->GetSharePtr();
+			CCommonDialogImplBase* pT = (CCommonDialogImplBase*)SNativeWndHelper::instance()->GetSharePtr();
 			ATLASSERT(pT != NULL);
 			ATLASSERT(pT->m_hWnd == NULL);
 			ATLASSERT(::IsWindow(hWnd));
@@ -1845,9 +1844,9 @@ public: \
 
 
 			//ModuleHelper::AddCreateWndData(&m_thunk.cd, (CCommonDialogImplBase*)this);
-			SNativeWndHelper::getSingletonPtr()->LockSharePtr(this);
+			SNativeWndHelper::instance()->LockSharePtr(this);
 			BOOL bRet = ::ChooseFont(&m_cf);
-			SNativeWndHelper::getSingletonPtr()->UnlockSharePtr();
+			SNativeWndHelper::instance()->UnlockSharePtr();
 			m_hWnd = NULL;
 
 			if (bRet)   // copy logical font from user's initialization buffer (if needed)
@@ -2150,10 +2149,10 @@ public: \
 
 			ATLASSERT(m_hWnd == NULL);
 
-			SNativeWndHelper::getSingletonPtr()->LockSharePtr(this);
+			SNativeWndHelper::instance()->LockSharePtr(this);
 
 			BOOL bRet = ::ChooseColor(&m_cc);
-			SNativeWndHelper::getSingletonPtr()->UnlockSharePtr();
+			SNativeWndHelper::instance()->UnlockSharePtr();
 			m_hWnd = NULL;
 
 			return bRet ? IDOK : IDCANCEL;
@@ -2183,7 +2182,7 @@ public: \
 
 			if (uMsg == WM_INITDIALOG)
 			{
-				pT = (CCommonDialogImplBase*)SNativeWndHelper::getSingletonPtr()->GetSharePtr();
+				pT = (CCommonDialogImplBase*)SNativeWndHelper::instance()->GetSharePtr();
 				lpCC->lCustData = (LPARAM)pT;
 				ATLASSERT(pT != NULL);
 				ATLASSERT(pT->m_hWnd == NULL);
@@ -2370,9 +2369,9 @@ public: \
 
 			ATLASSERT(m_hWnd == NULL);
 
-			SNativeWndHelper::getSingletonPtr()->LockSharePtr(this);
+			SNativeWndHelper::instance()->LockSharePtr(this);
 			BOOL bRet = ::PrintDlg(&m_pd);
-			SNativeWndHelper::getSingletonPtr()->UnlockSharePtr();
+			SNativeWndHelper::instance()->UnlockSharePtr();
 			m_hWnd = NULL;
 			return bRet ? IDOK : IDCANCEL;
 		}

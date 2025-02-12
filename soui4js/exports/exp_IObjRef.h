@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_IOBJREF__H__
+#define __EXP_IOBJREF__H__
 #include <interface/obj-ref-i.h>
 
 void Exp_IObjRef(qjsbind::Module* module)
@@ -9,3 +10,5 @@ void Exp_IObjRef(qjsbind::Module* module)
 	jsCls.AddFunc("Release", &IObjRef::Release);
 	jsCls.AddFunc("OnFinalRelease", &IObjRef::OnFinalRelease);
 }
+
+#endif // __EXP_IOBJREF__H__

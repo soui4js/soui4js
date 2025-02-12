@@ -3,7 +3,8 @@
 // 特定于项目的包含文件
 //
 
-#pragma once
+#ifndef __STDAFX__H__
+#define __STDAFX__H__
 
 #ifndef WINVER
 #define WINVER       0x0600
@@ -13,3 +14,5 @@
 #define ENABLE_SOBJ_XML 0	//using release config of soui. 
 #include <souistd.h>
 
+
+#endif // __STDAFX__H__

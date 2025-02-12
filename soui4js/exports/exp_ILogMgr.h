@@ -1,4 +1,5 @@
-#pragma once
+ï»¿#ifndef __EXP_ILOGMGR__H__
+#define __EXP_ILOGMGR__H__
 #include <interface/slog-i.h>
 
 class JsLogFileBuilder : public TObjRefImpl<IOutputFileBuilder>, JsThisOwner{
@@ -12,8 +13,8 @@ public:
 			return JsThisOwner::GetJsThis();
 	}
 
-	//Éú³ÉLOGÎÄ¼şÃû
-	//ÖÁÉÙÓ¦¸Ã°üº¬pszLogName£¬¼°curFileIndexÕâÁ½¸ö²ÎÊı
+	//ç”ŸæˆLOGæ–‡ä»¶å
+	//è‡³å°‘åº”è¯¥åŒ…å«pszLogNameï¼ŒåŠcurFileIndexè¿™ä¸¤ä¸ªå‚æ•°
 	STDMETHOD_(BOOL, buildOutputFile)
 		(CTHIS_ char* pszFileName, int nLen, const char* pszLogName, unsigned long pid, int curFileIndex) SCONST {
 		if (!m_funBuildOutputFile.IsFunction())
@@ -71,3 +72,4 @@ void Exp_ILogMgr(Module* module) {
 		jsCls.AddGetSet("onBuildOutputFile", &JsLogFileBuilder::m_funBuildOutputFile);
 	}
 }
+#endif // __EXP_ILOGMGR__H__

@@ -1,11 +1,12 @@
-#pragma once
+ï»¿#ifndef __JSCONTEXT__H__
+#define __JSCONTEXT__H__
 #include <unordered_map>
 #include <functional>
 #include <memory>
 #include <stack>
 #include <mutex>
 #include <atomic>
-#include <Windows.h>
+#include <windows.h>
 
 #include "jsvalue.h"
 #include "jsarglist.h"
@@ -31,7 +32,6 @@ namespace qjsbind {
 		static std::stack<JSContext*> s_ctxStack;
 	};
 
-	typedef void (*LogFun)(const char* log);
 
 	class JobEvent{
 		HANDLE hEvent;
@@ -88,8 +88,9 @@ namespace qjsbind {
 				JS_GetContextOpaque(ctx));
 		}
 
-		void SetLogFunc(LogFun func) {
+		void SetLogFunc(fun_printer func) {
 			log_func_ = func;
+			js_set_printer(func);
 		}
 
 		Value ParseJson(const char* buf, size_t buf_len,
@@ -116,35 +117,35 @@ namespace qjsbind {
 		Value NewValue(T v) {
 			return undefined_value;
 		}
-		template<>
+		//template<>
 		Value NewValue(int32_t v) {
 			return NewInt32(v);
 		}
-		template<>
+		//template<>
 		Value NewValue(char v) {
 			return NewInt32(v);
 		}
-		template<>
+		//template<>
 		Value NewValue(unsigned char v) {
 			return NewInt32(v);
 		}
-		template<>
+		//template<>
 		Value NewValue(short v) {
 			return NewInt32(v);
 		}
-		template<>
+		//template<>
 		Value NewValue(unsigned short v) {
 			return NewInt32(v);
 		}
-		template<>
+		//template<>
 		Value NewValue(uint32_t v) {
 			return NewUint32(v);
 		}
-		template<>
+		//template<>
 		Value NewValue(float v) {
 			return NewFloat64(v);
 		}
-		template<>
+		//template<>
 		Value NewValue(double v) {
 			return NewFloat64(v);
 		}
@@ -158,7 +159,6 @@ namespace qjsbind {
 			return ret;
 		}
 
-		//´´½¨classµÄ¶ÔÏó
 		Value NewClassObject(JSClassID class_id);
 
 		Value NewArrayBuffer(const uint8_t* buf, size_t len);
@@ -275,14 +275,13 @@ namespace qjsbind {
 			return Value(context_, rslt);
 		}
 
-		//·µ»Øfalse£¬µ÷ÓÃDumpError()²é¿´´íÎó
+
 		bool LoadByteCode(const uint8_t* buf, size_t buf_len);
 
 		void ExecuteJobs();
 
 		void DumpError() const;
 
-		//´´½¨Ä£¿é
 		Module* NewModule(const char* name);
 
 		Value ThrowOutOfMemory();
@@ -293,7 +292,7 @@ namespace qjsbind {
 
 		void Log(const std::string& msg) {
 			if (log_func_)
-				log_func_(msg.c_str());
+				log_func_(msg.c_str(),msg.length());
 		}
 
 		void AddClassId(JSClassID classid, JSClassID parent_classid);
@@ -311,9 +310,8 @@ namespace qjsbind {
 		JSContext* context_;
 		std::map<JSModuleDef*, std::unique_ptr<Module>> modules_;
 
-		LogFun log_func_;
+		fun_printer log_func_;
 		bool   is_attach_;
-		//´æ´¢classid£¬¼°Æä¸¸classid
 		std::unordered_map<JSClassID, JSClassID> class_ids_;
 	};
 
@@ -404,3 +402,5 @@ namespace qjsbind {
 			JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_STRICT | JS_EVAL_FLAG_COMPILE_ONLY));
 	}
 }
+
+#endif // __JSCONTEXT__H__

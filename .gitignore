@@ -1,0 +1,5 @@
+build
+.vs
+bin
+bin64
+out

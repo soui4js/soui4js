@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __SATTRSTORAGE__H__
+#define __SATTRSTORAGE__H__
 #include <helper/obj-ref-impl.hpp>
 #include <interface/SAttrStorage-i.h>
 #include <souicoll.h>
@@ -69,3 +70,4 @@ public:
     Value m_cbHandler;
     Value m_onNeedStorage;
 };
+#endif // __SATTRSTORAGE__H__

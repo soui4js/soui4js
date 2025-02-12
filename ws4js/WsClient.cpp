@@ -32,12 +32,12 @@ void WsConnListener::onDataRecv(const void* data, int len, bool bBinary)
 	m_pOwner->onDataRecv(data, len, bBinary);
 }
 
-
 ///////////////////////////////////////////////////////////
 WsClient::WsClient(LPCSTR url, LPCSTR protocol,int opt,LPCSTR ca):m_connListener(this)
 {
 	m_wsLoader = new WsLoader();
 	m_wsClient.Attach(m_wsLoader->CreateWsClient(&m_connListener));
+	
 	UrlInfo urlInfo;
 	parseUrl(url, urlInfo);
 	ClientOption option;
@@ -48,11 +48,14 @@ WsClient::WsClient(LPCSTR url, LPCSTR protocol,int opt,LPCSTR ca):m_connListener
 		option.skipServerCertHostnameCheck = !!(opt & skipServerCertHostnameCheck);
 		option.ca_u8 = ca;
 	}
+	m_bQuit = false;
 	m_wsClient->connectTo(urlInfo.addr.c_str(), urlInfo.path.c_str(), urlInfo.port, protocol, option);
 }
 
 WsClient::~WsClient()
 {
+	m_bQuit = true;
+	m_wsClient=NULL;
 	delete m_wsLoader;
 }
 
@@ -114,6 +117,7 @@ void WsClient::_onDataRecv(const std::string &buf, bool bBinary)
 	if (!cb.IsFunction()) {
 		return;
 	}
+	SSLOGI()<<"_onDataRecv,buf="<<buf.c_str();
 	Context* ctx = cb.context();
 	if (bBinary) {
 		qjsbind::Value args[] = {
@@ -132,26 +136,31 @@ void WsClient::_onDataRecv(const std::string &buf, bool bBinary)
 
 void WsClient::onConnected()
 {
+	if (m_bQuit) return;
 	WsClient::_onConnected();
 }
 
 void WsClient::onConnError(const char* errStr)
 {
+	if (m_bQuit) return;
 	_onConnError( std::string(errStr));
 }
 
 void WsClient::onDisconnect()
 {
+	if (m_bQuit) return;
 	_onDisconnect();
 }
 
 void WsClient::onDataSent(int nMsgId)
 {
+	if (m_bQuit) return;
 	_onDataSent(nMsgId);
 }
 
 void WsClient::onDataRecv(const void* data, int len, bool bBinary)
 {
+	if (m_bQuit) return;
 	_onDataRecv(std::string((const char*)data, len), bBinary);
 }
 
@@ -165,7 +174,7 @@ void WsClient::parseUrl(std::string url, UrlInfo& info)
 		info.bSecure = false;
 		url = url.substr(5);
 	}
-	int pos = url.find('/');
+	int pos = (int)url.find('/');
 	std::string addr;
 	if (pos == -1) {
 		addr = url;
@@ -176,7 +185,7 @@ void WsClient::parseUrl(std::string url, UrlInfo& info)
 		addr = url.substr(0, pos);
 		info.path = url.substr(pos);
 	}
-	pos = addr.find(':');
+	pos = (int)addr.find(':');
 	if (pos != -1) {
 		info.addr = addr.substr(0, pos);
 		std::string strPort = addr.substr(pos + 1);
@@ -224,7 +233,7 @@ Value WsClient_SendBinary(Context * ctx,WsClient* _this, ArgList& args)
 	uint8_t* pInput = args[0].ToBuffer(&szInput);
 	if (!pInput)
 		return exception_value;
-	int ret = _this->sendBinary(pInput, szInput);
+	int ret = _this->sendBinary(pInput, (int)szInput);
 	return NewValue(*ctx, ret);
 }
 
