@@ -333,6 +333,7 @@ function main(inst,workDir,args)
 {
 	soui4.log(workDir);
 	g_workDir = workDir;
+	soui4.log("workDir is "+workDir);
 	let theApp = soui4.GetApp();
 	let souiFac = soui4.CreateSouiFactory();
 	//*

@@ -88,7 +88,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>.;..\qjsbind;..\depends\quickjs\include;..\depends\soui4\soui\include;..\depends\soui4\utilities\include;..\depends\soui4\config;..\depends\soui4\components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\qjsbind;..\depends\quickjs\include;..\depends\soui4\include\soui\include;..\depends\soui4\include\utilities\include;..\depends\soui4\include\config;..\depends\soui4\include\components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -136,7 +136,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>.;..\qjsbind;..\depends\quickjs\include;..\depends\soui4\soui\include;..\depends\soui4\utilities\include;..\depends\soui4\config;..\depends\soui4\components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\qjsbind;..\depends\quickjs\include;..\depends\soui4\include\soui\include;..\depends\soui4\include\utilities\include;..\depends\soui4\include\config;..\depends\soui4\include\components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -185,7 +185,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>.;..\qjsbind;..\depends\quickjs\include;..\depends\soui4\soui\include;..\depends\soui4\utilities\include;..\depends\soui4\config;..\depends\soui4\components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\qjsbind;..\depends\quickjs\include;..\depends\soui4\include\soui\include;..\depends\soui4\include\utilities\include;..\depends\soui4\include\config;..\depends\soui4\include\components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -231,7 +231,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>.;..\qjsbind;..\depends\quickjs\include;..\depends\soui4\soui\include;..\depends\soui4\utilities\include;..\depends\soui4\config;..\depends\soui4\components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\qjsbind;..\depends\quickjs\include;..\depends\soui4\include\soui\include;..\depends\soui4\include\utilities\include;..\depends\soui4\include\config;..\depends\soui4\include\components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>

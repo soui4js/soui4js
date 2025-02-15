@@ -61,7 +61,7 @@ LPARAM SGetItemIndex(IWindow* pItem) {
 	pItem = pItem->GetIRoot();
 	IItemPanel* pItemPanel = NULL;
 	LPARAM ret = -1;
-	pItem->QueryInterface(__uuidof(IItemPanel), (IObjRef**) & (pItemPanel));
+	pItem->QueryInterface(IID_IItemPanel, (IObjRef**) & (pItemPanel));
 	if (pItemPanel) {
 		ret = pItemPanel->GetItemIndex();
 		pItemPanel->Release();

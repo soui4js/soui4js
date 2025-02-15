@@ -13,6 +13,11 @@
 
 #include <commdlg.h>
 #include <shlobj.h>
+#include <atl.mini/SComCli.h>
+
+#if (_WIN32_WINNT >= 0x0600) && !defined(_WIN32_WCE)
+#include <shobjidl.h>
+#endif // (_WIN32_WINNT >= 0x0600) && !defined(_WIN32_WCE)
 #include <core\SNativeWnd.h>
 
 #ifndef _Post_writable_byte_size_
@@ -86,7 +91,8 @@
 //   AtlTaskDialog()
 
 
-SNSBEGIN
+namespace SOUI
+{
 
 	///////////////////////////////////////////////////////////////////////////////
 	// CFileDialogImpl - used for File Open or File Save As
@@ -294,7 +300,7 @@ public: \
 
 
 	template <class T>
-	class CFileDialogImpl : public SNativeWnd
+	class CFileDialogImpl : public SOUI::SNativeWnd
 	{
 	public:
 		OPENFILENAME m_ofn;
@@ -353,17 +359,14 @@ public: \
 
 			ATLASSERT(m_hWnd == NULL);
 
-			//ModuleHelper::AddCreateWndData(&m_thunk.cd, (ATL::CDialogImplBase*)this);
-			SNativeWndHelper::getSingletonPtr()->LockSharePtr(this);
-			m_pThunk = (tagThunk*)HeapAlloc(SNativeWndHelper::getSingletonPtr()->GetHeap(), HEAP_ZERO_MEMORY, sizeof(tagThunk));
+			SNativeWndHelper::instance()->LockSharePtr(this);
 			BOOL bRet;
 			if (m_bOpenFileDialog)
 				bRet = ::GetOpenFileName(&m_ofn);
 			else
 				bRet = ::GetSaveFileName(&m_ofn);
-			SNativeWndHelper::getSingletonPtr()->UnlockSharePtr();
+			SNativeWndHelper::instance()->UnlockSharePtr();
 			m_hWnd = NULL;
-			HeapFree(SNativeWndHelper::getSingletonPtr()->GetHeap(), 0, m_pThunk);
 			return bRet ? IDOK : IDCANCEL;
 		}
 		// Attributes
@@ -1098,7 +1101,7 @@ public: \
 		}
 
 
-		HRESULT GetFilePath(SStringW& strFilePath)
+		HRESULT GetFilePath(SStringT& strFilePath)
 		{
 			T* pT = static_cast<T*>(this);
 			ATLASSERT(pT->m_spFileDlg != NULL);
@@ -1112,7 +1115,7 @@ public: \
 			return hRet;
 		}
 
-		HRESULT GetFileTitle(SStringW& strFileTitle)
+		HRESULT GetFileTitle(SStringT& strFileTitle)
 		{
 			T* pT = static_cast<T*>(this);
 			ATLASSERT(pT->m_spFileDlg != NULL);
@@ -1153,7 +1156,7 @@ public: \
 		}
 
 
-		static HRESULT GetFileNameFromShellItem(IShellItem* pShellItem, SIGDN type, SStringW& str)
+		static HRESULT GetFileNameFromShellItem(IShellItem* pShellItem, SIGDN type, SStringT& str)
 		{
 			ATLASSERT(pShellItem != NULL);
 
@@ -1744,6 +1747,83 @@ public: \
 			: CFolderDialogImpl<CFolderDialog>(hWndParent, lpstrTitle, uFlags)
 		{ }
 	};
+	//这是一个用法示例，此在文件夹对话框上添加一个包括子目录的check;
+	class fun
+	{
+	public:
+		virtual void IncludeChildDir(bool) = NULL;
+	};
+
+	class CWindowImpl:public SNativeWnd
+	{
+	protected:
+		fun* m_pHostWnd;
+
+		void OnLButtonUp(UINT nFlags, CPoint point)
+		{
+			LRESULT r = SendMessage(BM_GETCHECK, 0, 0);
+			if (r == BST_CHECKED)//被选中//BM_SETCHECK  
+			{
+				SendMessage(BM_SETCHECK, BST_UNCHECKED, 0);
+				m_pHostWnd->IncludeChildDir(false);
+			}
+			else if (r == BST_UNCHECKED)//不被选中 
+			{
+				SendMessage(BM_SETCHECK, BST_CHECKED, 0);
+				m_pHostWnd->IncludeChildDir(true);
+			}
+			SetMsgHandled(FALSE);
+		}
+		virtual void OnFinalMessage(HWND hWnd)
+		{
+			__super::OnFinalMessage(hWnd);
+			delete this;
+		}
+	public:
+		CWindowImpl(fun* pHostWnd) :m_pHostWnd(pHostWnd) {}
+		HWND Create(LPCTSTR lpClassName,LPCTSTR lpWindowName,DWORD dwStyle,int x,int y,int nWidth,int nHeight,HWND hWndParent,HMENU hMenu,HINSTANCE hInstance,LPVOID lpParam=NULL)
+		{	
+			HWND hWnd = ::CreateWindow(lpClassName,lpWindowName,dwStyle,x,y,nWidth,nHeight,hWndParent,hMenu,hInstance,lpParam);
+			SubclassWindow(hWnd);
+			return hWnd;
+		}
+		BEGIN_MSG_MAP_EX(CWindowImpl)
+			MSG_WM_LBUTTONUP(OnLButtonUp)
+			CHAIN_MSG_MAP(SNativeWnd)
+		END_MSG_MAP()
+	};
+
+	class SFolderDialogTest :public CFolderDialogImpl<SFolderDialogTest>,public fun
+	{
+		CWindowImpl *m_pSCheckBtn;
+		bool m_bIncludeChildDir;
+	public:
+		SFolderDialogTest(HWND hWndParent = NULL, LPCTSTR lpstrTitle = NULL,bool bIncludeChildDir=false, UINT uFlags = BIF_RETURNONLYFSDIRS)
+			: CFolderDialogImpl<SFolderDialogTest>(hWndParent, lpstrTitle, uFlags), m_pSCheckBtn(NULL),m_bIncludeChildDir(bIncludeChildDir)
+		{ }
+		
+		virtual void IncludeChildDir(bool bCheck)
+		{
+			m_bIncludeChildDir = bCheck;
+		}
+		bool IsIncludeChildDir()const
+		{
+			return m_bIncludeChildDir;
+		}
+		void OnInitialized()
+		{			
+			CRect rc;
+			::GetClientRect(m_hWnd, &rc);
+			HFONT hFont = CreateFont(-12, 0, 0, 0, 0, 0, 0, 0, GB2312_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, L"宋体");
+			m_pSCheckBtn=new CWindowImpl(this);
+			HWND hWnd = m_pSCheckBtn->Create(L"BUTTON", L"包括子目录", WS_CHILD | BS_CHECKBOX, 20, rc.bottom - 50, 100, 30, m_hWnd,NULL,SApplication::getSingleton().GetModule());
+			m_pSCheckBtn->SendMessage(WM_SETFONT, (WPARAM)hFont, 0);
+			m_pSCheckBtn->SendMessage(BM_SETCHECK,m_bIncludeChildDir?BST_CHECKED: BST_UNCHECKED, 0);			
+			m_pSCheckBtn->ShowWindow(TRUE);
+		}
+	};
+
+
 
 	///////////////////////////////////////////////////////////////////////////////
 	// CCommonDialogImplBase - base class for common dialog classes
@@ -1755,7 +1835,7 @@ public: \
 		{
 			if (uMsg != WM_INITDIALOG)
 				return 0;
-			CCommonDialogImplBase* pT = (CCommonDialogImplBase*)SNativeWndHelper::getSingletonPtr()->GetSharePtr();
+			CCommonDialogImplBase* pT = (CCommonDialogImplBase*)SNativeWndHelper::instance()->GetSharePtr();
 			ATLASSERT(pT != NULL);
 			ATLASSERT(pT->m_hWnd == NULL);
 			ATLASSERT(::IsWindow(hWnd));
@@ -1845,9 +1925,9 @@ public: \
 
 
 			//ModuleHelper::AddCreateWndData(&m_thunk.cd, (CCommonDialogImplBase*)this);
-			SNativeWndHelper::getSingletonPtr()->LockSharePtr(this);
+			SNativeWndHelper::instance()->LockSharePtr(this);
 			BOOL bRet = ::ChooseFont(&m_cf);
-			SNativeWndHelper::getSingletonPtr()->UnlockSharePtr();
+			SNativeWndHelper::instance()->UnlockSharePtr();
 			m_hWnd = NULL;
 
 			if (bRet)   // copy logical font from user's initialization buffer (if needed)
@@ -2183,7 +2263,7 @@ public: \
 
 			if (uMsg == WM_INITDIALOG)
 			{
-				pT = (CCommonDialogImplBase*)SNativeWndHelper::getSingletonPtr()->GetSharePtr();
+				pT = (CCommonDialogImplBase*)SNativeWndHelper::instance()->GetSharePtr();
 				lpCC->lCustData = (LPARAM)pT;
 				ATLASSERT(pT != NULL);
 				ATLASSERT(pT->m_hWnd == NULL);
@@ -6631,7 +6711,6 @@ namespace WTL
 
 #endif // ((_WIN32_WINNT >= 0x0600) || defined(_WTL_TASKDIALOG)) && !defined(_WIN32_WCE)
 #endif // complete
-
-SNSEND
+}; // namespace WTL
 
 #endif // __ATLDLGS_H__
