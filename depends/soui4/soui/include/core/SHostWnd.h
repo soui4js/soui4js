@@ -9,17 +9,16 @@
 #include <core/SWndContainerImpl.h>
 #include <core/SNativeWnd.h>
 #include <core/SDropTargetDispatcher.h>
-#include <event/SEventcrack.h>
+#include <event/SEventCrack.h>
 #include <interface/stooltip-i.h>
 #include <interface/shostwnd-i.h>
 #include <interface/SHostPresenter-i.h>
 #include <core/SCaret.h>
 #include <core/SNcPainter.h>
-#include <layout/SLayoutsize.h>
+#include <layout/SLayoutSize.h>
 #include <helper/SplitString.h>
-#include <helper/SWndSpy.h>
+#include <helper/swndspy.h>
 #include <helper/STimerGenerator.h>
-#include <proxy/SNativeWndProxy.h>
 SNSBEGIN
 
 // disable swnd spy for release by default.
@@ -33,7 +32,7 @@ SNSBEGIN
 
 class SOUI_EXP SHostWndAttr : public TObjRefImpl<SObject> {
     DEF_SOBJECT(TObjRefImpl<SObject>, L"SHostWndAttr")
-    enum
+    enum WndType
     {
         WT_UNDEFINE = 0,
         WT_APPMAIN = 1,
@@ -42,6 +41,7 @@ class SOUI_EXP SHostWndAttr : public TObjRefImpl<SObject> {
     friend class SHostWnd;
     friend class SRootWindow;
     friend class SNcPainter;
+    friend class SHostPresenter;
 
   public:
     SHostWndAttr(void);
@@ -74,6 +74,7 @@ class SOUI_EXP SHostWndAttr : public TObjRefImpl<SObject> {
         ATTR_DWORD(L"wndStyleEx", m_dwExStyle, FALSE)
         ATTR_BOOL(L"resizable", m_bResizable, FALSE)
         ATTR_BOOL(L"translucent", m_bTranslucent, FALSE)
+        ATTR_BOOL(L"autoShape", m_bAutoShape, FALSE)
         ATTR_BOOL(L"sendWheel2Hover", m_bSendWheel2Hover, FALSE)
         ATTR_BOOL(L"appWnd", m_bAppWnd, FALSE)
         ATTR_BOOL(L"toolWindow", m_bToolWnd, FALSE)
@@ -81,11 +82,11 @@ class SOUI_EXP SHostWndAttr : public TObjRefImpl<SObject> {
         ATTR_ICON(L"bigIcon", m_hAppIconBig, FALSE)
         ATTR_BOOL(L"allowSpy", m_bAllowSpy, FALSE)
         ATTR_BOOL(L"hasMsgLoop", m_bHasMsgLoop, FALSE)
-        ATTR_ENUM_BEGIN(L"wndType", DWORD, FALSE)
+        ATTR_ENUM_BEGIN(L"wndType", WndType, FALSE)
             ATTR_ENUM_VALUE(L"undefine", WT_UNDEFINE)
             ATTR_ENUM_VALUE(L"appMain", WT_APPMAIN)
             ATTR_ENUM_VALUE(L"normal", WT_NORMAL)
-        ATTR_ENUM_END(m_byWndType)
+        ATTR_ENUM_END(m_wndType)
     SOUI_ATTRS_END()
 
   protected:
@@ -94,14 +95,15 @@ class SOUI_EXP SHostWndAttr : public TObjRefImpl<SObject> {
     SLayoutSize m_rcMaxInset[4]; //窗口最大化时超出屏幕的边缘大小。经测试，WS_OVERLAPPED
                                  // style的窗口该属性无效
 
-    DWORD m_byWndType : 8;        //主窗口标志,有该标志的窗口关闭时自动发送WM_QUIT
-    DWORD m_bResizable : 1;       //窗口大小可调节
-    DWORD m_bAppWnd : 1;          // APP窗口，在任务栏上显示按钮
-    DWORD m_bToolWnd : 1;         //设置WS_ES_TOOLWINDOW属性
-    DWORD m_bTranslucent : 1;     //窗口的半透明属性
-    DWORD m_bAllowSpy : 1;        //允许spy
-    DWORD m_bSendWheel2Hover : 1; //将滚轮消息发送到hover窗口
-    DWORD m_bHasMsgLoop : 1;      //窗口有的MsgLoop标志，主要影响tooltip的RelayEvent时机
+    WndType m_wndType;       // 主窗口标志,有该标志的窗口关闭时自动发送WM_QUIT
+    BOOL m_bResizable;       //窗口大小可调节
+    BOOL m_bAppWnd;          // APP窗口，在任务栏上显示按钮
+    BOOL m_bToolWnd;         // 设置WS_ES_TOOLWINDOW属性
+    BOOL m_bTranslucent;     // 窗口的半透明属性
+    BOOL m_bAutoShape;       // auto build shape for translucent window (valid for linux)
+    BOOL m_bAllowSpy;        // 允许spy
+    BOOL m_bSendWheel2Hover; // 将滚轮消息发送到hover窗口
+    BOOL m_bHasMsgLoop;      // 窗口有的MsgLoop标志，主要影响tooltip的RelayEvent时机
     DWORD m_dwStyle;
     DWORD m_dwExStyle;
 
@@ -154,7 +156,8 @@ class SOUI_EXP SRootWindow : public SWindow {
 
 class SDummyWnd;
 class SOUI_EXP SHostWnd
-    : public TNativeWndProxy<IHostWnd>
+    : public TObjRefImpl<IHostWnd>
+    , public SNativeWnd
     , public SwndContainerImpl {
     friend class SDummyWnd;
     friend class SRootWindow;
@@ -182,13 +185,14 @@ class SOUI_EXP SHostWnd
     MSG m_msgMouse; /**<上一次鼠标按下消息*/
 
     CSize m_szAppSetted; /**<应用层设置的窗口大小 */
-    int m_nAutoSizing;   /**<自动计算大小触发的WM_SIZE消息 */
-    bool m_bResizing;    /**<执行WM_SIZE*/
+    CSize m_szPrev;
+    int m_nAutoSizing; /**<自动计算大小触发的WM_SIZE消息 */
+    bool m_bResizing;  /**<执行WM_SIZE*/
 
     SAutoRefPtr<IAnimation> m_hostAnimation;
     DWORD m_AniState;
     BOOL m_bFirstShow;
-    DWORD m_dwThreadID;
+    tid_t m_dwThreadID;
     SRootWindow *m_pRoot;
 
     EventHandlerInfo m_evtHandler;
@@ -225,6 +229,10 @@ class SOUI_EXP SHostWnd
     };
 
   public:
+    STDMETHOD_(INativeWnd *, GetNative)(THIS) OVERRIDE
+    {
+        return (INativeWnd *)this;
+    }
     STDMETHOD_(BOOL, InitFromXml)(THIS_ IXmlNode *pNode) OVERRIDE;
 
     STDMETHOD_(BOOL, DestroyWindow)(THIS) OVERRIDE;
@@ -268,7 +276,7 @@ class SOUI_EXP SHostWnd
     STDMETHOD_(BOOL, ShowWindow)(THIS_ int nCmdShow) OVERRIDE;
 
     STDMETHOD_(HWND, CreateEx)
-    (THIS_ HWND hWndParent, DWORD dwStyle, DWORD dwExStyle, int x, int y, int nWidth, int nHeight) OVERRIDE;
+    (THIS_ HWND hWndParent, DWORD dwStyle, DWORD dwExStyle, int x, int y, int nWidth, int nHeight, IXmlNode *xmlInit DEF_VAL(NULL)) OVERRIDE;
     STDMETHOD_(HWND, Create)
     (THIS_ HWND hWndParent, int x = 0, int y = 0, int nWidth = 0, int nHeight = 0) OVERRIDE;
 
@@ -327,11 +335,6 @@ class SOUI_EXP SHostWnd
     SWindow *GetRoot() const
     {
         return m_pRoot;
-    }
-
-    SNativeWnd *GetNative()
-    {
-        return this;
     }
 
     CRect GetWindowRect() const;
@@ -412,7 +415,6 @@ class SOUI_EXP SHostWnd
     void OnSetFocus(HWND wndOld);
     void OnKillFocus(HWND wndFocus);
 
-    void UpdateAlpha(BYTE byAlpha);
     void UpdatePresenter(HDC dc, IRenderTarget *pRT, LPCRECT rc, BYTE byAlpha = 255, UINT uFlag = 0);
 
     void OnCaptureChanged(HWND wnd);
@@ -463,6 +465,7 @@ class SOUI_EXP SHostWnd
     STDMETHOD_(BOOL, UpdateWindow)(BOOL bForce DEF_VAL(TRUE)) OVERRIDE;
 
     STDMETHOD_(void, UpdateTooltip)() OVERRIDE;
+    STDMETHOD_(void, SetToolTip)(THIS_ LPCRECT rc, UINT tipAlign, LPCTSTR pszTip) OVERRIDE;
 
     STDMETHOD_(BOOL, RegisterTimelineHandler)(THIS_ ITimelineHandler *pHandler) OVERRIDE;
     STDMETHOD_(BOOL, UnregisterTimelineHandler)(THIS_ ITimelineHandler *pHandler) OVERRIDE;
@@ -487,8 +490,10 @@ class SOUI_EXP SHostWnd
     virtual void DestroyTooltip(IToolTip *pTooltip) const;
 
   protected:
-    virtual BOOL OnLoadLayoutFromResourceID(const SStringT &resId);
+    virtual BOOL OnLoadLayoutFromResourceID(SXmlDoc &xmlDoc);
+    virtual SXmlNode OnGetInitXmlNode(SXmlDoc &xmlDoc);
     virtual void OnUserXmlNode(SXmlNode xmlUser);
+    virtual SRootWindow *CreateRoot();
 
   public:
     virtual BOOL onRootResize(IEvtArgs *e);
@@ -497,7 +502,7 @@ class SOUI_EXP SHostWnd
     virtual BOOL _HandleEvent(IEvtArgs *pEvt);
 
   protected:
-    LRESULT OnSetLanguage(UINT uMsg,WPARAM wp,LPARAM lp);
+    LRESULT OnSetLanguage(UINT uMsg, WPARAM wp, LPARAM lp);
     LRESULT OnUpdateFont(UINT uMsg, WPARAM wp, LPARAM lp);
     LRESULT OnRunTasks(UINT uMsg, WPARAM wp, LPARAM lp);
 
@@ -531,7 +536,7 @@ class SOUI_EXP SHostWnd
         MSG_WM_COMMAND(OnCommand)
         MSG_WM_SYSCOMMAND(OnSysCommand)
         MESSAGE_HANDLER_EX(UM_UPDATEFONT, OnUpdateFont)
-		MESSAGE_HANDLER_EX(UM_SETLANGUAGE,OnSetLanguage)
+        MESSAGE_HANDLER_EX(UM_SETLANGUAGE, OnSetLanguage)
         MESSAGE_HANDLER_EX(UM_RUN_TASKS, OnRunTasks)
         CHAIN_MSG_MAP_MEMBER(*m_pNcPainter)
 #if (!DISABLE_SWNDSPY)

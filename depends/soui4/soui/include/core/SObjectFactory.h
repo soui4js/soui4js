@@ -15,9 +15,11 @@
 #define __SOBJECTFACTORY__H__
 #include <core/SCmnMap.h>
 #include <helper/obj-ref-impl.hpp>
+#include <interface/SObjFactory-i.h>
+
 SNSBEGIN
 
-SOUI_EXP SObjectInfo ObjInfo_New(LPCWSTR name, int type);
+SOUI_EXP SObjectInfo ObjInfo_New(LPCWSTR name, int type, LPCWSTR alise = NULL);
 
 SOUI_EXP BOOL ObjInfo_IsValid(const SObjectInfo *pObjInfo);
 
@@ -74,7 +76,7 @@ class TplSObjectFactory : public TObjRefImpl<IObjectFactory> {
     // 通过 SObjectFactory 继承
     STDMETHOD_(SObjectInfo, GetObjectInfo)(CTHIS) SCONST OVERRIDE
     {
-        return ObjInfo_New(T::GetClassName(), T::GetClassType());
+        return ObjInfo_New(T::GetClassName(), T::GetClassType(), T::GetClassAlise());
     }
 };
 

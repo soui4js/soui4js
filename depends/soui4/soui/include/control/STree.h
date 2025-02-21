@@ -36,6 +36,18 @@
 #define STVL_ROOT  ((PSTREELINK)(ULONG_PTR)0xFFFF0000)
 #endif
 
+#ifndef STVI_ROOT
+#ifdef _WIN64
+#define STVI_ROOT  ((HSTREEITEM)0xFFFF000000000000) //=TVI_ROOT
+#define STVI_FIRST ((HSTREEITEM)0xFFFF000000000001) //=TVI_FIRST
+#define STVI_LAST  ((HSTREEITEM)0xFFFF000000000002) //=TVI_LAST
+#else
+#define STVI_ROOT  ((HSTREEITEM)0xFFFF0000) //=TVI_ROOT
+#define STVI_FIRST ((HSTREEITEM)0xFFFF0001) //=TVI_FIRST
+#define STVI_LAST  ((HSTREEITEM)0xFFFF0002) //=TVI_LAST
+#endif
+#endif // STVI_ROOT
+
 /**
  * @class      CSTree 模板类
  * @brief      CSTree 模板类
@@ -87,6 +99,12 @@ class CSTree {
     typedef BOOL (*CBTRAVERSING)(T *, LPARAM);
 
   public:
+    struct IDataFreer
+    {
+        virtual void OnDataFree(T &data) = 0;
+    };
+
+  public:
     /**
      * CSTree::CSTree
      * @brief    构造函数
@@ -94,9 +112,10 @@ class CSTree {
      * Describe  构造函数
      */
     CSTree()
+        : m_hRootFirst(NULL)
+        , m_hRootLast(NULL)
+        , m_dataFreer(NULL)
     {
-        m_hRootFirst = NULL;
-        m_hRootLast = NULL;
     }
 
     /**
@@ -685,6 +704,11 @@ class CSTree {
         }
     }
 
+    void SetDataFreer(IDataFreer *cbFree)
+    {
+        m_dataFreer = cbFree;
+    }
+
   private:
     /**
      * CSTree::FreeNode
@@ -720,8 +744,10 @@ class CSTree {
      */
     virtual void OnNodeFree(T &data)
     {
+        if (m_dataFreer)
+            m_dataFreer->OnDataFree(data);
     }
-
+    IDataFreer *m_dataFreer;
     HSTREENODE m_hRootFirst; /**< 第一个根节点 */
     HSTREENODE m_hRootLast;  /**< 最后一个根节点 */
 };

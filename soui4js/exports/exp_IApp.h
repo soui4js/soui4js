@@ -1,5 +1,5 @@
 #pragma once
-#include <interface/SApp-i.h>
+#include <interface/sapp-i.h>
 
 BOOL ITranslatorMgr_UninstallTranslator(Context* ctx, ITranslatorMgr* _this, ArgList& args);
 

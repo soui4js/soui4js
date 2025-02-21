@@ -2,6 +2,7 @@
 #include <core/SHostDialog.h>
 #include <helper/SDpiHelper.hpp>
 #include <set>
+#include <exports/exp_MsgHandlerProxy.h>
 
 template<class T>
 class JsHostWnd : public T, public JsThisOwner ,public SDpiHandler< JsHostWnd<T> >

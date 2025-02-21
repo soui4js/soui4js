@@ -1,16 +1,14 @@
 ﻿#ifndef __SNATIVEWND__H__
 #define __SNATIVEWND__H__
 #include <interface/SNativeWnd-i.h>
-#include <sobject/Sobject.hpp>
+#include <helper/SCriticalSection.h>
+#include <helper/obj-ref-impl.hpp>
+#include <windows.h>
+#include <soui_exp.h>
 
-#include "SSingleton2.h"
-//////////////////////////////////////////////////////////////////////////
-// thunk 技术实现参考http://www.cppblog.com/proguru/archive/2008/08/24/59831.html
-//////////////////////////////////////////////////////////////////////////
 SNSBEGIN
 
-class SOUI_EXP SNativeWndHelper : public SSingleton2<SNativeWndHelper> {
-    SINGLETON2_TYPE(SINGLETON_SIMPLEWNDHELPER)
+class SOUI_EXP SNativeWndHelper {
   public:
     HANDLE GetHeap()
     {
@@ -33,162 +31,35 @@ class SOUI_EXP SNativeWndHelper : public SSingleton2<SNativeWndHelper> {
         return m_atom;
     }
 
+    BOOL Init(HINSTANCE hInst, LPCTSTR pszClassName, BOOL bImeApp);
+
+  public:
+    static SNativeWndHelper *instance()
+    {
+        static SNativeWndHelper _this;
+        return &_this;
+    }
+
   private:
-    SNativeWndHelper(HINSTANCE hInst, LPCTSTR pszClassName, BOOL bImeApp);
+    SNativeWndHelper();
     ~SNativeWndHelper();
 
     HANDLE m_hHeap;
-    CRITICAL_SECTION m_cs;
+    SCriticalSection m_cs;
     void *m_sharePtr;
 
     ATOM m_atom;
     HINSTANCE m_hInst;
 };
 
-#if defined(_M_IX86)
-// 按一字节对齐
-#pragma pack(push, 1)
-struct tagThunk
-{
-    DWORD m_mov; // 4个字节
-    DWORD m_this;
-    BYTE m_jmp;
-    DWORD m_relproc;
-    //关键代码   //////////////////////////////////////
-    void Init(DWORD_PTR proc, void *pThis)
-    {
-        m_mov = 0x042444C7;
-        m_this = (DWORD)(ULONG_PTR)pThis; // mov [esp+4], pThis;而esp+4本来是放hWnd,现在被偷着放对象指针了.
-        m_jmp = 0xe9;
-        // 跳转到proc指定的入口函数
-        m_relproc = (DWORD)((INT_PTR)proc - ((INT_PTR)this + sizeof(tagThunk)));
-        // 告诉CPU把以上四条语句不当数据，当指令,接下来用GetCodeAddress获得的指针就会运行此指令
-        FlushInstructionCache(GetCurrentProcess(), this, sizeof(tagThunk));
-    }
-    void *GetCodeAddress()
-    {
-        return this; // 指向this,那么由GetCodeAddress获得的函数pProc是从DWORD m_mov;开始执行的
-    }
-};
-#pragma pack(pop)
-#elif defined(_M_AMD64)
-#pragma pack(push, 2)
-struct tagThunk
-{
-    USHORT RcxMov;  // mov rcx, pThis
-    ULONG64 RcxImm; //
-    USHORT RaxMov;  // mov rax, target
-    ULONG64 RaxImm; //
-    USHORT RaxJmp;  // jmp target
-    void Init(DWORD_PTR proc, void *pThis)
-    {
-        RcxMov = 0xb948;         // mov rcx, pThis
-        RcxImm = (ULONG64)pThis; //
-        RaxMov = 0xb848;         // mov rax, target
-        RaxImm = (ULONG64)proc;  //
-        RaxJmp = 0xe0ff;         // jmp rax
-        FlushInstructionCache(GetCurrentProcess(), this, sizeof(tagThunk));
-    }
-    // some thunks will dynamically allocate the memory for the code
-    void *GetCodeAddress()
-    {
-        return this;
-    }
-};
-#pragma pack(pop)
-#elif defined(_M_ARM)
-#pragma pack(push, 4)
-struct tagThunk // this should come out to 16 bytes
-{
-    DWORD m_mov_r0; // mov    r0, pThis
-    DWORD m_mov_pc; // mov    pc, pFunc
-    DWORD m_pThis;
-    DWORD m_pFunc;
-    void Init(DWORD_PTR proc, void *pThis)
-    {
-        m_mov_r0 = 0xE59F0000;
-        m_mov_pc = 0xE59FF000;
-        m_pThis = (DWORD)pThis;
-        m_pFunc = (DWORD)proc;
-        // write block from data cache and
-        //  flush from instruction cache
-        FlushInstructionCache(GetCurrentProcess(), this, sizeof(tagThunk));
-    }
-    void *GetCodeAddress()
-    {
-        return this;
-    }
-};
-#pragma pack(pop)
-#elif defined(_M_ARM64)
-#pragma pack(push, 4)
-struct tagThunk // this should come out to 16 bytes
-{
-    ULONG m_ldr_r16; // ldr  x16, [pc, #24]
-    ULONG m_ldr_r0;  // ldr  x0, [pc, #12]
-    ULONG m_br;      // br   x16
-    ULONG m_pad;
-    ULONG64 m_pThis;
-    ULONG64 m_pFunc;
-    void Init(DWORD_PTR proc, void *pThis)
-    {
-        m_ldr_r16 = 0x580000D0;
-        m_ldr_r0 = 0x58000060;
-        m_br = 0xd61f0200;
-        m_pThis = (ULONG64)pThis;
-        m_pFunc = (ULONG64)proc;
-        // write block from data cache and
-        //  flush from instruction cache
-        FlushInstructionCache(GetCurrentProcess(), this, sizeof(tagThunk));
-    }
-    void *GetCodeAddress()
-    {
-        return this;
-    }
-};
-#pragma pack(pop)
-#else
-#error Only AMD64, ARM, ARM64 and X86 supported
-#endif
-
-template <class T, class Base>
-class TObjRefProxy
-    : public T
-    , public Base {
-  public:
-    //!添加引用
-    /*!
-     */
-    STDMETHOD_(long, AddRef)(THIS) OVERRIDE
-    {
-        return Base::AddRef();
-    }
-
-    //!释放引用
-    /*!
-     */
-    STDMETHOD_(long, Release)(THIS) OVERRIDE
-    {
-        return Base::Release();
-    }
-
-    //!释放对象
-    /*!
-     */
-    STDMETHOD_(void, OnFinalRelease)(THIS) OVERRIDE
-    {
-        return Base::OnFinalRelease();
-    }
-};
-
-class SOUI_EXP SNativeWnd : public TObjRefImpl<INativeWnd> {
+struct tagThunk;
+class SOUI_EXP SNativeWnd : public INativeWnd {
   public:
     SNativeWnd();
     virtual ~SNativeWnd(void);
 
-    static ATOM RegisterSimpleWnd(HINSTANCE hInst, LPCTSTR pszSimpleWndName);
-
-    static ATOM RegisterSimpleWnd2(HINSTANCE hInst, LPCTSTR pszSimpleWndName);
+    static ATOM RegisterSimpleWnd(HINSTANCE hInst, LPCTSTR pszSimpleWndName, BOOL bImeWnd);
+    static void InitWndClass(HINSTANCE hInst, LPCTSTR pszSimpleWndName, BOOL bImeWnd);
 
     STDMETHOD_(int, GetID)(THIS) SCONST
     {
@@ -235,7 +106,7 @@ class SOUI_EXP SNativeWnd : public TObjRefImpl<INativeWnd> {
     STDMETHOD_(BOOL, SetWindowPos)
     (THIS_ HWND hWndInsertAfter, int x, int y, int cx, int cy, UINT nFlags) OVERRIDE;
 
-    STDMETHOD_(BOOL, CenterWindow)(THIS_ HWND hWndCenter DEF_VAL(NULL)) OVERRIDE;
+    STDMETHOD_(BOOL, CenterWindow)(THIS_ HWND hWndCenter DEF_VAL(0)) OVERRIDE;
 
     STDMETHOD_(BOOL, DestroyWindow)(THIS) OVERRIDE;
 
@@ -273,7 +144,7 @@ class SOUI_EXP SNativeWnd : public TObjRefImpl<INativeWnd> {
 
     STDMETHOD_(int, ReleaseDC)(THIS_ HDC hDC) OVERRIDE;
 
-    STDMETHOD_(BOOL, CreateCaret)(THIS_ HBITMAP hBitmap) OVERRIDE;
+    STDMETHOD_(BOOL, CreateCaret)(THIS_ HBITMAP hBitmap, int nWidth, int nHeight) OVERRIDE;
 
     STDMETHOD_(BOOL, HideCaret)(THIS) OVERRIDE;
 
@@ -291,9 +162,6 @@ class SOUI_EXP SNativeWnd : public TObjRefImpl<INativeWnd> {
     (THIS_ UINT message, WPARAM wParam DEF_VAL(0), LPARAM lParam DEF_VAL(0)) OVERRIDE;
 
     STDMETHOD_(BOOL, PostMessage)
-    (THIS_ UINT message, WPARAM wParam DEF_VAL(0), LPARAM lParam DEF_VAL(0)) OVERRIDE;
-
-    STDMETHOD_(BOOL, SendNotifyMessage)
     (THIS_ UINT message, WPARAM wParam DEF_VAL(0), LPARAM lParam DEF_VAL(0)) OVERRIDE;
 
     STDMETHOD_(BOOL, SetWindowText)(THIS_ LPCTSTR lpszString) OVERRIDE;
@@ -317,6 +185,8 @@ class SOUI_EXP SNativeWnd : public TObjRefImpl<INativeWnd> {
 
     STDMETHOD_(BOOL, SetLayeredWindowAttributes)
     (THIS_ COLORREF crKey, BYTE bAlpha, DWORD dwFlags) OVERRIDE;
+
+    STDMETHOD_(BOOL, SetLayeredWindowAlpha)(THIS_ BYTE byAlpha) OVERRIDE;
 
     STDMETHOD_(BOOL, UpdateLayeredWindow)
     (THIS_ HDC hdcDst, POINT *pptDst, SIZE *psize, HDC hdcSrc, POINT *pptSrc, COLORREF crKey, BLENDFUNCTION *pblend, DWORD dwFlags) OVERRIDE;
@@ -350,7 +220,6 @@ class SOUI_EXP SNativeWnd : public TObjRefImpl<INativeWnd> {
 
     // 只执行一次
     static LRESULT CALLBACK StartWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
     tagThunk *m_pThunk;
     WNDPROC m_pfnSuperWindowProc;
 };

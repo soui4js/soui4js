@@ -1,8 +1,9 @@
 ﻿#ifndef __SGRIDLAYOUT__H__
 #define __SGRIDLAYOUT__H__
 
-#include "interface/slayout-i.h"
-#include "SGridLayoutParamStruct.h"
+#include <interface/slayout-i.h>
+#include <layout/SGridLayoutParamStruct.h>
+#include <sobject/Sobject.hpp>
 
 SNSBEGIN
 
@@ -60,7 +61,7 @@ class SGridLayoutParam
 };
 
 class SOUI_EXP SGridLayout : public TObjRefImpl<SObjectImpl<ILayout>> {
-    DEF_SOBJECT(SObjectImpl<ILayout>, L"gridLayout")
+    DEF_SOBJECT_EX(SObjectImpl<ILayout>, L"gridLayout", L"grid")
   public:
     SGridLayout(void);
     ~SGridLayout(void);

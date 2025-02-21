@@ -3,6 +3,7 @@
 
 #include <interface/obj-ref-i.h>
 #include <interface/sobject-i.h>
+#include <interface/SGradient-i.h>
 #include <interface/SPathEffect-i.h>
 #include <interface/SImgDecoder-i.h>
 #include <interface/sxml-i.h>
@@ -1068,23 +1069,23 @@ DECLARE_INTERFACE_(IPathS, IRenderObj)
     STDMETHOD_(BOOL, hitTestStroke)(CTHIS_ float x, float y, float strokeSize) SCONST PURE;
 };
 
-typedef struct _GradientItem
-{
-    COLORREF cr;
-    float pos;
-} GradientItem;
-
 typedef struct _GradientInfo
 {
     GradientType type;
     union {
-        float angle;  // for linear
-        float radius; // radical
+        float angle; // for linear
         struct
         {
-            float fX;
-            float fY;
-        } center; // sweep;
+            float radius;  // radical
+            float centerX; // 0.0 -> 1.0, 0.5 is center of x
+            float centerY; // 0.0 -> 1.0, 0.5 is center of y
+        } radial;
+        struct
+        {
+            BOOL bFullArc; // true(default) indicator gradient is rendered for full circle.
+            float centerX; // 0.0 -> 1.0, 0.5 is center of x
+            float centerY; // 0.0 -> 1.0, 0.5 is center of y
+        } sweep;           // sweep;
     };
 } GradientInfo;
 
@@ -1162,6 +1163,8 @@ DECLARE_INTERFACE_(IRenderTarget, IObjRef)
 
     STDMETHOD_(HRESULT, DrawArc)
     (THIS_ LPCRECT pRect, float startAngle, float sweepAngle, BOOL useCenter) PURE;
+    STDMETHOD_(HRESULT, DrawArc2)
+    (THIS_ LPCRECT pRect, float startAngle, float sweepAngle, int width) PURE;
     STDMETHOD_(HRESULT, FillArc)(THIS_ LPCRECT pRect, float startAngle, float sweepAngle) PURE;
 
     STDMETHOD_(HRESULT, DrawLines)(THIS_ LPPOINT pPt, size_t nCount) PURE;
@@ -1341,6 +1344,16 @@ typedef IPathS IPath;
 #endif //__cplusplus
 
 SNSEND
-typedef BOOL (*FontFallback)(LPCSTR u8FontName, wchar_t text, char u8FontNameFallback[100], int *charset);
+
+/**
+ * @brief 字体回退回调接口，skia渲染专用
+ * @param u8FontName，当前字体名，utf8编码
+ * @param pWord, 不能渲染的字符
+ * @param wordLen, 字长，为1或者2
+ * @param[out] u8FontNameFallback,可用字体名，utf8编码
+ * @param[out] charset, 字体的charset属性
+ * @return TRUE-找到字体
+ */
+typedef BOOL (*FontFallback)(LPCSTR u8FontName, const wchar_t *pWord, size_t wordLen, char u8FontNameFallback[100], int *charset);
 
 #endif // __SRENDER_I__H__

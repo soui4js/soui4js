@@ -1,8 +1,9 @@
 ﻿#ifndef __SMSGLOOP_I__H__
 #define __SMSGLOOP_I__H__
 
+#include <windows.h>
 #include <interface/obj-ref-i.h>
-#include <interface/STaskLoop-i.h>
+#include <interface/SRunnable-i.h>
 
 SNSBEGIN
 

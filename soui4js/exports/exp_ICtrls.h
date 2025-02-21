@@ -1,5 +1,5 @@
 #pragma once
-#include <control/souictrls.h>
+#include <control/SouiCtrls.h>
 #include "toobj.h"
 
 template<typename T1, typename T2>

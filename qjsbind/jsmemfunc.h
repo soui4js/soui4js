@@ -725,6 +725,8 @@ namespace qjsbind {
 #pragma once
 #include "jsnewvalue.h"
 
+#ifdef WIN32
+
 namespace qjsbind {
 #ifndef _WIN64
 	//10 params
@@ -1444,4 +1446,6 @@ namespace qjsbind {
 	}
 #endif
 }
+#endif
+
 

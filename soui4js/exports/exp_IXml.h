@@ -1,5 +1,5 @@
 #pragma once
-#include <interface/Sxml-i.h>
+#include <interface/sxml-i.h>
 
 void Exp_IXml(qjsbind::Module* module)
 {

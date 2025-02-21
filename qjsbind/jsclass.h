@@ -199,7 +199,7 @@ namespace qjsbind {
 			assert(class_inited_);
 		}
 
-		template<void Mark(T*,JS_MarkFunc* markFun)=0>
+		template<void Mark(T*,JS_MarkFunc* markFun)=nullptr>
 		void Init(JSClassID parent_id = 0) {
 			assert(!class_inited_);
 

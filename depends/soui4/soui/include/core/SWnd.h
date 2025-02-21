@@ -14,7 +14,7 @@
 #ifndef __SWND__H__
 #define __SWND__H__
 #include <core/SWindowMgr.h>
-#include <interface/SwndContainer-i.h>
+#include <interface/SWndContainer-i.h>
 #include <interface/slayout-i.h>
 #include <interface/saccproxy-i.h>
 #include <interface/scaret-i.h>
@@ -24,11 +24,10 @@
 #include <event/SEvents.h>
 #include <event/SEventSet.h>
 #include <res.mgr/SUiDef.h>
-#include <core/SwndStyle.h>
+#include <core/SWndStyle.h>
 #include <core/SSkin.h>
 #include <animation/SAnimation.h>
 #include <interface/SWindow-i.h>
-#include <OCIdl.h>
 
 #define SC_WANTARROWS  0x0001     /* Control wants arrow keys         */
 #define SC_WANTTAB     0x0002     /* Control wants tab keys           */
@@ -310,7 +309,7 @@ class SOUI_EXP SWindow
     STDMETHOD_(IPathS *, GetWindowPath)(THIS) SCONST OVERRIDE;
 
     STDMETHOD_(BOOL, SetTimer)(THIS_ char id, UINT uElapse) OVERRIDE;
-    STDMETHOD_(void, KillTimer)(THIS_ char id) OVERRIDE;
+    STDMETHOD_(BOOL, KillTimer)(THIS_ char id) OVERRIDE;
 
     STDMETHOD_(SWND, GetCapture)(THIS) SCONST OVERRIDE;
     STDMETHOD_(SWND, SetCapture)(THIS) OVERRIDE;
@@ -448,7 +447,9 @@ class SOUI_EXP SWindow
     STDMETHOD_(void, SetCaretPos)(THIS_ int x, int y) OVERRIDE;
 
   public:
+#ifdef _WIN32
     IAccessible *GetAccessible();
+#endif
     IAccProxy *GetAccProxy();
     void accNotifyEvent(DWORD dwEvt);
 
@@ -689,6 +690,7 @@ class SOUI_EXP SWindow
     STDMETHOD_(void, OnAnimationStart)(THIS_ IAnimation *animation);
     STDMETHOD_(void, OnAnimationStop)(THIS_ IAnimation *animation);
     STDMETHOD_(void, OnAnimationRepeat)(THIS_ IAnimation *animation);
+    STDMETHOD_(void, OnAnimationPauseChange)(THIS_ IAnimation *animation, BOOL bPaused);
 
   protected:
     virtual void OnAnimationInvalidate(IAnimation *pAni, bool bErase);
@@ -1059,6 +1061,8 @@ class SOUI_EXP SWindow
 
     void OnLButtonDown(UINT nFlags, CPoint pt);
 
+    void OnLButtonDbClick(UINT nFlags, CPoint point);
+
     void OnLButtonUp(UINT nFlags, CPoint pt);
 
     void OnRButtonDown(UINT nFlags, CPoint point);
@@ -1095,6 +1099,7 @@ class SOUI_EXP SWindow
         MESSAGE_RANGE_HANDLER_EX(WM_LBUTTONDOWN, WM_MBUTTONDBLCLK, OnMouseClick)
         MSG_WM_LBUTTONDOWN(OnLButtonDown)
         MSG_WM_LBUTTONUP(OnLButtonUp)
+        MSG_WM_LBUTTONDBLCLK(OnLButtonDbClick)
         MSG_WM_RBUTTONDOWN(OnRButtonDown)
         MSG_WM_RBUTTONUP(OnRButtonUp)
         MSG_WM_MOUSEMOVE(OnMouseMove)

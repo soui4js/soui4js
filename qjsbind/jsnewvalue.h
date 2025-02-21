@@ -41,7 +41,7 @@ namespace qjsbind {
 #ifdef _WIN64
 		return Value(context.context(), JS_NewBigUint64(context.context(), (uint64_t)v));
 #else
-		return Value(context.context(), JS_NewUint32(context.context(), (uint32_t)v));
+		return Value(context.context(), JS_NewUint32(context.context(), (uint32_t)(uint64_t)v));
 #endif
 	}
 
@@ -63,6 +63,7 @@ namespace qjsbind {
 		return NewValue(context, (void*)v);
 	}
 
+#ifdef WIN32
 	template<>
 	inline Value NewValue(Context& context, long v)
 	{
@@ -74,6 +75,7 @@ namespace qjsbind {
 	{
 		return Value(context.context(), JS_NewUint32(context.context(), v));
 	}
+#endif // WIN32
 
 	template<>
 	inline Value NewValue(Context& context, bool v) {

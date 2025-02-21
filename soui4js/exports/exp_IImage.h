@@ -3,6 +3,7 @@
 
 
 BOOL IBitmapS_Save(Context* ctx, IBitmapS* _this, ArgList& args) {
+#ifdef WIN32
 	if (args.size() < 1)
 		return FALSE;
 	SStringW strPath = S_CA2W((const char*)args[0], CP_UTF8);
@@ -27,6 +28,8 @@ BOOL IBitmapS_Save(Context* ctx, IBitmapS* _this, ArgList& args) {
 	if (idx == -1)
 		return FALSE;
 	return _this->Save(strPath, &fmts[idx])==S_OK;
+#endif // WIN32
+	return FALSE;
 }
 
 void Exp_IImage(Module* module) {

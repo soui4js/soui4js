@@ -3,7 +3,9 @@
 #include <qjsbind.h>
 #include <event/SEvents.h>
 #include <core/SDefine.h>
+#ifdef WIN32
 #include "exp_SRegKey.h"
+#endif
 #include "exp_SValueAnimator.h"
 
 using namespace SOUI;
@@ -156,6 +158,7 @@ SEnumUint(WM_CLOSE);
 SEnumUint(WM_COMMAND);
 SEnumUint(WM_SYSCOMMAND);
 
+#ifdef WIN32
 
 SEnumInt(SKEY_ROOT);
 SEnumInt(SKEY_USER);
@@ -164,6 +167,7 @@ SEnumInt(SKEY_USERS);
 
 SEnumInt(REG_READ);
 SEnumInt(REG_WRITE);
+#endif
 
 SEnumInt(MOUSE_LBTN_DOWN);
 SEnumInt(MOUSE_LBTN_UP);

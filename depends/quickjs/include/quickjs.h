@@ -69,7 +69,7 @@ typedef struct JSClass JSClass;
 typedef uint32_t JSClassID;
 typedef uint32_t JSAtom;
 
-#if INTPTR_MAX >= INT64_MAX
+#if (INTPTR_MAX >= INT64_MAX)
 #define JS_PTR64
 #define JS_PTR64_DEF(a) a
 #else
@@ -1056,11 +1056,9 @@ QJS_API int JS_SetModuleExportList(JSContext *ctx, JSModuleDef *m,
                            const JSCFunctionListEntry *tab, int len);
 
 
-#ifdef _WIN32
 QJS_API int js_prepare_waitlist(JSContext* ctx, HANDLE* handles, int length, int* rwsize, int* msgSize, uint32_t*waitTime);
 QJS_API void js_handle_waitresult(JSContext* ctx, int ret, int osrw_cnt, int msg_cnt);
 
-#endif
 
 typedef void (*fun_printer)(const char* buf, int len);
 QJS_API void js_set_printer(fun_printer fun);

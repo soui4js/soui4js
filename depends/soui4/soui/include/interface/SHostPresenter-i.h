@@ -1,6 +1,7 @@
 ﻿#ifndef __SHOSTPRESENTER_I__H__
 #define __SHOSTPRESENTER_I__H__
-#include <interface/shostwnd-i.h>
+#include <interface/obj-ref-i.h>
+#include <interface/SRender-i.h>
 SNSBEGIN
 
 #undef INTERFACE
@@ -23,12 +24,10 @@ DECLARE_INTERFACE_(IHostPresenter, IObjRef)
     STDMETHOD_(void, OnFinalRelease)(THIS) PURE;
 
     //////////////////////////////////////////////////////////////////////////
-
     STDMETHOD_(void, OnHostCreate)(THIS) PURE;
     STDMETHOD_(void, OnHostDestroy)(THIS) PURE;
     STDMETHOD_(void, OnHostResize)(THIS_ SIZE szHost) PURE;
     STDMETHOD_(void, OnHostPresent)(THIS_ HDC hdc, IRenderTarget * pMemRT, LPCRECT rcDirty, BYTE byAlpha) PURE;
-    STDMETHOD_(void, OnHostAlpha)(THIS_ BYTE byAlpha) PURE;
 };
 
 SNSEND

@@ -1,8 +1,9 @@
 ﻿#ifndef __STOOLTIP__H__
 #define __STOOLTIP__H__
 
-#include "interface/stooltip-i.h"
-#include "core/SNativeWnd.h"
+#include <interface/stooltip-i.h>
+#include <core/SNativeWnd.h>
+#include <helper/obj-ref-impl.hpp>
 
 SNSBEGIN
 class STipCtrl
@@ -24,9 +25,12 @@ class STipCtrl
 
     STDMETHOD_(void, RelayEvent)(THIS_ const MSG *pMsg) OVERRIDE;
 
+    STDMETHOD_(void, SetToolTip)(THIS_ LPCRECT rc, UINT tipAlign, LPCTSTR pszTip, int nScale) OVERRIDE;
+
   protected:
     virtual void OnFinalMessage(HWND hWnd);
 
+    void UpdateFont(int nScale);
     void OnTimer(UINT_PTR idEvent);
     void OnPaint(HDC dc);
     void ShowTip(BOOL bShow);
@@ -46,6 +50,8 @@ class STipCtrl
     HFONT m_font;
 
     TIPID m_id;
+
+    UINT m_tipAlign;
 };
 SNSEND
 

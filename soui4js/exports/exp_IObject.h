@@ -1,5 +1,5 @@
 #pragma once
-#include <interface/SObject-i.h>
+#include <interface/sobject-i.h>
 
 Value IObject_GetAttribute(Context* ctx, IObject* _this, ArgList& args) {
 	if (args.size() < 1)

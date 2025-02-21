@@ -5,6 +5,7 @@
 #include <layout/SLayoutSize.h>
 #include <helper/SplitString.h>
 #include <matrix/SPoint.h>
+#include <sobject/Sobject.hpp>
 
 SNSBEGIN
 
@@ -243,28 +244,37 @@ class SOUI_EXP SGradientDesc {
     SGradientDesc();
 
   protected:
-    SArray<GradientItem> m_arrGradient;
+    SAutoRefPtr<IGradient> m_gradient;
     SLayoutSize m_radius;
+    float m_ratio_radius;
     GradientType m_type;
     float m_angle;
     float m_centerX;
     float m_centerY;
-    GradientInfo GetGradientInfo(int nScale) const;
+    BOOL m_bFullArc;
+
+  public:
+    GradientInfo GetGradientInfo(int nScale, int wid, int hei) const;
+    IGradient *GetGradient()
+    {
+        return m_gradient;
+    }
 
   protected:
-    HRESULT OnAttrColors(const SStringW &value, BOOL bLoading);
-
     SOUI_ATTRS_BEGIN()
-        ATTR_CUSTOM(L"colors", OnAttrColors)
         ATTR_ENUM_BEGIN(L"type", GradientType, TRUE)
             ATTR_ENUM_VALUE(L"linear", linear)
             ATTR_ENUM_VALUE(L"radial", radial)
             ATTR_ENUM_VALUE(L"sweep", sweep)
         ATTR_ENUM_END(m_type)
         ATTR_LAYOUTSIZE(L"radius", m_radius, TRUE)
+        ATTR_FLOAT(L"ratio_radius", m_ratio_radius, TRUE)
         ATTR_FLOAT(L"angle", m_angle, TRUE)
         ATTR_FLOAT(L"centerX", m_centerX, TRUE)
         ATTR_FLOAT(L"centerY", m_centerY, TRUE)
+        ATTR_BOOL(L"fullArc", m_bFullArc, TRUE)
+        ATTR_GRADIENT(L"gradient", m_gradient, TRUE)
+        ATTR_CHAIN_PTR(m_gradient, 0)
     SOUI_ATTRS_BREAK()
 };
 
@@ -277,6 +287,7 @@ class SOUI_EXP SSkinGradation2
 
   public:
     STDMETHOD_(ISkinObj *, Scale)(THIS_ int nScale) OVERRIDE;
+    STDMETHOD_(void, OnInitFinished)(THIS_ IXmlNode *xmlNode) OVERRIDE;
 
   protected:
     void _DrawByIndex(IRenderTarget *pRT, LPCRECT prcDraw, int iState, BYTE byAlpha) const override;
@@ -284,7 +295,7 @@ class SOUI_EXP SSkinGradation2
     SPoint m_ptCorner;
     SLayoutSize m_szCorner[2];
 
-  protected:
+  public:
     SOUI_ATTRS_BEGIN()
         ATTR_SPOINT(L"ratio_corners", m_ptCorner, TRUE)
         ATTR_LAYOUTSIZE2(L"corners", m_szCorner, TRUE)
@@ -449,7 +460,9 @@ class SOUI_EXP SSkinShape : public SSkinObjBase {
         {
         }
 
-        IBrushS *CreateBrush(IRenderTarget *pRT, int nScale, BYTE byAlpha) const;
+        IBrushS *CreateBrush(IRenderTarget *pRT, int nScale, BYTE byAlpha, int wid, int hei) const;
+
+        STDMETHOD_(void, OnInitFinished)(THIS_ IXmlNode *xmlNode) override;
 
       public:
         SOUI_ATTRS_BEGIN()
@@ -606,8 +619,8 @@ class SOUI_EXP SSkinShape : public SSkinObjBase {
 class SOUI_EXP SSKinGroup : public SSkinObjBase {
     DEF_SOBJECT(SSkinObjBase, L"group")
   public:
-    STDMETHOD_(SIZE, GetSkinSize)(THIS) SCONST OVERRIDE;
-    STDMETHOD_(int, GetStates)(THIS) SCONST OVERRIDE;
+    STDMETHOD_(SIZE, GetSkinSize)(CTHIS) SCONST OVERRIDE;
+    STDMETHOD_(int, GetStates)(CTHIS) SCONST OVERRIDE;
 
     SOUI_ATTRS_BEGIN()
         ATTR_SKIN(L"normal", m_skins[0], FALSE)

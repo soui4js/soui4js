@@ -251,9 +251,12 @@ namespace qjsbind {
 			return (uint64_t)value;
 		}
 
+#ifdef WIN32
 		operator long() const {
 			return ToInt32();
 		}
+#endif
+
 		operator int64_t() const {
 			return ToInt64();
 		}

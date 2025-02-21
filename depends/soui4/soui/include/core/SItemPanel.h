@@ -8,7 +8,9 @@
 #ifndef __SITEMPANEL__H__
 #define __SITEMPANEL__H__
 
-#include "SwndContainerImpl.h"
+#include "SWndContainerImpl.h"
+#include <proxy/SWindowProxy.h>
+#include <interface/SCtrl-i.h>
 
 SNSBEGIN
 
@@ -123,6 +125,7 @@ class SOUI_EXP SOsrPanel
     STDMETHOD_(BOOL, UpdateWindow)(BOOL bForce) OVERRIDE;
 
     STDMETHOD_(void, UpdateTooltip)() OVERRIDE;
+    STDMETHOD_(void, SetToolTip)(THIS_ LPCRECT rc, UINT tipAlign, LPCTSTR pszTip) OVERRIDE;
 
     STDMETHOD_(IMessageLoop *, GetMsgLoop)() OVERRIDE;
 
@@ -200,7 +203,7 @@ class TOsrPanelProxy
 
     STDMETHOD_(HRESULT, QueryInterface)(REFGUID id, IObjRef **ppRet) OVERRIDE
     {
-        if (id == __uuidof(T))
+        if (id == T::GetIID())
         {
             *ppRet = (T *)this;
             AddRef();

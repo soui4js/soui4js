@@ -1,6 +1,8 @@
 ﻿#ifndef __STRCPCVT__H__
 #define __STRCPCVT__H__
 
+#include <windows.h>
+
 #ifndef CP_ACP
 #define CP_ACP 0
 #endif//CP_ACP
@@ -8,9 +10,8 @@
 #include "utilities-def.h"
 #include "tstring.h"
 
-namespace SOUI
-{
 
+SNSBEGIN
     class UTILITIES_API SStrCpCvt
     {
     public:
@@ -23,9 +24,8 @@ namespace SOUI
         static SStringW CvtW2W(const SStringW &str,unsigned int cp=CP_ACP);
 
     };
-
-
-}//end of namespace SOUI
+    
+SNSEND
 
 #define S_CA2W SStrCpCvt::CvtA2W
 #define S_CW2A SStrCpCvt::CvtW2A

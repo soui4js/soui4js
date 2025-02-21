@@ -1,5 +1,5 @@
 #pragma once
-#include <interface/Sxml-i.h>
+#include <interface/sxml-i.h>
 
 void Slog(const char*);
 namespace qjsbind {

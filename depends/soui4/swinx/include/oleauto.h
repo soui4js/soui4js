@@ -1,0 +1,55 @@
+#ifndef _OLE_AUTO_H_
+#define _OLE_AUTO_H_
+#include <ctypes.h>
+#include <oaidl.h>
+
+/* BSTR functions */
+BSTR WINAPI SysAllocString(const OLECHAR *);
+BSTR WINAPI SysAllocStringByteLen(LPCSTR, UINT);
+BSTR WINAPI SysAllocStringLen(const OLECHAR *, UINT);
+void WINAPI SysFreeString(BSTR);
+INT WINAPI SysReAllocString(LPBSTR, const OLECHAR *);
+int WINAPI SysReAllocStringLen(BSTR *, const OLECHAR *, UINT);
+UINT WINAPI SysStringByteLen(BSTR);
+UINT WINAPI SysStringLen(BSTR);
+
+/* SafeArray functions */
+SAFEARRAY *WINAPI SafeArrayCreate(VARTYPE, UINT, SAFEARRAYBOUND *);
+SAFEARRAY *WINAPI SafeArrayCreateEx(VARTYPE, UINT, SAFEARRAYBOUND *, LPVOID);
+SAFEARRAY *WINAPI SafeArrayCreateVector(VARTYPE, LONG, ULONG);
+SAFEARRAY *WINAPI SafeArrayCreateVectorEx(VARTYPE, LONG, ULONG, LPVOID);
+
+HRESULT WINAPI SafeArrayAllocDescriptor(UINT, SAFEARRAY **);
+HRESULT WINAPI SafeArrayAllocDescriptorEx(VARTYPE, UINT, SAFEARRAY **);
+HRESULT WINAPI SafeArrayAllocData(SAFEARRAY *);
+HRESULT WINAPI SafeArrayDestroyDescriptor(SAFEARRAY *);
+HRESULT WINAPI SafeArrayPutElement(SAFEARRAY *, LONG *, void *);
+HRESULT WINAPI SafeArrayGetElement(SAFEARRAY *, LONG *, void *);
+HRESULT WINAPI SafeArrayLock(SAFEARRAY *);
+HRESULT WINAPI SafeArrayUnlock(SAFEARRAY *);
+HRESULT WINAPI SafeArrayGetUBound(SAFEARRAY *, UINT, LONG *);
+HRESULT WINAPI SafeArrayGetLBound(SAFEARRAY *, UINT, LONG *);
+UINT WINAPI SafeArrayGetDim(SAFEARRAY *);
+UINT WINAPI SafeArrayGetElemsize(SAFEARRAY *);
+HRESULT WINAPI SafeArrayGetVartype(SAFEARRAY *, VARTYPE *);
+HRESULT WINAPI SafeArrayAccessData(SAFEARRAY *, void **);
+HRESULT WINAPI SafeArrayUnaccessData(SAFEARRAY *);
+HRESULT WINAPI SafeArrayPtrOfIndex(SAFEARRAY *, LONG *, void **);
+HRESULT WINAPI SafeArrayCopyData(SAFEARRAY *, SAFEARRAY *);
+HRESULT WINAPI SafeArrayDestroyData(SAFEARRAY *);
+HRESULT WINAPI SafeArrayDestroy(SAFEARRAY *);
+HRESULT WINAPI SafeArrayCopy(SAFEARRAY *, SAFEARRAY **);
+HRESULT WINAPI SafeArrayRedim(SAFEARRAY *, SAFEARRAYBOUND *);
+HRESULT WINAPI SafeArraySetRecordInfo(SAFEARRAY *, IRecordInfo *);
+HRESULT WINAPI SafeArrayGetRecordInfo(SAFEARRAY *, IRecordInfo **);
+HRESULT WINAPI SafeArraySetIID(SAFEARRAY *, REFGUID);
+HRESULT WINAPI SafeArrayGetIID(SAFEARRAY *, GUID *);
+
+typedef enum tagREGKIND
+{
+    REGKIND_DEFAULT,
+    REGKIND_REGISTER,
+    REGKIND_NONE
+} REGKIND;
+
+#endif //_OLE_AUTO_H_

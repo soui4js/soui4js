@@ -3,7 +3,7 @@
 #include <interface/SScriptModule-i.h>
 #include <helper/obj-ref-impl.hpp>
 #include <qjsbind.h>
-#include <interface/smsgloop-i.h>
+#include <interface/SMsgLoop-i.h>
 
 SNSBEGIN
 

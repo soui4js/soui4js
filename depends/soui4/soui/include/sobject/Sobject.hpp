@@ -11,8 +11,8 @@
 * Describe    the base class used in SOUI, which provides type identify of class in runtime
 *             and implement attributes dispatcher described in XML.
 */
-
-#pragma once
+#ifndef __SOBJECT_I_H_
+#define __SOBJECT_I_H_
 
 #include <interface/sobject-i.h>
 #include <string/strcpcvt.h>
@@ -38,8 +38,13 @@ public:
 	static LPCWSTR GetClassName()                       
 	{                                                   
 		return T::GetClassName();                               
-	}                                              
-public:
+	}
+    static LPCWSTR GetClassAlias()
+    {
+        return T::GetClassAlias();
+    }
+
+  public:
 	static void MarkAttributeHandled(SXmlAttr xmlAttr, bool bHandled)
 	{
 		xmlAttr.set_userdata(bHandled?1:0);
@@ -209,3 +214,6 @@ protected:
 typedef SObjectImpl<IObject> SObject;
 
 SNSEND
+
+
+#endif//__SOBJECT_I_H_

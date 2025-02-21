@@ -2,7 +2,7 @@
 #define __SHOSTWND_I__H__
 #include <interface/SNativeWnd-i.h>
 #include <interface/SNcPainter-i.h>
-#include <interface/smsgloop-i.h>
+#include <interface/SMsgLoop-i.h>
 
 SNSBEGIN
 
@@ -10,7 +10,6 @@ typedef struct IWindow IWindow;
 typedef struct IApplication IApplication;
 typedef struct IHostPresenter IHostPresenter;
 typedef struct IHostWnd IHostWnd;
-
 typedef struct _EventHandlerInfo
 {
     FunCallback fun;
@@ -19,10 +18,28 @@ typedef struct _EventHandlerInfo
 
 #undef INTERFACE
 #define INTERFACE IHostWnd
-DECLARE_INTERFACE_(IHostWnd, INativeWnd)
+DECLARE_INTERFACE_(IHostWnd, IObjRef)
 {
-#include "SNativeWndApi.h"
+    //!添加引用
+    /*!
+     */
+    STDMETHOD_(long, AddRef)(THIS) PURE;
+
+    //!释放引用
+    /*!
+     */
+    STDMETHOD_(long, Release)(THIS) PURE;
+
+    //!释放对象
+    /*!
+     */
+    STDMETHOD_(void, OnFinalRelease)(THIS) PURE;
     //////////////////////////////////////////////////////////////////////////
+    /**
+     * @brief 获取INativeWnd接口
+     * @return INativeWnd*
+     */
+    STDMETHOD_(INativeWnd *, GetNative)(THIS) PURE;
 
     /**
      * @brief 创建窗口
@@ -33,10 +50,11 @@ DECLARE_INTERFACE_(IHostWnd, INativeWnd)
      * @param y
      * @param nWidth
      * @param nHeight
+     * @param xmlInit init xml node
      * @return HWND
      */
     STDMETHOD_(HWND, CreateEx)
-    (THIS_ HWND hWndParent, DWORD dwStyle, DWORD dwExStyle, int x, int y, int nWidth, int nHeight) PURE;
+    (THIS_ HWND hWndParent, DWORD dwStyle, DWORD dwExStyle, int x, int y, int nWidth, int nHeight, IXmlNode *xmlInit DEF_VAL(NULL)) PURE;
 
     /**
      * @brief 创建窗口
@@ -183,7 +201,26 @@ DECLARE_INTERFACE_(IHostWnd, INativeWnd)
 #define INTERFACE IHostDialog
 DECLARE_INTERFACE_(IHostDialog, IHostWnd)
 {
-#include "SNativeWndApi.h"
+    //!添加引用
+    /*!
+     */
+    STDMETHOD_(long, AddRef)(THIS) PURE;
+
+    //!释放引用
+    /*!
+     */
+    STDMETHOD_(long, Release)(THIS) PURE;
+
+    //!释放对象
+    /*!
+     */
+    STDMETHOD_(void, OnFinalRelease)(THIS) PURE;
+    //////////////////////////////////////////////////////////////////////////
+    /**
+     * @brief 获取NativeWnd接口
+     * @return INativeWnd*
+     */
+    STDMETHOD_(INativeWnd *, GetNative)(THIS) PURE;
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -196,10 +233,11 @@ DECLARE_INTERFACE_(IHostDialog, IHostWnd)
      * @param y
      * @param nWidth
      * @param nHeight
+     * @param xmlInit init xml node
      * @return HWND
      */
     STDMETHOD_(HWND, CreateEx)
-    (THIS_ HWND hWndParent, DWORD dwStyle, DWORD dwExStyle, int x, int y, int nWidth, int nHeight) PURE;
+    (THIS_ HWND hWndParent, DWORD dwStyle, DWORD dwExStyle, int x, int y, int nWidth, int nHeight, IXmlNode *xmlInit DEF_VAL(NULL)) PURE;
 
     /**
      * @brief 创建窗口

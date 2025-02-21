@@ -30,7 +30,7 @@
 
 //不交给SObject处理的属性表结尾
 #define SOUI_ATTRS_BREAK() \
-    return E_NOTIMPL;      \
+    hRet = E_NOTIMPL;      \
     return hRet;           \
     }
 
@@ -73,7 +73,7 @@
 #define ATTR_INT(attribname, varname, allredraw)      \
     if (0 == strAttribName.CompareNoCase(attribname)) \
     {                                                 \
-        int nRet = Str2Int(strValue, TRUE);           \
+        int nRet = Str2IntW(strValue, TRUE);          \
         varname = nRet;                               \
         hRet = allredraw ? S_OK : S_FALSE;            \
     }                                                 \
@@ -176,7 +176,7 @@
 #define ATTR_UINT(attribname, varname, allredraw)     \
     if (0 == strAttribName.CompareNoCase(attribname)) \
     {                                                 \
-        int nRet = Str2Int(strValue, TRUE);           \
+        int nRet = Str2IntW(strValue, TRUE);          \
         varname = (UINT)nRet;                         \
         hRet = allredraw ? S_OK : S_FALSE;            \
     }                                                 \
@@ -186,7 +186,7 @@
 #define ATTR_DWORD(attribname, varname, allredraw)    \
     if (0 == strAttribName.CompareNoCase(attribname)) \
     {                                                 \
-        int nRet = Str2Int(strValue, TRUE);           \
+        int nRet = Str2IntW(strValue, TRUE);          \
         varname = (DWORD)nRet;                        \
         hRet = allredraw ? S_OK : S_FALSE;            \
     }                                                 \
@@ -196,7 +196,7 @@
 #define ATTR_WORD(attribname, varname, allredraw)     \
     if (0 == strAttribName.CompareNoCase(attribname)) \
     {                                                 \
-        int nRet = Str2Int(strValue, TRUE);           \
+        int nRet = Str2IntW(strValue, TRUE);          \
         varname = (WORD)nRet;                         \
         hRet = allredraw ? S_OK : S_FALSE;            \
     }                                                 \
@@ -267,7 +267,7 @@
 #define ATTR_HEX(attribname, varname, allredraw)      \
     if (0 == strAttribName.CompareNoCase(attribname)) \
     {                                                 \
-        int nRet = Str2Int(strValue, TRUE);           \
+        int nRet = Str2IntW(strValue, TRUE);          \
         varname = nRet;                               \
         hRet = allredraw ? S_OK : S_FALSE;            \
     }                                                 \
@@ -403,6 +403,20 @@
         varname.Attach(SApplication::getSingleton().LoadAnimation(S_CW2T(strValue))); \
         hRet = allredraw ? S_OK : S_FALSE;                                            \
     }                                                                                 \
+    else
+
+#define ATTR_GRADIENT(attribname, varname, allredraw)                 \
+    if (0 == strAttribName.CompareNoCase(attribname))                 \
+    {                                                                 \
+        SOUI::IGradient *pGradient = GETUIDEF->GetGradient(strValue); \
+        if (!pGradient)                                               \
+            hRet = E_FAIL;                                            \
+        else                                                          \
+        {                                                             \
+            varname = pGradient;                                      \
+            hRet = allredraw ? S_OK : S_FALSE;                        \
+        }                                                             \
+    }                                                                 \
     else
 
 #endif //_SATTRCRACK_H

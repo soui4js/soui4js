@@ -11,9 +11,10 @@
 #ifndef __SCOMCLI_H__
 #define __SCOMCLI_H__
 
-
-
+#include <sdef.h>
+#include <windows.h>
 #include <unknwn.h>
+#include <oaidl.h>
 
 #ifndef SASSERT
 #include <assert.h>
@@ -26,8 +27,7 @@
 
 
 #pragma pack(push,8)
-namespace SOUI
-{
+SNSBEGIN
 
 /////////////////////////////////////////////////////////////////////////////
 // Smart Pointer helpers
@@ -88,10 +88,10 @@ protected:
         (void)nNull;
         p = NULL;
     }
-    SComPtrBase( T* lp) throw()
+    SComPtrBase( T* lp, BOOL bAddRef) throw()
     {
         p = lp;
-        if (p != NULL)
+        if (p != NULL && bAddRef)
             p->AddRef();
     }
 public:
@@ -225,13 +225,13 @@ public:
         SComPtrBase<T>(nNull)
     {
     }
-    SComPtr(T* lp) throw() :
-        SComPtrBase<T>(lp)
+    SComPtr(T* lp, BOOL bAddRef = TRUE) throw() :
+        SComPtrBase<T>(lp,bAddRef)
 
     {
     }
     SComPtr( const SComPtr<T>& lp) throw() :
-        SComPtrBase<T>(lp.p)
+        SComPtrBase<T>(lp.p,TRUE)
     {
     }
     T* operator=( T* lp) throw()
@@ -245,7 +245,7 @@ public:
     template <typename Q>
     T* operator=( const SComPtr<Q>& lp) throw()
     {
-        if( !IsEqualObject(lp) )
+        if( !SComPtrBase<T>::IsEqualObject(lp) )
         {
             return static_cast<T*>(SComQIPtrAssign((IUnknown**)&this->p, lp, __uuidof(T)));
         }
@@ -269,12 +269,12 @@ public:
     SComPtr() throw()
     {
     }
-    SComPtr(IDispatch* lp) throw() :
-        SComPtrBase<IDispatch>(lp)
+    SComPtr(IDispatch* lp, BOOL bAddRef = TRUE) throw() :
+        SComPtrBase<IDispatch>(lp,bAddRef)
     {
     }
     SComPtr(const SComPtr<IDispatch>& lp) throw() :
-        SComPtrBase<IDispatch>(lp.p)
+        SComPtrBase<IDispatch>(lp.p,TRUE)
     {
     }
     IDispatch* operator=(IDispatch* lp) throw()
@@ -439,8 +439,8 @@ public:
     SComQIPtr() throw()
     {
     }
-    SComQIPtr( T* lp) throw() :
-        SComPtr<T>(lp)
+    SComQIPtr( T* lp, BOOL bAddRef = TRUE) throw() :
+        SComPtr<T>(lp,bAddRef)
     {
     }
     SComQIPtr( const SComQIPtr<T,piid>& lp) throw() :
@@ -516,9 +516,9 @@ public:
     }
 };
 
-typedef SComQIPtr<IDispatch, &__uuidof(IDispatch)> CComDispatchDriver;
+typedef SComQIPtr<IDispatch, &IID_IDispatch> CComDispatchDriver;
 
-}    // namespace SOUI
+SNSEND
 #pragma pack(pop)
 
 #pragma warning (pop)    

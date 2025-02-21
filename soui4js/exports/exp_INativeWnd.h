@@ -50,7 +50,9 @@ void Exp_INativeWnd(qjsbind::Module* module)
 	jsCls.AddFunc("SetFocus", &INativeWnd::SetFocus);
 	jsCls.AddFunc("SendMessage", &INativeWnd::SendMessage);
 	jsCls.AddFunc("PostMessage", &INativeWnd::PostMessage);
+#ifdef WIN32
 	jsCls.AddFunc("SendNotifyMessage", &INativeWnd::SendNotifyMessage);
+#endif
 	jsCls.AddFunc("SetWindowText", &INativeWnd::SetWindowText);
 	jsCls.AddFunc("GetWindowText", &INativeWnd::GetWindowText);
 	jsCls.AddFunc("IsIconic", &INativeWnd::IsIconic);

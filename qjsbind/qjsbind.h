@@ -1,4 +1,10 @@
 ﻿#pragma once
+
+//gcc判断是否是64位
+#ifdef __x86_64__ 
+#define _WIN64
+#endif
+
 #include <quickjs.h>
 #include <quickjs-libc.h>
 #include <utility>

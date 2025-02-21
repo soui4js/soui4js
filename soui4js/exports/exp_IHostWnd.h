@@ -1,5 +1,5 @@
 #pragma once
-#include <interface/SHostWnd-i.h>
+#include <interface/shostwnd-i.h>
 
 void Exp_IHostWnd(qjsbind::Module* module)
 {

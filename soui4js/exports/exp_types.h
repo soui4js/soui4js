@@ -81,7 +81,7 @@ namespace qjsbind {
 		SStringA str = S_CW2A(v, CP_UTF8);
 		return Value(context.context(), JS_NewString(context.context(), str.c_str()));
 	}
-	
+#ifdef WIN32
 	WeakValue::operator wchar_t const* (void)const {
 		if (!IsString())
 			return NULL;
@@ -90,7 +90,7 @@ namespace qjsbind {
 		strW = S_CA2W(str, CP_UTF8);
 		return strW.c_str();
 	}
-
+#endif
 	//--------------------------------------------------
 	template<>
 	WeakValue::operator SOUI::RepeatMode() const {

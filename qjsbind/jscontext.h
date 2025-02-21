@@ -5,7 +5,7 @@
 #include <stack>
 #include <mutex>
 #include <atomic>
-#include <Windows.h>
+#include <windows.h>
 
 #include "jsvalue.h"
 #include "jsarglist.h"
@@ -116,35 +116,35 @@ namespace qjsbind {
 		Value NewValue(T v) {
 			return undefined_value;
 		}
-		template<>
+		//template<>
 		Value NewValue(int32_t v) {
 			return NewInt32(v);
 		}
-		template<>
+		//template<>
 		Value NewValue(char v) {
 			return NewInt32(v);
 		}
-		template<>
+		//template<>
 		Value NewValue(unsigned char v) {
 			return NewInt32(v);
 		}
-		template<>
+		//template<>
 		Value NewValue(short v) {
 			return NewInt32(v);
 		}
-		template<>
+		//template<>
 		Value NewValue(unsigned short v) {
 			return NewInt32(v);
 		}
-		template<>
+		//template<>
 		Value NewValue(uint32_t v) {
 			return NewUint32(v);
 		}
-		template<>
+		//template<>
 		Value NewValue(float v) {
 			return NewFloat64(v);
 		}
-		template<>
+		//template<>
 		Value NewValue(double v) {
 			return NewFloat64(v);
 		}
