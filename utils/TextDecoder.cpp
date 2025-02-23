@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <qjsbind.h>
+#include <windows.h>
 #include "TextDecoder.h"
 
 using namespace qjsbind;

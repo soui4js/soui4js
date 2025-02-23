@@ -11,17 +11,17 @@
 #define SCOM_MASK scom_mask_scom_all
 #endif 
 
-#define COM_RENDER_GDI  _T("render-gdi.dll")
-#define COM_RENDER_SKIA _T("render-skia.dll")
-#define COM_RENDER_D2D _T("render-d2d.dll")
-#define COM_SCRIPT_QJS _T("soui4js.dll")
-#define COM_TRANSLATOR _T("translator.dll")
-#define COM_LOG4Z   _T("log4z.dll")
-#define COM_ZIPRESPROVIDER _T("resprovider-zip.dll")
-#define COM_7ZIPRESPROVIDER _T("resprovider-7zip.dll")
-#define COM_TASKLOOP _T("taskloop.dll")
-#define COM_IPCOBJ _T("SIpcObject.dll")
-#define COM_HTTPCLIENT _T("httpclient.dll")
+#define COM_RENDER_GDI  _T("librender-gdi")
+#define COM_RENDER_SKIA _T("librender-skia")
+#define COM_RENDER_D2D _T("librender-d2d")
+#define COM_SCRIPT_QJS _T("libsoui4js")
+#define COM_TRANSLATOR _T("libtranslator")
+#define COM_LOG4Z   _T("liblog4z")
+#define COM_ZIPRESPROVIDER _T("libresprovider-zip")
+#define COM_7ZIPRESPROVIDER _T("libresprovider-7zip")
+#define COM_TASKLOOP _T("libtaskloop")
+#define COM_IPCOBJ _T("libSIpcObject")
+#define COM_HTTPCLIENT _T("libhttpclient")
 
 
 namespace SOUI{

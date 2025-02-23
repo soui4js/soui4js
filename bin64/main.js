@@ -175,7 +175,7 @@ class MainDialog extends soui4.JsHostWnd{
 		this.lvAdapter = new AppLvAdapter(this);
 		lvapi.SetAdapter(this.lvAdapter);
 		lvapi.Release();
-		this.lvAdapter.LoadFromUrl("https://soui4js.com/applist.xml");
+		//this.lvAdapter.LoadFromUrl("https://soui4js.com/applist.xml");
 	}
 
 	onUnit(){
@@ -202,7 +202,7 @@ class MainDialog extends soui4.JsHostWnd{
 
 	onEvent(e){
 		if(e.GetID()==soui4.EVT_INIT){//event_init
-			this.onInit();
+			//this.onInit();
 		}else if(e.GetID()==soui4.EVT_EXIT)//event_exit
 		{
 			this.onUnit();
@@ -220,7 +220,7 @@ class MainDialog extends soui4.JsHostWnd{
 			soui4.SMessageBox(this.GetHwnd(),"程序加载中...","错误",0);
 			return;
 		}
-		let infoPath=g_workDir + "\\"+appInfo.name+"\\appInfo.json";
+		let infoPath=g_workDir + "/"+appInfo.name+"/appInfo.json";
 		let bDownNow=true;
 		try{
 			let strAppInfo = std.loadFile(infoPath);
@@ -231,14 +231,14 @@ class MainDialog extends soui4.JsHostWnd{
 				bDownNow=false;
 			}else{
 				//remove cache
-				soui4.DelDir(g_workDir + "\\"+appInfo.name);
+				soui4.DelDir(g_workDir + "/"+appInfo.name);
 			}
 		}catch(e){
 			soui4.log("load file failed,err="+e.toString());
 		}
 		if(!bDownNow){
 			//open app directly.
-			let localPath = "\""+g_workDir + "\\"+appInfo.name+"\"";
+			let localPath = "\""+g_workDir + "/"+appInfo.name+"\"";
 			soui4.Fork(localPath);
 		}else{
 			this.isLoading = true;
@@ -249,9 +249,9 @@ class MainDialog extends soui4.JsHostWnd{
 			this.download.onResp = this.onDownloadResp;
 			this.download.onError = this.onDownloadError;
 			this.download.SetOpaque(100);
-			os.mkdir(g_workDir+"\\cache");
+			os.mkdir(g_workDir+"/cache");
 			this.appInfo = appInfo;
-			this.localFile = g_workDir + "\\cache\\"+appInfo.name+".zip";
+			this.localFile = g_workDir + "/cache/"+appInfo.name+".zip";
 			this.download.DownloadFile(this.localFile);
 		}
 	}
@@ -313,12 +313,12 @@ class MainDialog extends soui4.JsHostWnd{
 			if(p1==1){
 				//try to open.
 				let strAppInfo = JSON.stringify(this.appInfo);
-				let localAppInfo = g_workDir + "\\"+this.appInfo.name+"\\appInfo.json";
+				let localAppInfo = g_workDir + "/"+this.appInfo.name+"/appInfo.json";
 				let f = std.open(localAppInfo, "w");
 				f.puts(strAppInfo);
 				f.close();
 
-				let localPath = "\""+g_workDir + "\\"+this.appInfo.name+"\"";
+				let localPath = "\""+g_workDir + "/"+this.appInfo.name+"\"";
 				soui4.Fork(localPath);
 			}else{
 				soui4.SMessageBox(this.GetHwnd(),"extract failed!","error",0);

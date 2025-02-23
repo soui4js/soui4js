@@ -53,13 +53,13 @@ BOOL InitApp(SComMgr2 & comMgr,IApplication *theApp){
 		SAutoRefPtr<IImgDecoderFactory> pImgDecoderFactory;
 		LPCTSTR pszImgDecoderName = NULL;
 		if (imgDecoder.Find(L"wic") != -1)
-			pszImgDecoderName = _T("imgdecoder-wic.dll");
+			pszImgDecoderName = _T("libimgdecoder-wic");
 		else if(imgDecoder.Find(L"png") != -1)
-			pszImgDecoderName = _T("imgdecoder-png.dll");
+			pszImgDecoderName = _T("libimgdecoder-png");
 		else if (imgDecoder.Find(L"stb") != -1)
-			pszImgDecoderName = _T("imgdecoder-stb.dll");
+			pszImgDecoderName = _T("libimgdecoder-stb");
 		else
-			pszImgDecoderName = _T("imgdecoder-gdip.dll");
+			pszImgDecoderName = _T("libimgdecoder-stb");
 		bLoaded = comMgr.CreateImgDecoder(pszImgDecoderName,(IObjRef * *)& pImgDecoderFactory);
 		SASSERT_FMT(bLoaded, _T("load interface [%s] failed!"), _T("imgdecoder"));
 		if(!bLoaded) break;
@@ -103,15 +103,19 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpstrC
 	int argc = 0;
 	//LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc);
 	SStringA jsfile="main.js";//default to run main.js
+
 	if (argc > 1)
 	{
-		//SetCurrentDirectoryW(argv[1]);
+		SetCurrentDirectoryW(L"/home/code/.vs/soui4js/cc3d0ce0-cd2a-4df6-8615-eb84e5111a3c/src/bin64");
 		//if (argc > 2)
 		//	jsfile = S_CW2A(argv[2],CP_UTF8);
 	}
 	else
 		SetDefaultDir();
-	//LocalFree(argv);
+	//LocalFree(argv);	
+	// 
+	SetCurrentDirectoryW(L"/home/code/.vs/soui4js/cc3d0ce0-cd2a-4df6-8615-eb84e5111a3c/src/bin64");
+
 	int nRet = 0;
 	{
 #if WIN32
@@ -129,11 +133,11 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpstrC
 
 			TCHAR szDir[MAX_PATH];
 			GetCurrentDirectory(MAX_PATH, szDir);
-			SStringA strDir = S_CT2A(szDir, CP_UTF8);
+			SStringA strDir = S_CT2A("/home/code/.vs/soui4js/cc3d0ce0-cd2a-4df6-8615-eb84e5111a3c/src/bin64", CP_UTF8);
 			SAutoRefPtr<IScriptModule> script;
 			theApp->CreateScriptModule(&script); //create a qjs instance
 
-			if(script->executeScriptFile(strDir+"\\"+ jsfile))//load qjs script
+			if(script->executeScriptFile(strDir+"/"+ jsfile))//load qjs script
 				nRet = script->executeMain(hInstance,strDir.c_str(),NULL);//execute the main function defined in lua script
 			else {
 

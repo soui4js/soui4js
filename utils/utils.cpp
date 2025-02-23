@@ -6,6 +6,12 @@
 #include <qjsbind.h>
 #include "exp_utils.h"
 
+#ifdef _WIN32
+#define EXPORT_API __declspec(dllexport)
+#else
+#define EXPORT_API __attribute__((visibility("default")))
+#endif
+#ifdef _WIN32
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
 	switch (ul_reason_for_call)
@@ -19,9 +25,9 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 	}
 	return TRUE;
 }
-
+#endif
 extern "C"
-__declspec(dllexport) JSModuleDef* js_init_module(JSContext* ctx, const char* module_name)
+EXPORT_API JSModuleDef* js_init_module(JSContext* ctx, const char* module_name)
 {
 	qjsbind::Context* context = qjsbind::Context::get(ctx);
 	if(!context)
@@ -32,7 +38,7 @@ __declspec(dllexport) JSModuleDef* js_init_module(JSContext* ctx, const char* mo
 }
 
 extern "C"
-__declspec(dllexport) void js_uninit_module(JSContext * ctx)
+EXPORT_API void js_uninit_module(JSContext * ctx)
 {
 	qjsbind::Context* context = qjsbind::Context::get(ctx);
 	if(context && context->isAttached())
