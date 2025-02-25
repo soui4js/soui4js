@@ -53,14 +53,25 @@ BOOL InitApp(SComMgr2 & comMgr,IApplication *theApp){
 		if(!bLoaded) break;
 		SAutoRefPtr<IImgDecoderFactory> pImgDecoderFactory;
 		LPCTSTR pszImgDecoderName = NULL;
+#ifdef _WIN32
+		if (imgDecoder.Find(L"wic") != -1)
+			pszImgDecoderName = _T("imgdecoder-wic");
+		else if(imgDecoder.Find(L"png") != -1)
+			pszImgDecoderName = _T("imgdecoder-png");
+		else if (imgDecoder.Find(L"stb") != -1)
+			pszImgDecoderName = _T("imgdecoder-stb");
+		else
+			pszImgDecoderName = _T("imgdecoder-stb");
+#else
 		if (imgDecoder.Find(L"wic") != -1)
 			pszImgDecoderName = _T("libimgdecoder-wic");
-		else if(imgDecoder.Find(L"png") != -1)
+		else if (imgDecoder.Find(L"png") != -1)
 			pszImgDecoderName = _T("libimgdecoder-png");
 		else if (imgDecoder.Find(L"stb") != -1)
 			pszImgDecoderName = _T("libimgdecoder-stb");
 		else
 			pszImgDecoderName = _T("libimgdecoder-stb");
+#endif//_WIN32
 		bLoaded = comMgr.CreateImgDecoder((IObjRef * *)& pImgDecoderFactory,pszImgDecoderName);
 		SASSERT_FMT(bLoaded, _T("load interface [%s] failed!"), _T("imgdecoder"));
 		if(!bLoaded) break;
@@ -121,7 +132,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpstrC
 
 	SStringA jsfile="main.js";//default to run main.js
 #ifdef _WIN32
-
+	SetCurrentDirectoryW(L"D:\\work\\soui4js\\out\\vs2022\\bin\\Debug");
 #else
 	SetCurrentDirectory("/home/flyhigh/work/soui4js/build/bin64");
 #endif//_WIN32
