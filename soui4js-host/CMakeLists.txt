@@ -3,53 +3,45 @@ set(PROJECT_NAME soui4js-host)
 ################################################################################
 # Source groups
 ################################################################################
-set(no_group_source_files
-    "readme.txt"
-)
+
 source_group("" FILES ${no_group_source_files})
 
-set(Headers
+set(HOST_HEADER
     "resource.h"
     "stdafx.h"
 )
-source_group("Headers" FILES ${Headers})
+source_group("Headers" FILES ${HOST_HEADER})
 
-set(Sources
+set(HOST_SRC
     "soui4js-host.cpp"
     "stdafx.cpp"
 )
-source_group("Sources" FILES ${Sources})
-
-set(ALL_FILES
-    ${no_group_source_files}
-    ${Headers}
-    ${Sources}
-)
+source_group("Sources" FILES ${HOST_SRC})
 
 ################################################################################
 # Target
 ################################################################################
-add_executable(${PROJECT_NAME} ${ALL_FILES})
-
-target_precompile_headers(${PROJECT_NAME} PRIVATE
-    "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/stdafx.h>"
-)
-
-use_props(${PROJECT_NAME} "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
+add_executable(${PROJECT_NAME} ${HOST_HEADER} ${HOST_SRC})
 
 
 ################################################################################
 # Include directories
 ################################################################################
+target_include_directories(${PROJECT_NAME} PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/qjsbind
+    ${CMAKE_SOURCE_DIR}/depends/quickjs/include
+    ${CMAKE_SOURCE_DIR}/depends/soui4/include/config
+    ${CMAKE_SOURCE_DIR}/depends/soui4/include/utilities/include
+    ${CMAKE_SOURCE_DIR}/depends/soui4/include/SOUI/include
+    ${CMAKE_SOURCE_DIR}/depends/soui4/include/components
+)
 
-    target_include_directories(${PROJECT_NAME} PUBLIC
-    "${CMAKE_CURRENT_SOURCE_DIR}/../depends/soui4/swinx/include;"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/soui4/config;"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/soui4/components;"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/soui4/soui;"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/soui4/soui/include;"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/soui4/utilities/include"
-    )
+target_link_directories(${PROJECT_NAME} PRIVATE
+${CMAKE_SOURCE_DIR}/depends/soui4/lib_deb/x64
+)
+
+target_link_libraries(${PROJECT_NAME} soui4js soui4 utilities4)
 
 ################################################################################
 # Dependencies
@@ -57,24 +49,4 @@ use_props(${PROJECT_NAME} "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
 add_dependencies(${PROJECT_NAME}
     soui4js
 )
-
-    set(ADDITIONAL_LIBRARY_DEPENDENCIES
-    "swinx"
-        "utilities4;"
-        "soui4"
-    )
-
-target_link_libraries(${PROJECT_NAME} PRIVATE "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
-
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    target_link_directories(${PROJECT_NAME} PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/soui4/lib/x64;"
-        "${OUTPUT_DIRECTORY}"
-    )
-elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x86")
-    target_link_directories(${PROJECT_NAME} PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/soui4/lib/x86;"
-        "${OUTPUT_DIRECTORY}"
-    )
-endif()
 

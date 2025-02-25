@@ -1,8 +1,8 @@
 set(PROJECT_NAME soui4js)
 
 
-set(Headers
-"stdafx.h"
+set(SOUI4JS_HEADER
+    "stdafx.h"
     "exports/exp_basic.h"
     "exports/exp_enums.h"
     "exports/exp_EvtHandlerProxy.h"
@@ -57,76 +57,42 @@ set(Headers
     "resource.h"
     "soui4js.h"
 )
-source_group("Headers" FILES ${Headers})
+source_group("Headers" FILES ${SOUI4JS_HEADER})
 
-set(Sources
+set(SOUI4JS_SRC
     "exp_soui.cpp"
     "soui4js.cpp"
     "stdafx.cpp"
 )
-source_group("Sources" FILES ${Sources})
+source_group("Sources" FILES ${SOUI4JS_SRC})
 
 
 ################################################################################
 # Target
 ################################################################################
-add_library(${PROJECT_NAME} SHARED ${Sources})
+add_library(${PROJECT_NAME} SHARED ${SOUI4JS_SRC})
 
 
-target_precompile_headers(${PROJECT_NAME} PRIVATE
-    "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/stdafx.h>"
+target_include_directories(${PROJECT_NAME} PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/qjsbind
+    ${CMAKE_SOURCE_DIR}/depends/quickjs/include
+    ${CMAKE_SOURCE_DIR}/depends/soui4/include/config
+    ${CMAKE_SOURCE_DIR}/depends/soui4/include/utilities/include
+    ${CMAKE_SOURCE_DIR}/depends/soui4/include/SOUI/include
+    ${CMAKE_SOURCE_DIR}/depends/soui4/include/components
 )
 
-use_props(${PROJECT_NAME} "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
+target_link_directories(${PROJECT_NAME} PRIVATE
+${CMAKE_SOURCE_DIR}/depends/quickjs/lib_deb/x64
+${CMAKE_SOURCE_DIR}/depends/soui4/lib_deb/x64
+)
 
-
-    target_include_directories(${PROJECT_NAME} PUBLIC
-        "${CMAKE_CURRENT_SOURCE_DIR}/.;"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/soui4/swinx/include;"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../qjsbind;"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/quickjs/include;"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/soui4/soui/include;"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/soui4/utilities/include;"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/soui4/config;"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/soui4/components"
-    )
-
-
+target_link_libraries(${PROJECT_NAME} qjsbind quickjs soui4 utilities4)
 ################################################################################
 # Dependencies
 ################################################################################
 add_dependencies(${PROJECT_NAME}
     qjsbind
 )
-
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    set(ADDITIONAL_LIBRARY_DEPENDENCIES
-        "libquickjs.a;"
-        "qjsbind;"
-        "soui4;"
-        "utilities4"
-    )
-elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x86")
-    set(ADDITIONAL_LIBRARY_DEPENDENCIES
-        "libquickjs.a;"
-        "qjsbind;"
-        "soui4;"
-        "utilities4"
-    )
-endif()
-target_link_libraries(${PROJECT_NAME} PUBLIC "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
-
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    target_link_directories(${PROJECT_NAME} PUBLIC
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/soui4/lib/x64;"
-        "${OUTPUT_DIRECTORY};"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/quickjs/bin/x64"
-    )
-elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x86")
-    target_link_directories(${PROJECT_NAME} PUBLIC
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/soui4/lib/x86;"
-        "${OUTPUT_DIRECTORY};"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/quickjs/bin/x86"
-    )
-endif()
 

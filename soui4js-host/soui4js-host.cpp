@@ -60,7 +60,7 @@ BOOL InitApp(SComMgr2 & comMgr,IApplication *theApp){
 			pszImgDecoderName = _T("libimgdecoder-stb");
 		else
 			pszImgDecoderName = _T("libimgdecoder-stb");
-		bLoaded = comMgr.CreateImgDecoder(pszImgDecoderName,(IObjRef * *)& pImgDecoderFactory);
+		bLoaded = comMgr.CreateImgDecoder((IObjRef * *)& pImgDecoderFactory,pszImgDecoderName);
 		SASSERT_FMT(bLoaded, _T("load interface [%s] failed!"), _T("imgdecoder"));
 		if(!bLoaded) break;
 
