@@ -16,13 +16,15 @@ endif()
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin64)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin64)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin64)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
  
 
-if (NOT CMAKE_SYSTEM_NAME MATCHES Windows)
-include_directories(depends/swinx/include)
+if (CMAKE_SYSTEM_NAME MATCHES Windows)
+    add_definitions(-DUNICODE -D_UNICODE)
+else()
+    include_directories(depends/swinx/include)
 endif()
 
 ################################################################################

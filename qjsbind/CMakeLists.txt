@@ -9,7 +9,9 @@ source_group("Source Files" FILES ${QJSBIND_SRCS})
 
 add_library(${PROJECT_NAME} STATIC ${QJSBIND_SRCS})
 
+if (NOT CMAKE_SYSTEM_NAME MATCHES Windows)
 target_compile_options(${PROJECT_NAME} PRIVATE -fPIC)
+endif()
 
 target_include_directories(${PROJECT_NAME}
         PRIVATE ${CMAKE_SOURCE_DIR}/depends/quickjs/include  

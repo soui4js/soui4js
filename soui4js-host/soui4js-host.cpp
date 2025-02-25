@@ -120,9 +120,11 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpstrC
 	int argc = 0;
 
 	SStringA jsfile="main.js";//default to run main.js
+#ifdef _WIN32
 
+#else
 	SetCurrentDirectory("/home/flyhigh/work/soui4js/build/bin64");
-
+#endif//_WIN32
 	int nRet = 0;
 	{
 #if WIN32
@@ -138,9 +140,9 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpstrC
 			LoadSystemRes(theApp, souiFac,comMgr);//load system resource
 			LoadScriptModule(theApp, comMgr); //load script module.
 
-			TCHAR szDir[MAX_PATH];
-			GetCurrentDirectory(MAX_PATH, szDir);
-			SStringA strDir = "/home/flyhigh/work/soui4js/build/bin64";
+			WCHAR szDir[MAX_PATH];
+			GetCurrentDirectoryW(MAX_PATH, szDir);
+			SStringA strDir = S_CW2A(szDir,CP_UTF8);
 			SAutoRefPtr<IScriptModule> script;
 			theApp->CreateScriptModule(&script); //create a qjs instance
 
@@ -161,8 +163,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpstrC
 	OleUninitialize();
 	return nRet;
 }
-
-
 
 #ifndef _WIN32
 int main(int argc, char** argv) {
