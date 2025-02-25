@@ -38,10 +38,12 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 )
 
 target_link_directories(${PROJECT_NAME} PRIVATE
+${CMAKE_SOURCE_DIR}/depends/swinx/lib_deb/x64
+${CMAKE_SOURCE_DIR}/depends/quickjs/lib_deb/x64
 ${CMAKE_SOURCE_DIR}/depends/soui4/lib_deb/x64
 )
 
-target_link_libraries(${PROJECT_NAME} soui4js soui4 utilities4)
+target_link_libraries(${PROJECT_NAME} soui4js soui4 swinx utilities4)
 
 ################################################################################
 # Dependencies
