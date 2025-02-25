@@ -12,6 +12,7 @@
 #pragma comment(lib,"Shell32.lib")
 
 #endif // WIN32
+#include <resprovider-zip/zipresprovider-param.h>
 
 using namespace SOUI;
 
@@ -72,18 +73,34 @@ BOOL InitApp(SComMgr2 & comMgr,IApplication *theApp){
 	return TRUE;
 };
 
-BOOL LoadSystemRes(IApplication *theApp,SouiFactory & souiFac)
+BOOL LoadSystemRes(IApplication *theApp,SouiFactory & souiFac,SComMgr2 & comMgr)
 {
+	#ifdef _WIN32
 	HMODULE hModSysResource = LoadLibrary(SYS_NAMED_RESOURCE);
 	if (!hModSysResource)
 		return FALSE;
-
 	IResProvider* sysResProvider = souiFac.CreateResProvider(RES_PE);
 	sysResProvider->Init((WPARAM)hModSysResource, 0);
 	theApp->LoadSystemNamedResource(sysResProvider);
 	sysResProvider->Release();
-	FreeLibrary(hModSysResource);
+	FreeLibrary(hModSysResource);	
 	return TRUE;
+	#else
+
+	IResProvider* sysResProvider;
+	BOOL bLoaded = comMgr.CreateResProvider_ZIP((IObjRef**)&sysResProvider);
+	SASSERT_FMT(bLoaded, _T("load interface [%s] failed!"), _T("resprovider_zip"));
+
+	ZIPRES_PARAM param;
+	ZipFile(&param,theApp->GetRenderFactory(),"soui-sys-resource.zip");
+	bLoaded = sysResProvider->Init((WPARAM)&param, 0);
+	SASSERT(bLoaded);
+	if(bLoaded){
+		theApp->LoadSystemNamedResource(sysResProvider);
+	}
+	sysResProvider->Release();
+	return bLoaded;
+	#endif
 }
 
 BOOL LoadScriptModule(IApplication*theApp,SComMgr2 & comMgr)
@@ -101,20 +118,10 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpstrC
 	HRESULT hRes = OleInitialize(NULL);
 	SASSERT(SUCCEEDED(hRes));
 	int argc = 0;
-	//LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+
 	SStringA jsfile="main.js";//default to run main.js
 
-	if (argc > 1)
-	{
-		SetCurrentDirectoryW(L"/home/code/.vs/soui4js/cc3d0ce0-cd2a-4df6-8615-eb84e5111a3c/src/bin64");
-		//if (argc > 2)
-		//	jsfile = S_CW2A(argv[2],CP_UTF8);
-	}
-	else
-		SetDefaultDir();
-	//LocalFree(argv);	
-	// 
-	SetCurrentDirectoryW(L"/home/code/.vs/soui4js/cc3d0ce0-cd2a-4df6-8615-eb84e5111a3c/src/bin64");
+	SetCurrentDirectory("/home/flyhigh/work/soui4js/build/bin64");
 
 	int nRet = 0;
 	{
@@ -128,12 +135,12 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpstrC
 		IApplication* theApp = souiFac.CreateApp(NULL, hInstance);
 		if(InitApp(comMgr, theApp))
 		{
-			LoadSystemRes(theApp, souiFac);//load system resource
+			LoadSystemRes(theApp, souiFac,comMgr);//load system resource
 			LoadScriptModule(theApp, comMgr); //load script module.
 
 			TCHAR szDir[MAX_PATH];
 			GetCurrentDirectory(MAX_PATH, szDir);
-			SStringA strDir = S_CT2A("/home/code/.vs/soui4js/cc3d0ce0-cd2a-4df6-8615-eb84e5111a3c/src/bin64", CP_UTF8);
+			SStringA strDir = "/home/flyhigh/work/soui4js/build/bin64";
 			SAutoRefPtr<IScriptModule> script;
 			theApp->CreateScriptModule(&script); //create a qjs instance
 
