@@ -12,6 +12,7 @@
 #include <string.h>
 #include <errno.h>
 #endif
+#include <fstream>
 
 using namespace SOUI;
 

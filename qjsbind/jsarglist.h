@@ -1,11 +1,12 @@
-#pragma once
+ï»¿#ifndef __JSARGLIST__H__
+#define __JSARGLIST__H__
 #include "jsvalue.h"
 #include <assert.h>
 #include <array>
 
 namespace qjsbind {
 
-	//²ÎÊıÁĞ±í
+	//å‚æ•°åˆ—è¡¨
 	class ArgList {
 	public:
 		enum {
@@ -66,3 +67,5 @@ namespace qjsbind {
 	};
 
 }
+
+#endif // __JSARGLIST__H__

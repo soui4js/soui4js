@@ -1,10 +1,9 @@
-﻿#pragma once
-
+﻿#ifndef __QJSBIND__H__
+#define __QJSBIND__H__
 //gcc判断是否是64位
-#ifdef __x86_64__ 
+#if defined(__x86_64__) && !defined(_WIN64) 
 #define _WIN64
 #endif
-
 #include <quickjs.h>
 #include <quickjs-libc.h>
 #include <utility>
@@ -188,3 +187,5 @@ private:
 
 }//namespace
 
+
+#endif // __QJSBIND__H__

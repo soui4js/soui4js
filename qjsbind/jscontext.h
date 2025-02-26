@@ -1,4 +1,5 @@
-#pragma once
+ï»¿#ifndef __JSCONTEXT__H__
+#define __JSCONTEXT__H__
 #include <unordered_map>
 #include <functional>
 #include <memory>
@@ -158,7 +159,6 @@ namespace qjsbind {
 			return ret;
 		}
 
-		//´´½¨classµÄ¶ÔÏó
 		Value NewClassObject(JSClassID class_id);
 
 		Value NewArrayBuffer(const uint8_t* buf, size_t len);
@@ -275,14 +275,13 @@ namespace qjsbind {
 			return Value(context_, rslt);
 		}
 
-		//·µ»Øfalse£¬µ÷ÓÃDumpError()²é¿´´íÎó
+
 		bool LoadByteCode(const uint8_t* buf, size_t buf_len);
 
 		void ExecuteJobs();
 
 		void DumpError() const;
 
-		//´´½¨Ä£¿é
 		Module* NewModule(const char* name);
 
 		Value ThrowOutOfMemory();
@@ -313,7 +312,6 @@ namespace qjsbind {
 
 		LogFun log_func_;
 		bool   is_attach_;
-		//´æ´¢classid£¬¼°Æä¸¸classid
 		std::unordered_map<JSClassID, JSClassID> class_ids_;
 	};
 
@@ -404,3 +402,5 @@ namespace qjsbind {
 			JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_STRICT | JS_EVAL_FLAG_COMPILE_ONLY));
 	}
 }
+
+#endif // __JSCONTEXT__H__

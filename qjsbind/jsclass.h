@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef __JSCLASS__H__
+#define __JSCLASS__H__
 #include "jscontext.h"
 #include "jsmemfunc.h"
 #include "jsproxy.h"
@@ -332,3 +333,5 @@ namespace qjsbind {
 }//namespace
 
 
+
+#endif // __JSCLASS__H__

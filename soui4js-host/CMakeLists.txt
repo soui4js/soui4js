@@ -21,7 +21,7 @@ source_group("Sources" FILES ${HOST_SRC})
 ################################################################################
 # Target
 ################################################################################
-add_executable(${PROJECT_NAME} ${HOST_HEADER} ${HOST_SRC})
+add_executable(${PROJECT_NAME} WIN32 ${HOST_HEADER} ${HOST_SRC})
 
 
 ################################################################################
@@ -43,7 +43,6 @@ ${CMAKE_SOURCE_DIR}/depends/quickjs/lib_win/$(Platform)
 ${CMAKE_SOURCE_DIR}/depends/soui4/lib_win/$(Platform)
 )
 target_link_libraries(${PROJECT_NAME} soui4js soui4 utilities4)
-set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE TRUE)
 else()
 target_link_directories(${PROJECT_NAME} PRIVATE
 ${CMAKE_SOURCE_DIR}/depends/swinx/lib_deb/x64
