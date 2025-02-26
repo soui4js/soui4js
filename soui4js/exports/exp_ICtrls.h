@@ -1,7 +1,14 @@
 ﻿#ifndef __EXP_ICTRLS__H__
 #define __EXP_ICTRLS__H__
 #include <control/SouiCtrls.h>
+#include <sguid.h>
 #include "toobj.h"
+
+template<class T>
+GUID TGuidOf(const T * obj=NULL)// specialize by class
+{
+    return T::GetIID();
+}
 
 template<typename T1, typename T2>
 T1* QueryICtrl(IWindow* pWnd) {
