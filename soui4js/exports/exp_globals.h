@@ -1,4 +1,7 @@
-#pragma once
+#ifndef _EXP_GLOBALS_H_
+#define _EXP_GLOBALS_H_
+
+
 #include <souistd.h>
 #include <interface/SFactory-i.h>
 #include "SFuncSlot.h"
@@ -64,7 +67,7 @@ LPARAM SGetItemIndex(IWindow* pItem) {
 	pItem = pItem->GetIRoot();
 	IItemPanel* pItemPanel = NULL;
 	LPARAM ret = -1;
-	pItem->QueryInterface(__uuidof(IItemPanel), (IObjRef**) & (pItemPanel));
+	pItem->QueryInterface(IItemPanel::GetIID(), (IObjRef**)&(pItemPanel));
 	if (pItemPanel) {
 		ret = pItemPanel->GetItemIndex();
 		pItemPanel->Release();
@@ -418,3 +421,5 @@ void Exp_Global(qjsbind::Module* module)
 	module->ExportFunc("IsX64", &IsX64);
 	module->ExportFunc("NotifySettingChange", &NotifySettingChange);
 }
+
+#endif // !_EXP_GLOBALS_H_

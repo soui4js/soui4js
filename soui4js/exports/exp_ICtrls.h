@@ -4,12 +4,6 @@
 #include <sguid.h>
 #include "toobj.h"
 
-template<class T>
-GUID TGuidOf(const T * obj=NULL)// specialize by class
-{
-    return T::GetIID();
-}
-
 template<typename T1, typename T2>
 T1* QueryICtrl(IWindow* pWnd) {
 	if (pWnd->IsClass(T2::GetClassName()))

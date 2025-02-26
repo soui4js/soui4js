@@ -38,7 +38,7 @@ void Exp_SEventArg(qjsbind::Module* module) {
 		jsCls.Init(JsClass<IEvtArgs>::class_id());
 		jsCls.AddGetSet<BOOL>("bInit", &EventSpinValue2String::bInit);
 		jsCls.AddGetSet<int>("nValue", &EventSpinValue2String::nValue);
-		jsCls.AddGetSet<IStringA*>("strValue", &EventSpinValue2String::strValue);
+		jsCls.AddGetSet<IStringT*>("strValue", &EventSpinValue2String::strValue);
 		DEF_CAST_IOBJ(module, EventSpinValue2String);
 	}
 
@@ -97,7 +97,7 @@ void Exp_SEventArg(qjsbind::Module* module) {
 	{
 		JsClass<EventSwndUpdateTooltip> jsCls = module->ExportClass<EventSwndUpdateTooltip>("EventSwndUpdateTooltip");
 		jsCls.Init(JsClass<IEvtArgs>::class_id());
-		jsCls.AddGetSet<IStringA*>("strToolTip", &EventSwndUpdateTooltip::strToolTip);
+		jsCls.AddGetSet<IStringT*>("strToolTip", &EventSwndUpdateTooltip::strToolTip);
 		jsCls.AddGetSet<BOOL>("bUpdated", &EventSwndUpdateTooltip::bUpdated);
 		DEF_CAST_IOBJ(module, EventSwndUpdateTooltip);
 	}
