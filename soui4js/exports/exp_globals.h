@@ -15,8 +15,12 @@
 
 
 void Slog(const char* szLog) {
+#ifdef _WIN32
 	SStringW str = S_CA2W(szLog, CP_UTF8);
 	SLOGI2("qjs") << str.c_str();
+#else
+	SLOGI2("qjs") << szLog;
+#endif//_WIN32
 }
 
 void SDebugBreak(int id) {
