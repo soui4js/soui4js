@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_IWINDOW__H__
+#define __EXP_IWINDOW__H__
 #include <interface/SWindow-i.h>
 #include "toobj.h"
 
@@ -195,3 +196,5 @@ void Exp_IWindow(qjsbind::Module* module)
 
 	DEF_CAST_IOBJ(module, IWindow);
 }
+
+#endif // __EXP_IWINDOW__H__

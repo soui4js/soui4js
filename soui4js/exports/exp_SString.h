@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_SSTRING__H__
+#define __EXP_SSTRING__H__
 #include <string/sstringa.h>
 #include <string/sstringw.h>
 
@@ -40,3 +41,5 @@ void Exp_SStringW(qjsbind::Module* module)
 	jsCls.Init(JsClass<IStringW>::class_id());
 	jsCls.AddCtor<newStringW>();
 }
+
+#endif // __EXP_SSTRING__H__

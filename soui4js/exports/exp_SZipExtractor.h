@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_SZIPEXTRACTOR__H__
+#define __EXP_SZIPEXTRACTOR__H__
 
 BOOL MkPath(const std::string& path, const std::string& root);
 
@@ -141,6 +142,7 @@ void Exp_SZipExtractor(Module* module) {
 	jsCls.AddCtor<constructor<SZipExtractor>>();
 	jsCls.AddFunc("Open", &SZipExtractor::Open);
 	jsCls.AddFunc("ExtractTo", &SZipExtractor::ExtractTo);
-	jsCls.AddGetSet<Value>("cbHandler", &SZipExtractor::m_cbHandler);
-	jsCls.AddGetSet<Value>("onMsg", &SZipExtractor::m_onMsg);
+	jsCls.AddGetSet("cbHandler", &SZipExtractor::m_cbHandler);
+	jsCls.AddGetSet("onMsg", &SZipExtractor::m_onMsg);
 }
+#endif // __EXP_SZIPEXTRACTOR__H__

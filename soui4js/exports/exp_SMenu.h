@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_SMENU__H__
+#define __EXP_SMENU__H__
 #include <helper/SMenu.h>
 #include <helper/SMenuEx.h>
 
@@ -15,3 +16,4 @@ void Exp_SMenuEx(qjsbind::Module* module)
 	jsCls.Init(JsClass<IMenuEx>::class_id());
 	jsCls.AddCtor<constructor<SMenuEx>>();
 }
+#endif // __EXP_SMENU__H__

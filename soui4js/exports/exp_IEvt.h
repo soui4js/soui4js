@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_IEVT__H__
+#define __EXP_IEVT__H__
 #include <interface/SEvtArgs-i.h>
 
 void Exp_IEvtArg(qjsbind::Module* module)
@@ -28,3 +29,5 @@ void Exp_IEvtSlot(qjsbind::Module* module)
 	jsCls.AddFunc( "GetSlotType", &IEvtSlot::GetSlotType);
 
 }
+
+#endif // __EXP_IEVT__H__

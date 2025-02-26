@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_IHOSTWND__H__
+#define __EXP_IHOSTWND__H__
 #include <interface/shostwnd-i.h>
 
 void Exp_IHostWnd(qjsbind::Module* module)
@@ -32,3 +33,4 @@ void Exp_IHostDialog(qjsbind::Module* module)
 	jsCls.AddFunc("EndDialog", &IHostDialog::EndDialog);
 
 }
+#endif // __EXP_IHOSTWND__H__

@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_ICTRLS__H__
+#define __EXP_ICTRLS__H__
 #include <control/SouiCtrls.h>
 #include "toobj.h"
 
@@ -7,7 +8,7 @@ T1* QueryICtrl(IWindow* pWnd) {
 	if (pWnd->IsClass(T2::GetClassName()))
 	{
 		IObjRef* pCtrl = NULL;
-		pWnd->QueryInterface(__uuidof(T1), &pCtrl);
+		pWnd->QueryInterface(TGuidOf<T1>(), &pCtrl);
 		if (!pCtrl) return NULL;
 		return (T1*)pCtrl;
 	}
@@ -400,3 +401,4 @@ void Exp_ICtrls(qjsbind::Module* module) {
 		DEF_QICTRL(module, IStackView, SStackView);
 	}
 }
+#endif // __EXP_ICTRLS__H__

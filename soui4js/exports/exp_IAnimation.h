@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_IANIMATION__H__
+#define __EXP_IANIMATION__H__
 #include <interface/SAnimation-i.h>
 
 void Exp_IAnimation(qjsbind::Module* module)
@@ -44,3 +45,5 @@ void Exp_IAnimation(qjsbind::Module* module)
 	jsCls.AddFunc( "setUserData", &IAnimation::setUserData);
 	jsCls.AddFunc( "getUserData", &IAnimation::getUserData);
 }
+
+#endif // __EXP_IANIMATION__H__

@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_ISOUIFAC__H__
+#define __EXP_ISOUIFAC__H__
 #include <interface/SFactory-i.h>
 
 
@@ -20,3 +21,4 @@ void Exp_ISouiFactory(qjsbind::Module *module)
 	jsCls.AddFunc("CreateTimer", &ISouiFactory::CreateTimer);
 	jsCls.AddFunc("CreateAnimatorGroup", &ISouiFactory::CreateAnimatorGroup);
 }
+#endif // __EXP_ISOUIFAC__H__

@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_SFILEOPENDLG__H__
+#define __EXP_SFILEOPENDLG__H__
 #include "souidlgs.h"
 
 typedef HRESULT (WINAPI * FunSHCreateItemFromParsingName)(PCWSTR, IBindCtx*, REFIID, void**);
@@ -149,3 +150,4 @@ void Exp_FileOpenDlg(Module* module) {
 	jsCls.AddFunc("DoModal2", &SFileOpenDlg::DoModal2);
 
 }
+#endif // __EXP_SFILEOPENDLG__H__

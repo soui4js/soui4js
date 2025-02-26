@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_IMENUEX__H__
+#define __EXP_IMENUEX__H__
 #include <interface/smenuex-i.h>
 
 void Exp_IMenuEx(qjsbind::Module* module)
@@ -24,3 +25,4 @@ void Exp_IMenuEx(qjsbind::Module* module)
 
 	module->ExportFunc("EndMenuEx", EndMenuEx);
 }
+#endif // __EXP_IMENUEX__H__

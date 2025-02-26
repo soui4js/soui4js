@@ -1,4 +1,4 @@
-#ifndef _JS_MODULE_H_
+﻿#ifndef _JS_MODULE_H_
 #define _JS_MODULE_H_
 
 #include <quickjs.h>

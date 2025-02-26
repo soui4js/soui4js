@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_BASIC__H__
+#define __EXP_BASIC__H__
 
 namespace qjsbind {
 	template<>
@@ -127,3 +128,4 @@ void Exp_Basic(qjsbind::Module* module) {
 		jsCls.AddGetSet("wMilliseconds", &SYSTEMTIME::wMilliseconds);
 	}
 }
+#endif // __EXP_BASIC__H__

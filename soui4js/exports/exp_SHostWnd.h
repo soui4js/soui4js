@@ -1,8 +1,8 @@
-#pragma once
+﻿#ifndef __EXP_SHOSTWND__H__
+#define __EXP_SHOSTWND__H__
 #include <core/SHostDialog.h>
 #include <helper/SDpiHelper.hpp>
 #include <set>
-#include <exports/exp_MsgHandlerProxy.h>
 
 template<class T>
 class JsHostWnd : public T, public JsThisOwner ,public SDpiHandler< JsHostWnd<T> >
@@ -111,3 +111,4 @@ void Exp_JsHostDialog(qjsbind::Module* module) {
 	jsCls.AddGetSet("onEvt", &JsHostWnd<SHostDialog>::m_onEvent);
 	jsCls.AddGetSet("onMsg", &JsHostWnd<SHostDialog>::m_onMsg);
 }
+#endif // __EXP_SHOSTWND__H__
