@@ -3,7 +3,7 @@
 #include "jscontext.h"
 #include "jsmemfunc.h"
 #include "jsproxy.h"
-#include "qjsbind.h"
+#include "jsmodule.h"
 
 namespace qjsbind {
 
