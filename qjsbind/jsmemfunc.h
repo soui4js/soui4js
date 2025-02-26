@@ -726,7 +726,6 @@ namespace qjsbind {
 
 #include "jsnewvalue.h"
 
-#ifdef WIN32
 
 namespace qjsbind {
 #ifndef _WIN64
@@ -1447,7 +1446,6 @@ namespace qjsbind {
 	}
 #endif
 }
-#endif//_WIN32
 
 
 #endif // __JSMEMFUNC__H__
