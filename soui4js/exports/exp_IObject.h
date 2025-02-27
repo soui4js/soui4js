@@ -1,5 +1,6 @@
-#pragma once
-#include <interface/SObject-i.h>
+﻿#ifndef __EXP_IOBJECT__H__
+#define __EXP_IOBJECT__H__
+#include <interface/sobject-i.h>
 
 Value IObject_GetAttribute(Context* ctx, IObject* _this, ArgList& args) {
 	if (args.size() < 1)
@@ -30,3 +31,5 @@ void Exp_IObject(qjsbind::Module* module)
 	jsCls.AddCFunc("GetAttribute", &IObject_GetAttribute);
 	jsCls.AddFunc("SetAttrHandler", &IObject::SetAttrHandler);
 }
+
+#endif // __EXP_IOBJECT__H__

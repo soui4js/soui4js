@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_ENUMS__H__
+#define __EXP_ENUMS__H__
 
 #include <qjsbind.h>
 #include <event/SEvents.h>
@@ -211,3 +212,4 @@ SEnumInt(SBA_MOUSE_MOVING);
 SEnumInt(SBA_MOUSE_UP);
 
 }
+#endif // __EXP_ENUMS__H__

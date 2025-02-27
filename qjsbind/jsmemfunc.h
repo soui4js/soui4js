@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __JSMEMFUNC__H__
+#define __JSMEMFUNC__H__
 #include "jsnewvalue.h"
 #ifndef WINAPI
 #define WINAPI __stdcall
@@ -722,8 +723,10 @@ namespace qjsbind {
 	}
 }
 
-#pragma once
+
 #include "jsnewvalue.h"
+
+#ifdef WIN32
 
 namespace qjsbind {
 #ifndef _WIN64
@@ -1444,4 +1447,7 @@ namespace qjsbind {
 	}
 #endif
 }
+#endif//_WIN32
 
+
+#endif // __JSMEMFUNC__H__

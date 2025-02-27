@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __JSPROXY__H__
+#define __JSPROXY__H__
 namespace qjsbind {
 	template<class T>
 	class JsProxy
@@ -23,3 +24,4 @@ namespace qjsbind {
 		bool bOwner;
 	};
 }
+#endif // __JSPROXY__H__

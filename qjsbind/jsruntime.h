@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __JSRUNTIME__H__
+#define __JSRUNTIME__H__
 #include "jsvalue.h"
 
 namespace qjsbind {
@@ -47,3 +48,4 @@ namespace qjsbind {
 
 
 }
+#endif // __JSRUNTIME__H__

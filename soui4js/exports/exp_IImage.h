@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_IIMAGE__H__
+#define __EXP_IIMAGE__H__
 #include <interface/SRender-i.h>
 
 
@@ -37,3 +38,4 @@ void Exp_IImage(Module* module) {
 	jsCls.AddFunc("Clone", &IBitmapS::Clone);
 	jsCls.AddCFunc("Save", &IBitmapS_Save);
 }
+#endif // __EXP_IIMAGE__H__

@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_IRESPROVIDER__H__
+#define __EXP_IRESPROVIDER__H__
 #include <interface/SResProvider-i.h>
 
 void Exp_IResProvider(qjsbind::Module* module)
@@ -16,3 +17,5 @@ void Exp_IResProvider(qjsbind::Module* module)
 	jsCls.AddFunc("GetRawBuffer", &IResProvider::GetRawBuffer);
 	jsCls.AddFunc("EnumResource", &IResProvider::EnumResource);
 }
+
+#endif // __EXP_IRESPROVIDER__H__

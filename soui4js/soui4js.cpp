@@ -5,10 +5,11 @@
 #include <event/SEventSlot.h>
 #include <string/strcpcvt.h>
 #include <commgr2.h>
+#ifdef WIN32
 #include <Winsock2.h>
 //#include <souistd.h>
 #pragma comment(lib,"Ws2_32.lib")
-
+#endif
 #include "soui4js.h"
 using namespace qjsbind;
 using namespace SOUI;
@@ -41,7 +42,8 @@ static void Soui4jsLog(const char* tag, const char* pLogStr, int level, const ch
     {
         DWORD tid = GetCurrentThreadId();
         int nLen = printf("tid=%u,%s,%s %s %s:%d\n", tid, tag, pLogStr, fun, file, line);
-        flushall();
+        //flushall();
+        fflush(stdout);
     }
 }
 
@@ -177,11 +179,13 @@ namespace SOUI
 
 	int Soui4Js::executeMain(THIS_ HINSTANCE hInst,LPCSTR pszWorkDir, LPCSTR pszArgs)
 	{
+#ifdef WIN32
         WORD wVersionRequested;
         WSADATA wsaData;
         int err;
         wVersionRequested = MAKEWORD(2, 2);
         err = WSAStartup(wVersionRequested, &wsaData);
+#endif // WIN32       
 
         qjsbind::Value args[3];
         args[0] = NewValue(*m_context, hInst);
@@ -200,7 +204,9 @@ namespace SOUI
         
         pApp->CreateTaskLoop(1,Normal,TRUE);
         qjsbind::Value ret = m_context->Invoke(m_context->Global(), "main", 3, args);
+#ifdef WIN32
         WSACleanup();
+#endif // WIN32
 
         if (ret.IsException())
         {

@@ -9,16 +9,12 @@
 #ifndef __ATLDLGS_H__
 #define __ATLDLGS_H__
 
-#pragma once
+
 
 #include <commdlg.h>
 #include <shlobj.h>
+#include <core/SNativeWnd.h>
 #include <atl.mini/SComCli.h>
-
-#if (_WIN32_WINNT >= 0x0600) && !defined(_WIN32_WCE)
-#include <shobjidl.h>
-#endif // (_WIN32_WINNT >= 0x0600) && !defined(_WIN32_WCE)
-#include <core\SNativeWnd.h>
 
 #ifndef _Post_writable_byte_size_
 #define _Post_writable_byte_size_(x)
@@ -91,8 +87,7 @@
 //   AtlTaskDialog()
 
 
-namespace SOUI
-{
+SNSBEGIN
 
 	///////////////////////////////////////////////////////////////////////////////
 	// CFileDialogImpl - used for File Open or File Save As
@@ -203,7 +198,7 @@ public: \
 		}
 		T* operator->() const throw()
 		{
-			ATLASSERT(m_p != NULL);
+			SASSERT(m_p != NULL);
 			return(m_p);
 		}
 
@@ -250,7 +245,7 @@ public: \
 
 		_Ret_maybenull_ _Post_writable_byte_size_(nBytes) T* AllocateBytes(_In_ size_t nBytes)
 		{
-			ATLASSERT(m_p == NULL);
+			SASSERT(m_p == NULL);
 			if (nBytes > t_nFixedBytes)
 			{
 				AllocateHeap(nBytes);
@@ -300,7 +295,7 @@ public: \
 
 
 	template <class T>
-	class CFileDialogImpl : public SOUI::SNativeWnd
+	class CFileDialogImpl : public SNativeWnd
 	{
 	public:
 		OPENFILENAME m_ofn;
@@ -326,7 +321,7 @@ public: \
 			// adjust struct size if running on older version of Windows
 			if (AtlIsOldWindows())
 			{
-				ATLASSERT(sizeof(m_ofn) > OPENFILENAME_SIZE_VERSION_400);   // must be
+				SASSERT(sizeof(m_ofn) > OPENFILENAME_SIZE_VERSION_400);   // must be
 				m_ofn.lStructSize = OPENFILENAME_SIZE_VERSION_400;
 			}
 #endif // (_WIN32_WINNT >= 0x0500)
@@ -349,16 +344,17 @@ public: \
 
 		INT_PTR DoModal(HWND hWndParent = ::GetActiveWindow())
 		{
-			ATLASSERT((m_ofn.Flags & OFN_ENABLEHOOK) != 0);
-			ATLASSERT(m_ofn.lpfnHook != NULL);   // can still be a user hook
+			SASSERT((m_ofn.Flags & OFN_ENABLEHOOK) != 0);
+			SASSERT(m_ofn.lpfnHook != NULL);   // can still be a user hook
 
-			ATLASSERT((m_ofn.Flags & OFN_EXPLORER) != 0);
+			SASSERT((m_ofn.Flags & OFN_EXPLORER) != 0);
 
 			if (m_ofn.hwndOwner == NULL)   // set only if not specified before
 				m_ofn.hwndOwner = hWndParent;
 
-			ATLASSERT(m_hWnd == NULL);
+			SASSERT(m_hWnd == NULL);
 
+			//ModuleHelper::AddCreateWndData(&m_thunk.cd, (ATL::CDialogImplBase*)this);
 			SNativeWndHelper::instance()->LockSharePtr(this);
 			BOOL bRet;
 			if (m_bOpenFileDialog)
@@ -372,7 +368,7 @@ public: \
 		// Attributes
 		HWND GetFileDialogWindow() const
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return ::GetParent(m_hWnd);
 		}
 
@@ -385,48 +381,48 @@ public: \
 
 		int GetFilePath(LPTSTR lpstrFilePath, int nLength) const
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT((m_ofn.Flags & OFN_EXPLORER) != 0);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT((m_ofn.Flags & OFN_EXPLORER) != 0);
 
 			return (int)::SendMessage(GetFileDialogWindow(),CDM_GETFILEPATH, nLength, (LPARAM)lpstrFilePath);
 		}
 
 		int GetFolderIDList(LPVOID lpBuff, int nLength) const
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT((m_ofn.Flags & OFN_EXPLORER) != 0);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT((m_ofn.Flags & OFN_EXPLORER) != 0);
 
 			return (int)::SendMessage(GetFileDialogWindow(),CDM_GETFOLDERIDLIST, nLength, (LPARAM)lpBuff);
 		}
 
 		int GetFolderPath(LPTSTR lpstrFolderPath, int nLength) const
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT((m_ofn.Flags & OFN_EXPLORER) != 0);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT((m_ofn.Flags & OFN_EXPLORER) != 0);
 
 			return (int)::SendMessage(GetFileDialogWindow(),CDM_GETFOLDERPATH, nLength, (LPARAM)lpstrFolderPath);
 		}
 
 		int GetSpec(LPTSTR lpstrSpec, int nLength) const
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT((m_ofn.Flags & OFN_EXPLORER) != 0);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT((m_ofn.Flags & OFN_EXPLORER) != 0);
 
 			return (int)::SendMessage(GetFileDialogWindow(),CDM_GETSPEC, nLength, (LPARAM)lpstrSpec);
 		}
 
 		void SetControlText(int nCtrlID, LPCTSTR lpstrText)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT((m_ofn.Flags & OFN_EXPLORER) != 0);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT((m_ofn.Flags & OFN_EXPLORER) != 0);
 
 			::SendMessage(GetFileDialogWindow(),CDM_SETCONTROLTEXT, nCtrlID, (LPARAM)lpstrText);
 		}
 
 		void SetDefExt(LPCTSTR lpstrExt)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT((m_ofn.Flags & OFN_EXPLORER) != 0);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT((m_ofn.Flags & OFN_EXPLORER) != 0);
 
 			::SendMessage(GetFileDialogWindow(),CDM_SETDEFEXT, 0, (LPARAM)lpstrExt);
 		}
@@ -439,8 +435,8 @@ public: \
 		// Operations
 		void HideControl(int nCtrlID)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT((m_ofn.Flags & OFN_EXPLORER) != 0);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT((m_ofn.Flags & OFN_EXPLORER) != 0);
 
 			::SendMessage(GetFileDialogWindow(),CDM_HIDECONTROL, nCtrlID);
 		}
@@ -448,7 +444,7 @@ public: \
 		// Special override for common dialogs
 		BOOL EndDialog(INT_PTR /*nRetCode*/ = 0)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			::SendMessage(GetFileDialogWindow(),WM_COMMAND, MAKEWPARAM(IDCANCEL, 0));
 			return TRUE;
 		}
@@ -468,14 +464,14 @@ public: \
 
 		LRESULT _OnFileOK(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			T* pT = static_cast<T*>(this);
 			return !pT->OnFileOK((LPOFNOTIFY)pnmh);
 		}
 
 		LRESULT _OnFolderChange(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			T* pT = static_cast<T*>(this);
 			pT->OnFolderChange((LPOFNOTIFY)pnmh);
 			return 0;
@@ -483,7 +479,7 @@ public: \
 
 		LRESULT _OnHelp(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			T* pT = static_cast<T*>(this);
 			pT->OnHelp((LPOFNOTIFY)pnmh);
 			return 0;
@@ -491,7 +487,7 @@ public: \
 
 		LRESULT _OnInitDone(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			T* pT = static_cast<T*>(this);
 			pT->OnInitDone((LPOFNOTIFY)pnmh);
 			return 0;
@@ -499,7 +495,7 @@ public: \
 
 		LRESULT _OnSelChange(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			T* pT = static_cast<T*>(this);
 			pT->OnSelChange((LPOFNOTIFY)pnmh);
 			return 0;
@@ -507,14 +503,14 @@ public: \
 
 		LRESULT _OnShareViolation(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			T* pT = static_cast<T*>(this);
 			return pT->OnShareViolation((LPOFNOTIFY)pnmh);
 		}
 
 		LRESULT _OnTypeChange(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			T* pT = static_cast<T*>(this);
 			pT->OnTypeChange((LPOFNOTIFY)pnmh);
 			return 0;
@@ -523,7 +519,7 @@ public: \
 #ifndef _WIN32_WCE
 		LRESULT _OnIncludeItem(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			T* pT = static_cast<T*>(this);
 			return pT->OnIncludeItem((LPOFNOTIFYEX)pnmh);
 		}
@@ -635,7 +631,7 @@ public: \
 			{
 				// On NT platforms, GetOpenFileNameA thunks to GetOpenFileNameW and there 
 				// is absolutely nothing we can do except to start off with a large buffer.
-				ATLVERIFY(ResizeFilenameBuffer(_WTL_FIXED_OFN_BUFFER_LENGTH));
+				ResizeFilenameBuffer(_WTL_FIXED_OFN_BUFFER_LENGTH);
 			}
 #endif
 		}
@@ -899,7 +895,7 @@ public: \
 
 			if (!ResizeFilenameBuffer(nLength))
 			{
-				ATLASSERT(FALSE);
+				SASSERT(FALSE);
 				return;
 			}
 
@@ -1045,7 +1041,7 @@ public: \
 			T* pT = static_cast<T*>(this);
 			if (pT->m_spFileDlg == NULL)
 			{
-				ATLASSERT(FALSE);
+				SASSERT(FALSE);
 				return nRet;
 			}
 
@@ -1058,7 +1054,7 @@ public: \
 			else if (hRet == HRESULT_FROM_WIN32(ERROR_CANCELLED))
 				nRet = IDCANCEL;
 			else
-				ATLASSERT(FALSE);   // error
+				SASSERT(FALSE);   // error
 
 			pT->_Unadvise(dwCookie);
 
@@ -1075,7 +1071,7 @@ public: \
 		HRESULT GetFilePath(LPWSTR lpstrFilePath, int cchLength)
 		{
 			T* pT = static_cast<T*>(this);
-			ATLASSERT(pT->m_spFileDlg != NULL);
+			SASSERT(pT->m_spFileDlg != NULL);
 
 			ATL::CComPtr<IShellItem> spItem;
 			HRESULT hRet = pT->m_spFileDlg->GetResult(&spItem);
@@ -1089,7 +1085,7 @@ public: \
 		HRESULT GetFileTitle(LPWSTR lpstrFileTitle, int cchLength)
 		{
 			T* pT = static_cast<T*>(this);
-			ATLASSERT(pT->m_spFileDlg != NULL);
+			SASSERT(pT->m_spFileDlg != NULL);
 
 			ATL::CComPtr<IShellItem> spItem;
 			HRESULT hRet = pT->m_spFileDlg->GetResult(&spItem);
@@ -1101,10 +1097,10 @@ public: \
 		}
 
 
-		HRESULT GetFilePath(SStringT& strFilePath)
+		HRESULT GetFilePath(SStringW& strFilePath)
 		{
 			T* pT = static_cast<T*>(this);
-			ATLASSERT(pT->m_spFileDlg != NULL);
+			SASSERT(pT->m_spFileDlg != NULL);
 
 			SComPtr<IShellItem> spItem;
 			HRESULT hRet = pT->m_spFileDlg->GetResult(&spItem);
@@ -1115,10 +1111,10 @@ public: \
 			return hRet;
 		}
 
-		HRESULT GetFileTitle(SStringT& strFileTitle)
+		HRESULT GetFileTitle(SStringW& strFileTitle)
 		{
 			T* pT = static_cast<T*>(this);
-			ATLASSERT(pT->m_spFileDlg != NULL);
+			SASSERT(pT->m_spFileDlg != NULL);
 
 			SComPtr<IShellItem> spItem;
 			HRESULT hRet = pT->m_spFileDlg->GetResult(&spItem);
@@ -1132,7 +1128,7 @@ public: \
 		// Helpers for IShellItem
 		static HRESULT GetFileNameFromShellItem(IShellItem* pShellItem, SIGDN type, LPWSTR lpstr, int cchLength)
 		{
-			ATLASSERT(pShellItem != NULL);
+			SASSERT(pShellItem != NULL);
 
 			LPWSTR lpstrName = NULL;
 			HRESULT hRet = pShellItem->GetDisplayName(type, &lpstrName);
@@ -1145,7 +1141,7 @@ public: \
 				}
 				else
 				{
-					ATLASSERT(FALSE);
+					SASSERT(FALSE);
 					hRet = DISP_E_BUFFERTOOSMALL;
 				}
 
@@ -1156,9 +1152,9 @@ public: \
 		}
 
 
-		static HRESULT GetFileNameFromShellItem(IShellItem* pShellItem, SIGDN type, SStringT& str)
+		static HRESULT GetFileNameFromShellItem(IShellItem* pShellItem, SIGDN type, SStringW& str)
 		{
-			ATLASSERT(pShellItem != NULL);
+			SASSERT(pShellItem != NULL);
 
 			LPWSTR lpstrName = NULL;
 			HRESULT hRet = pShellItem->GetDisplayName(type, &lpstrName);
@@ -1176,7 +1172,7 @@ public: \
 		void _Advise(DWORD& dwCookie)
 		{
 			T* pT = static_cast<T*>(this);
-			ATLASSERT(pT->m_spFileDlg != NULL);
+			SASSERT(pT->m_spFileDlg != NULL);
 			HRESULT hRet = pT->m_spFileDlg->Advise((IFileDialogEvents*)this, &dwCookie);
 			ATLVERIFY(SUCCEEDED(hRet));
 		}
@@ -1184,7 +1180,7 @@ public: \
 		void _Unadvise(DWORD dwCookie)
 		{
 			T* pT = static_cast<T*>(this);
-			ATLASSERT(pT->m_spFileDlg != NULL);
+			SASSERT(pT->m_spFileDlg != NULL);
 			HRESULT hRet = pT->m_spFileDlg->Unadvise(dwCookie);
 			ATLVERIFY(SUCCEEDED(hRet));
 		}
@@ -1192,29 +1188,29 @@ public: \
 		void _Init(LPCWSTR lpszFileName, DWORD dwOptions, LPCWSTR lpszDefExt, const COMDLG_FILTERSPEC* arrFilterSpec, UINT uFilterSpecCount)
 		{
 			T* pT = static_cast<T*>(this);
-			ATLASSERT(pT->m_spFileDlg != NULL);
+			SASSERT(pT->m_spFileDlg != NULL);
 
 			HRESULT hRet = E_FAIL;
 
 			if (lpszFileName != NULL)
 			{
 				hRet = pT->m_spFileDlg->SetFileName(lpszFileName);
-				ATLASSERT(SUCCEEDED(hRet));
+				SASSERT(SUCCEEDED(hRet));
 			}
 
 			hRet = pT->m_spFileDlg->SetOptions(dwOptions);
-			ATLASSERT(SUCCEEDED(hRet));
+			SASSERT(SUCCEEDED(hRet));
 
 			if (lpszDefExt != NULL)
 			{
 				hRet = pT->m_spFileDlg->SetDefaultExtension(lpszDefExt);
-				ATLASSERT(SUCCEEDED(hRet));
+				SASSERT(SUCCEEDED(hRet));
 			}
 
 			if (arrFilterSpec != NULL && uFilterSpecCount != 0U)
 			{
 				hRet = pT->m_spFileDlg->SetFileTypes(uFilterSpecCount, arrFilterSpec);
-				ATLASSERT(SUCCEEDED(hRet));
+				SASSERT(SUCCEEDED(hRet));
 			}
 		}
 
@@ -1249,7 +1245,7 @@ public: \
 		virtual HRESULT STDMETHODCALLTYPE IFileDialogEvents::OnFileOk(IFileDialog* pfd)
 		{
 			T* pT = static_cast<T*>(this);
-			ATLASSERT(pT->m_spFileDlg.IsEqualObject(pfd));
+			SASSERT(pT->m_spFileDlg.IsEqualObject(pfd));
 			pfd;   // avoid level 4 warning
 			return pT->OnFileOk();
 		}
@@ -1257,7 +1253,7 @@ public: \
 		virtual HRESULT STDMETHODCALLTYPE IFileDialogEvents::OnFolderChanging(IFileDialog* pfd, IShellItem* psiFolder)
 		{
 			T* pT = static_cast<T*>(this);
-			ATLASSERT(pT->m_spFileDlg.IsEqualObject(pfd));
+			SASSERT(pT->m_spFileDlg.IsEqualObject(pfd));
 			pfd;   // avoid level 4 warning
 			return pT->OnFolderChanging(psiFolder);
 		}
@@ -1265,7 +1261,7 @@ public: \
 		virtual HRESULT STDMETHODCALLTYPE IFileDialogEvents::OnFolderChange(IFileDialog* pfd)
 		{
 			T* pT = static_cast<T*>(this);
-			ATLASSERT(pT->m_spFileDlg.IsEqualObject(pfd));
+			SASSERT(pT->m_spFileDlg.IsEqualObject(pfd));
 			pfd;   // avoid level 4 warning
 			return pT->OnFolderChange();
 		}
@@ -1273,7 +1269,7 @@ public: \
 		virtual HRESULT STDMETHODCALLTYPE IFileDialogEvents::OnSelectionChange(IFileDialog* pfd)
 		{
 			T* pT = static_cast<T*>(this);
-			ATLASSERT(pT->m_spFileDlg.IsEqualObject(pfd));
+			SASSERT(pT->m_spFileDlg.IsEqualObject(pfd));
 			pfd;   // avoid level 4 warning
 			return pT->OnSelectionChange();
 		}
@@ -1281,7 +1277,7 @@ public: \
 		virtual HRESULT STDMETHODCALLTYPE IFileDialogEvents::OnShareViolation(IFileDialog* pfd, IShellItem* psi, FDE_SHAREVIOLATION_RESPONSE* pResponse)
 		{
 			T* pT = static_cast<T*>(this);
-			ATLASSERT(pT->m_spFileDlg.IsEqualObject(pfd));
+			SASSERT(pT->m_spFileDlg.IsEqualObject(pfd));
 			pfd;   // avoid level 4 warning
 			return pT->OnShareViolation(psi, pResponse);
 		}
@@ -1289,7 +1285,7 @@ public: \
 		virtual HRESULT STDMETHODCALLTYPE IFileDialogEvents::OnTypeChange(IFileDialog* pfd)
 		{
 			T* pT = static_cast<T*>(this);
-			ATLASSERT(pT->m_spFileDlg.IsEqualObject(pfd));
+			SASSERT(pT->m_spFileDlg.IsEqualObject(pfd));
 			pfd;   // avoid level 4 warning
 			return pT->OnTypeChange();
 		}
@@ -1297,7 +1293,7 @@ public: \
 		virtual HRESULT STDMETHODCALLTYPE IFileDialogEvents::OnOverwrite(IFileDialog* pfd, IShellItem* psi, FDE_OVERWRITE_RESPONSE* pResponse)
 		{
 			T* pT = static_cast<T*>(this);
-			ATLASSERT(pT->m_spFileDlg.IsEqualObject(pfd));
+			SASSERT(pT->m_spFileDlg.IsEqualObject(pfd));
 			pfd;   // avoid level 4 warning
 			return pT->OnOverwrite(psi, pResponse);
 		}
@@ -1624,7 +1620,7 @@ public: \
 			}
 			else
 			{
-				ATLASSERT(pT->m_hWnd == hWnd);
+				SASSERT(pT->m_hWnd == hWnd);
 			}
 
 			switch (uMsg)
@@ -1686,25 +1682,25 @@ public: \
 		// Commands - valid to call only from handlers
 		void EnableOK(BOOL bEnable)
 		{
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 			::SendMessage(m_hWnd, BFFM_ENABLEOK, 0, bEnable);
 		}
 
 		void SetSelection(LPCITEMIDLIST pItemIDList)
 		{
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 			::SendMessage(m_hWnd, BFFM_SETSELECTION, FALSE, (LPARAM)pItemIDList);
 		}
 
 		void SetSelection(LPCTSTR lpstrFolderPath)
 		{
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 			::SendMessage(m_hWnd, BFFM_SETSELECTION, TRUE, (LPARAM)lpstrFolderPath);
 		}
 
 		void SetStatusText(LPCTSTR lpstrText)
 		{
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 			::SendMessage(m_hWnd, BFFM_SETSTATUSTEXT, 0, (LPARAM)lpstrText);
 		}
 
@@ -1713,7 +1709,7 @@ public: \
 #ifndef BFFM_SETOKTEXT
 			const UINT BFFM_SETOKTEXT = WM_USER + 105;
 #endif
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 			USES_CONVERSION;
 			LPCWSTR lpstr = T2CW(lpstrOKText);
 			::SendMessage(m_hWnd, BFFM_SETOKTEXT, 0, (LPARAM)lpstr);
@@ -1724,7 +1720,7 @@ public: \
 #ifndef BFFM_SETEXPANDED
 			const UINT BFFM_SETEXPANDED = WM_USER + 106;
 #endif
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 			::SendMessage(m_hWnd, BFFM_SETEXPANDED, FALSE, (LPARAM)pItemIDList);
 		}
 
@@ -1733,7 +1729,7 @@ public: \
 #ifndef BFFM_SETEXPANDED
 			const UINT BFFM_SETEXPANDED = WM_USER + 106;
 #endif
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 			//USES_CONVERSION;
 			LPCWSTR lpstr = S_CT2W(lpstrFolderPath);
 			::SendMessage(m_hWnd, BFFM_SETEXPANDED, TRUE, (LPARAM)lpstr);
@@ -1747,83 +1743,6 @@ public: \
 			: CFolderDialogImpl<CFolderDialog>(hWndParent, lpstrTitle, uFlags)
 		{ }
 	};
-	//这是一个用法示例，此在文件夹对话框上添加一个包括子目录的check;
-	class fun
-	{
-	public:
-		virtual void IncludeChildDir(bool) = NULL;
-	};
-
-	class CWindowImpl:public SNativeWnd
-	{
-	protected:
-		fun* m_pHostWnd;
-
-		void OnLButtonUp(UINT nFlags, CPoint point)
-		{
-			LRESULT r = SendMessage(BM_GETCHECK, 0, 0);
-			if (r == BST_CHECKED)//被选中//BM_SETCHECK  
-			{
-				SendMessage(BM_SETCHECK, BST_UNCHECKED, 0);
-				m_pHostWnd->IncludeChildDir(false);
-			}
-			else if (r == BST_UNCHECKED)//不被选中 
-			{
-				SendMessage(BM_SETCHECK, BST_CHECKED, 0);
-				m_pHostWnd->IncludeChildDir(true);
-			}
-			SetMsgHandled(FALSE);
-		}
-		virtual void OnFinalMessage(HWND hWnd)
-		{
-			__super::OnFinalMessage(hWnd);
-			delete this;
-		}
-	public:
-		CWindowImpl(fun* pHostWnd) :m_pHostWnd(pHostWnd) {}
-		HWND Create(LPCTSTR lpClassName,LPCTSTR lpWindowName,DWORD dwStyle,int x,int y,int nWidth,int nHeight,HWND hWndParent,HMENU hMenu,HINSTANCE hInstance,LPVOID lpParam=NULL)
-		{	
-			HWND hWnd = ::CreateWindow(lpClassName,lpWindowName,dwStyle,x,y,nWidth,nHeight,hWndParent,hMenu,hInstance,lpParam);
-			SubclassWindow(hWnd);
-			return hWnd;
-		}
-		BEGIN_MSG_MAP_EX(CWindowImpl)
-			MSG_WM_LBUTTONUP(OnLButtonUp)
-			CHAIN_MSG_MAP(SNativeWnd)
-		END_MSG_MAP()
-	};
-
-	class SFolderDialogTest :public CFolderDialogImpl<SFolderDialogTest>,public fun
-	{
-		CWindowImpl *m_pSCheckBtn;
-		bool m_bIncludeChildDir;
-	public:
-		SFolderDialogTest(HWND hWndParent = NULL, LPCTSTR lpstrTitle = NULL,bool bIncludeChildDir=false, UINT uFlags = BIF_RETURNONLYFSDIRS)
-			: CFolderDialogImpl<SFolderDialogTest>(hWndParent, lpstrTitle, uFlags), m_pSCheckBtn(NULL),m_bIncludeChildDir(bIncludeChildDir)
-		{ }
-		
-		virtual void IncludeChildDir(bool bCheck)
-		{
-			m_bIncludeChildDir = bCheck;
-		}
-		bool IsIncludeChildDir()const
-		{
-			return m_bIncludeChildDir;
-		}
-		void OnInitialized()
-		{			
-			CRect rc;
-			::GetClientRect(m_hWnd, &rc);
-			HFONT hFont = CreateFont(-12, 0, 0, 0, 0, 0, 0, 0, GB2312_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, L"宋体");
-			m_pSCheckBtn=new CWindowImpl(this);
-			HWND hWnd = m_pSCheckBtn->Create(L"BUTTON", L"包括子目录", WS_CHILD | BS_CHECKBOX, 20, rc.bottom - 50, 100, 30, m_hWnd,NULL,SApplication::getSingleton().GetModule());
-			m_pSCheckBtn->SendMessage(WM_SETFONT, (WPARAM)hFont, 0);
-			m_pSCheckBtn->SendMessage(BM_SETCHECK,m_bIncludeChildDir?BST_CHECKED: BST_UNCHECKED, 0);			
-			m_pSCheckBtn->ShowWindow(TRUE);
-		}
-	};
-
-
 
 	///////////////////////////////////////////////////////////////////////////////
 	// CCommonDialogImplBase - base class for common dialog classes
@@ -1836,9 +1755,9 @@ public: \
 			if (uMsg != WM_INITDIALOG)
 				return 0;
 			CCommonDialogImplBase* pT = (CCommonDialogImplBase*)SNativeWndHelper::instance()->GetSharePtr();
-			ATLASSERT(pT != NULL);
-			ATLASSERT(pT->m_hWnd == NULL);
-			ATLASSERT(::IsWindow(hWnd));
+			SASSERT(pT != NULL);
+			SASSERT(pT->m_hWnd == NULL);
+			SASSERT(::IsWindow(hWnd));
 			// subclass dialog's window
 			if (!pT->SubclassWindow(hWnd))
 			{
@@ -1855,7 +1774,7 @@ public: \
 		// Special override for common dialogs
 		BOOL EndDialog(INT_PTR /*nRetCode*/ = 0)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			SendMessage(WM_COMMAND, MAKEWPARAM(IDABORT, 0));
 			return TRUE;
 		}
@@ -1915,13 +1834,13 @@ public: \
 		// Operations
 		INT_PTR DoModal(HWND hWndParent = ::GetActiveWindow())
 		{
-			ATLASSERT((m_cf.Flags & CF_ENABLEHOOK) != 0);
-			ATLASSERT(m_cf.lpfnHook != NULL);   // can still be a user hook
+			SASSERT((m_cf.Flags & CF_ENABLEHOOK) != 0);
+			SASSERT(m_cf.lpfnHook != NULL);   // can still be a user hook
 
 			if (m_cf.hwndOwner == NULL)          // set only if not specified before
 				m_cf.hwndOwner = hWndParent;
 
-			ATLASSERT(m_hWnd == NULL);
+			SASSERT(m_hWnd == NULL);
 
 
 			//ModuleHelper::AddCreateWndData(&m_thunk.cd, (CCommonDialogImplBase*)this);
@@ -1939,7 +1858,7 @@ public: \
 		// works only when the dialog is dislayed or after
 		void GetCurrentFont(LPLOGFONT lplf) const
 		{
-			ATLASSERT(lplf != NULL);
+			SASSERT(lplf != NULL);
 
 			if (m_hWnd != NULL)
 				::SendMessage(m_hWnd, WM_CHOOSEFONT_GETLOGFONT, 0, (LPARAM)lplf);
@@ -1951,7 +1870,7 @@ public: \
 #ifndef _WIN32_WCE
 		void SetLogFont(LPLOGFONT lplf)
 		{
-			ATLASSERT(lplf != NULL);
+			SASSERT(lplf != NULL);
 #ifndef WM_CHOOSEFONT_SETLOGFONT
 			const UINT WM_CHOOSEFONT_SETLOGFONT = (WM_USER + 101);
 #endif
@@ -2222,18 +2141,18 @@ public: \
 		// Operations
 		INT_PTR DoModal(HWND hWndParent = ::GetActiveWindow())
 		{
-			ATLASSERT((m_cc.Flags & CC_ENABLEHOOK) != 0);
-			ATLASSERT(m_cc.lpfnHook != NULL);   // can still be a user hook
+			SASSERT((m_cc.Flags & CC_ENABLEHOOK) != 0);
+			SASSERT(m_cc.lpfnHook != NULL);   // can still be a user hook
 
 			if (m_cc.hwndOwner == NULL)          // set only if not specified before
 				m_cc.hwndOwner = hWndParent;
 
-			ATLASSERT(m_hWnd == NULL);
+			SASSERT(m_hWnd == NULL);
 
-			SNativeWndHelper::getSingletonPtr()->LockSharePtr(this);
+			SNativeWndHelper::instance()->LockSharePtr(this);
 
 			BOOL bRet = ::ChooseColor(&m_cc);
-			SNativeWndHelper::getSingletonPtr()->UnlockSharePtr();
+			SNativeWndHelper::instance()->UnlockSharePtr();
 			m_hWnd = NULL;
 
 			return bRet ? IDOK : IDCANCEL;
@@ -2242,7 +2161,7 @@ public: \
 		// Set the current color while dialog is displayed
 		void SetCurrentColor(COLORREF clr)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			SendMessage(_GetSetRGBMessage(), 0, (LPARAM)clr);
 		}
 
@@ -2265,9 +2184,9 @@ public: \
 			{
 				pT = (CCommonDialogImplBase*)SNativeWndHelper::instance()->GetSharePtr();
 				lpCC->lCustData = (LPARAM)pT;
-				ATLASSERT(pT != NULL);
-				ATLASSERT(pT->m_hWnd == NULL);
-				ATLASSERT(::IsWindow(hWnd));
+				SASSERT(pT != NULL);
+				SASSERT(pT->m_hWnd == NULL);
+				SASSERT(::IsWindow(hWnd));
 				// subclass dialog's window
 				if (!pT->SubclassWindow(hWnd))
 				{
@@ -2277,12 +2196,12 @@ public: \
 			else if (uMsg == _GetColorOKMessage())
 			{
 				pT = (CCommonDialogImplBase*)lpCC->lCustData;
-				ATLASSERT(pT != NULL);
-				ATLASSERT(::IsWindow(pT->m_hWnd));
+				SASSERT(pT != NULL);
+				SASSERT(::IsWindow(pT->m_hWnd));
 			}
 			else
 			{
-				ATLASSERT(FALSE);
+				SASSERT(FALSE);
 				return 0;
 			}
 
@@ -2325,7 +2244,7 @@ public: \
 
 				LeaveCriticalSection(&m_cs);
 			}
-			ATLASSERT(uSetRGBMessage != 0);
+			SASSERT(uSetRGBMessage != 0);
 			return uSetRGBMessage;
 		}
 
@@ -2343,7 +2262,7 @@ public: \
 
 				LeaveCriticalSection(&m_cs);
 			}
-			ATLASSERT(uColorOKMessage != 0);
+			SASSERT(uColorOKMessage != 0);
 			return uColorOKMessage;
 		}
 
@@ -2439,20 +2358,20 @@ public: \
 		// Operations
 		INT_PTR DoModal(HWND hWndParent = ::GetActiveWindow())
 		{
-			ATLASSERT((m_pd.Flags & PD_ENABLEPRINTHOOK) != 0);
-			ATLASSERT((m_pd.Flags & PD_ENABLESETUPHOOK) != 0);
-			ATLASSERT(m_pd.lpfnPrintHook != NULL);   // can still be a user hook
-			ATLASSERT(m_pd.lpfnSetupHook != NULL);   // can still be a user hook
-			ATLASSERT((m_pd.Flags & PD_RETURNDEFAULT) == 0);   // use GetDefaults for this
+			SASSERT((m_pd.Flags & PD_ENABLEPRINTHOOK) != 0);
+			SASSERT((m_pd.Flags & PD_ENABLESETUPHOOK) != 0);
+			SASSERT(m_pd.lpfnPrintHook != NULL);   // can still be a user hook
+			SASSERT(m_pd.lpfnSetupHook != NULL);   // can still be a user hook
+			SASSERT((m_pd.Flags & PD_RETURNDEFAULT) == 0);   // use GetDefaults for this
 
 			if (m_pd.hwndOwner == NULL)   // set only if not specified before
 				m_pd.hwndOwner = hWndParent;
 
-			ATLASSERT(m_hWnd == NULL);
+			SASSERT(m_hWnd == NULL);
 
-			SNativeWndHelper::getSingletonPtr()->LockSharePtr(this);
+			SNativeWndHelper::instance()->LockSharePtr(this);
 			BOOL bRet = ::PrintDlg(&m_pd);
-			SNativeWndHelper::getSingletonPtr()->UnlockSharePtr();
+			SNativeWndHelper::instance()->UnlockSharePtr();
 			m_hWnd = NULL;
 			return bRet ? IDOK : IDCANCEL;
 		}
@@ -2461,8 +2380,8 @@ public: \
 		BOOL GetDefaults()
 		{
 			m_pd.Flags |= PD_RETURNDEFAULT;
-			ATLASSERT(m_pd.hDevMode == NULL);    // must be NULL
-			ATLASSERT(m_pd.hDevNames == NULL);   // must be NULL
+			SASSERT(m_pd.hDevMode == NULL);    // must be NULL
+			SASSERT(m_pd.hDevNames == NULL);   // must be NULL
 
 			return ::PrintDlg(&m_pd);
 		}
@@ -2560,7 +2479,7 @@ public: \
 
 		HDC GetPrinterDC() const        // return HDC (caller must delete)
 		{
-			ATLASSERT((m_pd.Flags & PD_RETURNDC) != 0);
+			SASSERT((m_pd.Flags & PD_RETURNDC) != 0);
 			return m_pd.hDC;
 		}
 
@@ -2655,8 +2574,8 @@ namespace WTL
 		// Operations
 		HRESULT DoModal(HWND hWndParent = ::GetActiveWindow())
 		{
-			ATLASSERT(m_hWnd == NULL);
-			ATLASSERT((m_pdex.Flags & PD_RETURNDEFAULT) == 0);   // use GetDefaults for this
+			SASSERT(m_hWnd == NULL);
+			SASSERT((m_pdex.Flags & PD_RETURNDEFAULT) == 0);   // use GetDefaults for this
 
 			if (m_pdex.hwndOwner == NULL)   // set only if not specified before
 				m_pdex.hwndOwner = hWndParent;
@@ -2673,7 +2592,7 @@ namespace WTL
 
 		BOOL EndDialog(INT_PTR /*nRetCode*/ = 0)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			SendMessage(WM_COMMAND, MAKEWPARAM(IDABORT, 0));
 			return TRUE;
 		}
@@ -2681,8 +2600,8 @@ namespace WTL
 		// GetDefaults will not display a dialog but will get device defaults
 		HRESULT GetDefaults()
 		{
-			ATLASSERT(m_pdex.hDevMode == NULL);    // must be NULL
-			ATLASSERT(m_pdex.hDevNames == NULL);   // must be NULL
+			SASSERT(m_pdex.hDevMode == NULL);    // must be NULL
+			SASSERT(m_pdex.hDevNames == NULL);   // must be NULL
 
 			if (m_pdex.hwndOwner == NULL)   // set only if not specified before
 				m_pdex.hwndOwner = ::GetActiveWindow();
@@ -2777,7 +2696,7 @@ namespace WTL
 
 		HDC GetPrinterDC() const        // return HDC (caller must delete)
 		{
-			ATLASSERT((m_pdex.Flags & PD_RETURNDC) != 0);
+			SASSERT((m_pdex.Flags & PD_RETURNDC) != 0);
 			return m_pdex.hDC;
 		}
 
@@ -2960,15 +2879,15 @@ namespace WTL
 		// Operations
 		INT_PTR DoModal(HWND hWndParent = ::GetActiveWindow())
 		{
-			ATLASSERT((m_psd.Flags & PSD_ENABLEPAGESETUPHOOK) != 0);
-			ATLASSERT((m_psd.Flags & PSD_ENABLEPAGEPAINTHOOK) != 0);
-			ATLASSERT(m_psd.lpfnPageSetupHook != NULL);   // can still be a user hook
-			ATLASSERT(m_psd.lpfnPagePaintHook != NULL);   // can still be a user hook
+			SASSERT((m_psd.Flags & PSD_ENABLEPAGESETUPHOOK) != 0);
+			SASSERT((m_psd.Flags & PSD_ENABLEPAGEPAINTHOOK) != 0);
+			SASSERT(m_psd.lpfnPageSetupHook != NULL);   // can still be a user hook
+			SASSERT(m_psd.lpfnPagePaintHook != NULL);   // can still be a user hook
 
 			if (m_psd.hwndOwner == NULL)   // set only if not specified before
 				m_psd.hwndOwner = hWndParent;
 
-			ATLASSERT(m_hWnd == NULL);
+			SASSERT(m_hWnd == NULL);
 
 #if (_ATL_VER >= 0x0800)
 			// Allocate the thunk structure here, where we can fail gracefully.
@@ -3088,8 +3007,8 @@ namespace WTL
 			DWORD dwFlags = FR_DOWN,
 			HWND hWndParent = NULL)
 		{
-			ATLASSERT((m_fr.Flags & FR_ENABLEHOOK) != 0);
-			ATLASSERT(m_fr.lpfnHook != NULL);
+			SASSERT((m_fr.Flags & FR_ENABLEHOOK) != 0);
+			SASSERT(m_fr.lpfnHook != NULL);
 
 			m_fr.Flags |= dwFlags;
 
@@ -3097,7 +3016,7 @@ namespace WTL
 				m_fr.hwndOwner = ::GetActiveWindow();
 			else
 				m_fr.hwndOwner = hWndParent;
-			ATLASSERT(m_fr.hwndOwner != NULL); // must have an owner for modeless dialog
+			SASSERT(m_fr.hwndOwner != NULL); // must have an owner for modeless dialog
 
 			if (lpszFindWhat != NULL)
 				SecureHelper::strncpy_x(m_szFindWhat, _countof(m_szFindWhat), lpszFindWhat, _TRUNCATE);
@@ -3105,7 +3024,7 @@ namespace WTL
 			if (lpszReplaceWith != NULL)
 				SecureHelper::strncpy_x(m_szReplaceWith, _countof(m_szReplaceWith), lpszReplaceWith, _TRUNCATE);
 
-			ATLASSERT(m_hWnd == NULL);
+			SASSERT(m_hWnd == NULL);
 
 #if (_ATL_VER >= 0x0800)
 			// Allocate the thunk structure here, where we can fail gracefully.
@@ -3125,7 +3044,7 @@ namespace WTL
 			else
 				hWnd = ::ReplaceText(&m_fr);
 
-			ATLASSERT(m_hWnd == hWnd);
+			SASSERT(m_hWnd == hWnd);
 			return hWnd;
 		}
 
@@ -3138,7 +3057,7 @@ namespace WTL
 		// to retreive the object
 		static T* PASCAL GetNotifier(LPARAM lParam)
 		{
-			ATLASSERT(lParam != NULL);
+			SASSERT(lParam != NULL);
 			T* pDlg = (T*)(lParam - offsetof(T, m_fr));
 			return pDlg;
 		}
@@ -3248,7 +3167,7 @@ namespace WTL
 		// Operations
 		BOOL InitDialogBaseUnits(HWND hWnd)
 		{
-			ATLASSERT(::IsWindow(hWnd));
+			SASSERT(::IsWindow(hWnd));
 			RECT rc = { 0, 0, 4, 8 };
 			if (!::MapDialogRect(hWnd, &rc)) return FALSE;
 			m_sizeUnits.cx = rc.right;
@@ -3266,7 +3185,7 @@ namespace WTL
 
 		BOOL InitDialogBaseUnits(HFONT hFont, HWND hWnd = NULL)
 		{
-			ATLASSERT(hFont != NULL);
+			SASSERT(hFont != NULL);
 			CWindowDC dc = hWnd;
 			TEXTMETRIC tmText = { 0 };
 			SIZE sizeText = { 0 };
@@ -3478,7 +3397,7 @@ namespace WTL
 			}
 #else // _WIN32_WCE
 			// Windows CE doesn't support the addition of menus to a dialog box
-			ATLASSERT(Menu.m_lpstr == NULL);
+			SASSERT(Menu.m_lpstr == NULL);
 			Menu.m_lpstr;   // avoid level 4 warning
 			WORD menuData = 0;
 			AddData(&menuData, sizeof(WORD));
@@ -3527,7 +3446,7 @@ namespace WTL
 		void AddControl(ATL::_U_STRINGorID ClassName, WORD wId, short nX, short nY, short nWidth, short nHeight, DWORD dwStyle, DWORD dwExStyle,
 			ATL::_U_STRINGorID Text, const WORD* pCreationData = NULL, WORD nCreationData = 0, DWORD dwHelpID = 0)
 		{
-			ATLASSERT(IsValid());
+			SASSERT(IsValid());
 
 			// DWORD align data
 			const DWORD_PTR dwDwordAlignBits = sizeof(DWORD) - 1;
@@ -3550,7 +3469,7 @@ namespace WTL
 				AddData(&item, sizeof(item));
 			}
 
-			ATLASSERT(ClassName.m_lpstr != NULL);
+			SASSERT(ClassName.m_lpstr != NULL);
 			if (IS_INTRESOURCE(ClassName.m_lpstr))
 			{
 				WORD wData[] = { 0xFFFF, LOWORD(ClassName.m_lpstr) };
@@ -3580,7 +3499,7 @@ namespace WTL
 
 			if ((nCreationData != 0))
 			{
-				ATLASSERT(pCreationData != NULL);
+				SASSERT(pCreationData != NULL);
 				AddData(pCreationData, nCreationData * sizeof(WORD));
 			}
 		}
@@ -3593,7 +3512,7 @@ namespace WTL
 
 		void AddData(LPCVOID pData, size_t nData)
 		{
-			ATLASSERT(pData != NULL);
+			SASSERT(pData != NULL);
 
 			const SIZE_T ALLOCATION_INCREMENT = 1024;
 
@@ -3601,13 +3520,13 @@ namespace WTL
 			{
 				m_cAllocated = ((nData / ALLOCATION_INCREMENT) + 1) * ALLOCATION_INCREMENT;
 				m_hData = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, m_cAllocated);
-				ATLASSERT(m_hData != NULL);
+				SASSERT(m_hData != NULL);
 #ifndef UNDER_CE
 				m_pPtr = m_pData = static_cast<LPBYTE>(::GlobalLock(m_hData));
 #else
 				m_pPtr = m_pData = static_cast<LPBYTE>(m_hData);
 #endif
-				ATLASSERT(m_pData != NULL);
+				SASSERT(m_pData != NULL);
 			}
 			else if (((m_pPtr - m_pData) + nData) > m_cAllocated)
 			{
@@ -3617,13 +3536,13 @@ namespace WTL
 				::GlobalUnlock(m_pData);
 #endif
 				m_hData = ::GlobalReAlloc(m_hData, m_cAllocated, GMEM_MOVEABLE | GMEM_ZEROINIT);
-				ATLASSERT(m_hData != NULL);
+				SASSERT(m_hData != NULL);
 #ifndef UNDER_CE
 				m_pData = static_cast<LPBYTE>(::GlobalLock(m_hData));
 #else
 				m_pData = static_cast<LPBYTE>(m_hData);
 #endif
-				ATLASSERT(m_pData != NULL);
+				SASSERT(m_pData != NULL);
 				m_pPtr = m_pData + ptrPos;
 			}
 
@@ -3705,7 +3624,7 @@ namespace WTL
 		wFontSize = pointSize; \
 		szFontName = typeFace;
 #define DIALOG_FONT_EX(pointsize, typeface, weight, italic, charset) \
-		ATLASSERT(bExTemplate); \
+		SASSERT(bExTemplate); \
 		wFontSize = pointsize; \
 		szFontName = typeface; \
 		wWeight = weight; \
@@ -3787,7 +3706,7 @@ namespace WTL
 		INT_PTR DoModal(HWND hWndParent = ::GetActiveWindow(), LPARAM dwInitParam = NULL)
 		{
 			T* pT = static_cast<T*>(this);
-			ATLASSERT(pT->m_hWnd == NULL);
+			SASSERT(pT->m_hWnd == NULL);
 
 			if (!m_Template.IsValid())
 				CreateTemplate();
@@ -3814,7 +3733,7 @@ namespace WTL
 		HWND Create(HWND hWndParent, LPARAM dwInitParam = NULL)
 		{
 			T* pT = static_cast<T*>(this);
-			ATLASSERT(pT->m_hWnd == NULL);
+			SASSERT(pT->m_hWnd == NULL);
 
 			if (!m_Template.IsValid())
 				CreateTemplate();
@@ -3836,7 +3755,7 @@ namespace WTL
 #endif // _DEBUG
 
 			HWND hWnd = ::CreateDialogIndirectParam(ModuleHelper::GetResourceInstance(), (LPCDLGTEMPLATE)m_Template.GetTemplatePtr(), hWndParent, (DLGPROC)T::StartDialogProc, dwInitParam);
-			ATLASSERT(m_hWnd == hWnd);
+			SASSERT(m_hWnd == hWnd);
 
 			return hWnd;
 		}
@@ -3849,12 +3768,12 @@ namespace WTL
 
 		void DoInitTemplate()
 		{
-			ATLASSERT(FALSE);   // MUST be defined in derived class
+			SASSERT(FALSE);   // MUST be defined in derived class
 		}
 
 		void DoInitControls()
 		{
-			ATLASSERT(FALSE);   // MUST be defined in derived class
+			SASSERT(FALSE);   // MUST be defined in derived class
 		}
 	};
 
@@ -3878,83 +3797,83 @@ namespace WTL
 		// Attributes
 		int GetPageCount() const
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			HWND hWndTabCtrl = GetTabControl();
-			ATLASSERT(hWndTabCtrl != NULL);
+			SASSERT(hWndTabCtrl != NULL);
 			return (int)::SendMessage(hWndTabCtrl, TCM_GETITEMCOUNT, 0, 0L);
 		}
 
 		HWND GetActivePage() const
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return (HWND)::SendMessage(m_hWnd, PSM_GETCURRENTPAGEHWND, 0, 0L);
 		}
 
 		int GetActiveIndex() const
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			HWND hWndTabCtrl = GetTabControl();
-			ATLASSERT(hWndTabCtrl != NULL);
+			SASSERT(hWndTabCtrl != NULL);
 			return (int)::SendMessage(hWndTabCtrl, TCM_GETCURSEL, 0, 0L);
 		}
 
 		BOOL SetActivePage(int nPageIndex)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return (BOOL)::SendMessage(m_hWnd, PSM_SETCURSEL, nPageIndex, 0L);
 		}
 
 		BOOL SetActivePage(HPROPSHEETPAGE hPage)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT(hPage != NULL);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT(hPage != NULL);
 			return (BOOL)::SendMessage(m_hWnd, PSM_SETCURSEL, 0, (LPARAM)hPage);
 		}
 
 		BOOL SetActivePageByID(int nPageID)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return (BOOL)::SendMessage(m_hWnd, PSM_SETCURSELID, 0, nPageID);
 		}
 
 		void SetTitle(LPCTSTR lpszText, UINT nStyle = 0)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT((nStyle & ~PSH_PROPTITLE) == 0); // only PSH_PROPTITLE is valid
-			ATLASSERT(lpszText != NULL);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT((nStyle & ~PSH_PROPTITLE) == 0); // only PSH_PROPTITLE is valid
+			SASSERT(lpszText != NULL);
 			::SendMessage(m_hWnd, PSM_SETTITLE, nStyle, (LPARAM)lpszText);
 		}
 
 		HWND GetTabControl() const
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return (HWND)::SendMessage(m_hWnd, PSM_GETTABCONTROL, 0, 0L);
 		}
 
 		void SetFinishText(LPCTSTR lpszText)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			::SendMessage(m_hWnd, PSM_SETFINISHTEXT, 0, (LPARAM)lpszText);
 		}
 
 		void SetWizardButtons(DWORD dwFlags)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			::PostMessage(m_hWnd, PSM_SETWIZBUTTONS, 0, dwFlags);
 		}
 
 		// Operations
 		BOOL AddPage(HPROPSHEETPAGE hPage)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT(hPage != NULL);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT(hPage != NULL);
 			return (BOOL)::SendMessage(m_hWnd, PSM_ADDPAGE, 0, (LPARAM)hPage);
 		}
 
 		BOOL AddPage(LPCPROPSHEETPAGE pPage)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT(pPage != NULL);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT(pPage != NULL);
 			HPROPSHEETPAGE hPage = ::CreatePropertySheetPage(pPage);
 			if (hPage == NULL)
 				return FALSE;
@@ -3964,15 +3883,15 @@ namespace WTL
 #ifndef _WIN32_WCE
 		BOOL InsertPage(int nNewPageIndex, HPROPSHEETPAGE hPage)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT(hPage != NULL);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT(hPage != NULL);
 			return (BOOL)::SendMessage(m_hWnd, PSM_INSERTPAGE, nNewPageIndex, (LPARAM)hPage);
 		}
 
 		BOOL InsertPage(int nNewPageIndex, LPCPROPSHEETPAGE pPage)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT(pPage != NULL);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT(pPage != NULL);
 			HPROPSHEETPAGE hPage = ::CreatePropertySheetPage(pPage);
 			if (hPage == NULL)
 				return FALSE;
@@ -3981,15 +3900,15 @@ namespace WTL
 
 		BOOL InsertPage(HPROPSHEETPAGE hPageInsertAfter, HPROPSHEETPAGE hPage)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT(hPage != NULL);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT(hPage != NULL);
 			return (BOOL)::SendMessage(m_hWnd, PSM_INSERTPAGE, (WPARAM)hPageInsertAfter, (LPARAM)hPage);
 		}
 
 		BOOL InsertPage(HPROPSHEETPAGE hPageInsertAfter, LPCPROPSHEETPAGE pPage)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT(pPage != NULL);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT(pPage != NULL);
 			HPROPSHEETPAGE hPage = ::CreatePropertySheetPage(pPage);
 			if (hPage == NULL)
 				return FALSE;
@@ -3999,125 +3918,125 @@ namespace WTL
 
 		void RemovePage(int nPageIndex)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			::SendMessage(m_hWnd, PSM_REMOVEPAGE, nPageIndex, 0L);
 		}
 
 		void RemovePage(HPROPSHEETPAGE hPage)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT(hPage != NULL);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT(hPage != NULL);
 			::SendMessage(m_hWnd, PSM_REMOVEPAGE, 0, (LPARAM)hPage);
 		}
 
 		BOOL PressButton(int nButton)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return (BOOL)::SendMessage(m_hWnd, PSM_PRESSBUTTON, nButton, 0L);
 		}
 
 		BOOL Apply()
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return (BOOL)::SendMessage(m_hWnd, PSM_APPLY, 0, 0L);
 		}
 
 		void CancelToClose()
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			::SendMessage(m_hWnd, PSM_CANCELTOCLOSE, 0, 0L);
 		}
 
 		void SetModified(HWND hWndPage, BOOL bChanged = TRUE)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT(::IsWindow(hWndPage));
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(hWndPage));
 			UINT uMsg = bChanged ? PSM_CHANGED : PSM_UNCHANGED;
 			::SendMessage(m_hWnd, uMsg, (WPARAM)hWndPage, 0L);
 		}
 
 		LRESULT QuerySiblings(WPARAM wParam, LPARAM lParam)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return ::SendMessage(m_hWnd, PSM_QUERYSIBLINGS, wParam, lParam);
 		}
 
 		void RebootSystem()
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			::SendMessage(m_hWnd, PSM_REBOOTSYSTEM, 0, 0L);
 		}
 
 		void RestartWindows()
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			::SendMessage(m_hWnd, PSM_RESTARTWINDOWS, 0, 0L);
 		}
 
 		BOOL IsDialogMessage(LPMSG lpMsg)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return (BOOL)::SendMessage(m_hWnd, PSM_ISDIALOGMESSAGE, 0, (LPARAM)lpMsg);
 		}
 
 #if (_WIN32_IE >= 0x0500) && !defined(_WIN32_WCE)
 		int HwndToIndex(HWND hWnd) const
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return (int)::SendMessage(m_hWnd, PSM_HWNDTOINDEX, (WPARAM)hWnd, 0L);
 		}
 
 		HWND IndexToHwnd(int nIndex) const
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return (HWND)::SendMessage(m_hWnd, PSM_INDEXTOHWND, nIndex, 0L);
 		}
 
 		int PageToIndex(HPROPSHEETPAGE hPage) const
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return (int)::SendMessage(m_hWnd, PSM_PAGETOINDEX, 0, (LPARAM)hPage);
 		}
 
 		HPROPSHEETPAGE IndexToPage(int nIndex) const
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return (HPROPSHEETPAGE)::SendMessage(m_hWnd, PSM_INDEXTOPAGE, nIndex, 0L);
 		}
 
 		int IdToIndex(int nID) const
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return (int)::SendMessage(m_hWnd, PSM_IDTOINDEX, 0, nID);
 		}
 
 		int IndexToId(int nIndex) const
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return (int)::SendMessage(m_hWnd, PSM_INDEXTOID, nIndex, 0L);
 		}
 
 		int GetResult() const
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return (int)::SendMessage(m_hWnd, PSM_GETRESULT, 0, 0L);
 		}
 
 		BOOL RecalcPageSizes()
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return (BOOL)::SendMessage(m_hWnd, PSM_RECALCPAGESIZES, 0, 0L);
 		}
 
 		void SetHeaderTitle(int nIndex, LPCTSTR lpstrHeaderTitle)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			::SendMessage(m_hWnd, PSM_SETHEADERTITLE, nIndex, (LPARAM)lpstrHeaderTitle);
 		}
 
 		void SetHeaderSubTitle(int nIndex, LPCTSTR lpstrHeaderSubTitle)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			::SendMessage(m_hWnd, PSM_SETHEADERSUBTITLE, nIndex, (LPARAM)lpstrHeaderSubTitle);
 		}
 #endif // (_WIN32_IE >= 0x0500) && !defined(_WIN32_WCE)
@@ -4125,7 +4044,7 @@ namespace WTL
 		// Implementation - override to prevent usage
 		HWND Create(LPCTSTR, HWND, ATL::_U_RECT = NULL, LPCTSTR = NULL, DWORD = 0, DWORD = 0, ATL::_U_MENUorID = 0U, LPVOID = NULL)
 		{
-			ATLASSERT(FALSE);
+			SASSERT(FALSE);
 			return NULL;
 		}
 	};
@@ -4186,7 +4105,7 @@ namespace WTL
 
 			if (uMsg == PSCB_INITIALIZED)
 			{
-				ATLASSERT(hWnd != NULL);
+				SASSERT(hWnd != NULL);
 				T* pT = (T*)ModuleHelper::ExtractCreateWndData();
 				// subclass the sheet window
 				pT->SubclassWindow(hWnd);
@@ -4239,7 +4158,7 @@ namespace WTL
 		// Create method
 		HWND Create(HWND hWndParent = NULL)
 		{
-			ATLASSERT(m_hWnd == NULL);
+			SASSERT(m_hWnd == NULL);
 
 			m_psh.dwFlags |= PSH_MODELESS;
 			if (m_psh.hwndParent == NULL)
@@ -4264,14 +4183,14 @@ namespace WTL
 			HWND hWnd = (HWND)::PropertySheet(&m_psh);
 			_CleanUpPages();   // ensure clean-up, required if call failed
 
-			ATLASSERT(m_hWnd == hWnd);
+			SASSERT(m_hWnd == hWnd);
 
 			return hWnd;
 		}
 
 		INT_PTR DoModal(HWND hWndParent = ::GetActiveWindow())
 		{
-			ATLASSERT(m_hWnd == NULL);
+			SASSERT(m_hWnd == NULL);
 
 			m_psh.dwFlags &= ~PSH_MODELESS;
 			if (m_psh.hwndParent == NULL)
@@ -4326,13 +4245,13 @@ namespace WTL
 
 		HPROPSHEETPAGE GetPage(int nPageIndex) const
 		{
-			ATLASSERT(m_hWnd == NULL);   // can't do this after it's created
+			SASSERT(m_hWnd == NULL);   // can't do this after it's created
 			return (HPROPSHEETPAGE)m_arrPages[nPageIndex];
 		}
 
 		int GetPageIndex(HPROPSHEETPAGE hPage) const
 		{
-			ATLASSERT(m_hWnd == NULL);   // can't do this after it's created
+			SASSERT(m_hWnd == NULL);   // can't do this after it's created
 			return m_arrPages.Find((HPROPSHEETPAGE&)hPage);
 		}
 
@@ -4340,7 +4259,7 @@ namespace WTL
 		{
 			if (m_hWnd == NULL)   // not created yet
 			{
-				ATLASSERT(nPageIndex >= 0 && nPageIndex < m_arrPages.GetSize());
+				SASSERT(nPageIndex >= 0 && nPageIndex < m_arrPages.GetSize());
 				m_psh.nStartPage = nPageIndex;
 				return TRUE;
 			}
@@ -4349,7 +4268,7 @@ namespace WTL
 
 		BOOL SetActivePage(HPROPSHEETPAGE hPage)
 		{
-			ATLASSERT(hPage != NULL);
+			SASSERT(hPage != NULL);
 			if (m_hWnd == NULL)   // not created yet
 			{
 				int nPageIndex = GetPageIndex(hPage);
@@ -4364,8 +4283,8 @@ namespace WTL
 
 		void SetTitle(LPCTSTR lpszText, UINT nStyle = 0)
 		{
-			ATLASSERT((nStyle & ~PSH_PROPTITLE) == 0);   // only PSH_PROPTITLE is valid
-			ATLASSERT(lpszText != NULL);
+			SASSERT((nStyle & ~PSH_PROPTITLE) == 0);   // only PSH_PROPTITLE is valid
+			SASSERT(lpszText != NULL);
 
 			if (m_hWnd == NULL)
 			{
@@ -4384,8 +4303,8 @@ namespace WTL
 #if defined(_AYGSHELL_H_) || defined(__AYGSHELL_H__) // PPC specific Link field	
 		void SetLinkText(LPCTSTR lpszText)
 		{
-			ATLASSERT(lpszText != NULL);
-			ATLASSERT(lstrlen(lpszText) < PROPSHEET_LINK_SIZE);
+			SASSERT(lpszText != NULL);
+			SASSERT(lstrlen(lpszText) < PROPSHEET_LINK_SIZE);
 			lstrcpy(m_szLink, lpszText);
 		}
 #endif // defined(_AYGSHELL_H_) || defined(__AYGSHELL_H__) 
@@ -4403,7 +4322,7 @@ namespace WTL
 		// Operations
 		BOOL AddPage(HPROPSHEETPAGE hPage)
 		{
-			ATLASSERT(hPage != NULL);
+			SASSERT(hPage != NULL);
 			BOOL bRet = FALSE;
 			if (m_hWnd != NULL)
 				bRet = TBase::AddPage(hPage);
@@ -4414,7 +4333,7 @@ namespace WTL
 
 		BOOL AddPage(LPCPROPSHEETPAGE pPage)
 		{
-			ATLASSERT(pPage != NULL);
+			SASSERT(pPage != NULL);
 			HPROPSHEETPAGE hPage = ::CreatePropertySheetPage(pPage);
 			if (hPage == NULL)
 				return FALSE;
@@ -4426,7 +4345,7 @@ namespace WTL
 
 		BOOL RemovePage(HPROPSHEETPAGE hPage)
 		{
-			ATLASSERT(hPage != NULL);
+			SASSERT(hPage != NULL);
 			if (m_hWnd == NULL)   // not created yet
 			{
 				int nPage = GetPageIndex(hPage);
@@ -4452,7 +4371,7 @@ namespace WTL
 #if (_WIN32_IE >= 0x0400) && !defined(_WIN32_WCE)
 		void SetHeader(LPCTSTR szbmHeader)
 		{
-			ATLASSERT(m_hWnd == NULL);   // can't do this after it's created
+			SASSERT(m_hWnd == NULL);   // can't do this after it's created
 
 			m_psh.dwFlags &= ~PSH_WIZARD;
 			m_psh.dwFlags |= (PSH_HEADER | PSH_WIZARD97);
@@ -4461,7 +4380,7 @@ namespace WTL
 
 		void SetHeader(HBITMAP hbmHeader)
 		{
-			ATLASSERT(m_hWnd == NULL);   // can't do this after it's created
+			SASSERT(m_hWnd == NULL);   // can't do this after it's created
 
 			m_psh.dwFlags &= ~PSH_WIZARD;
 			m_psh.dwFlags |= (PSH_HEADER | PSH_USEHBMHEADER | PSH_WIZARD97);
@@ -4470,7 +4389,7 @@ namespace WTL
 
 		void SetWatermark(LPCTSTR szbmWatermark, HPALETTE hplWatermark = NULL)
 		{
-			ATLASSERT(m_hWnd == NULL);   // can't do this after it's created
+			SASSERT(m_hWnd == NULL);   // can't do this after it's created
 
 			m_psh.dwFlags &= ~PSH_WIZARD;
 			m_psh.dwFlags |= PSH_WATERMARK | PSH_WIZARD97;
@@ -4485,7 +4404,7 @@ namespace WTL
 
 		void SetWatermark(HBITMAP hbmWatermark, HPALETTE hplWatermark = NULL)
 		{
-			ATLASSERT(m_hWnd == NULL);   // can't do this after it's created
+			SASSERT(m_hWnd == NULL);   // can't do this after it's created
 
 			m_psh.dwFlags &= ~PSH_WIZARD;
 			m_psh.dwFlags |= (PSH_WATERMARK | PSH_USEHBMWATERMARK | PSH_WIZARD97);
@@ -4500,7 +4419,7 @@ namespace WTL
 
 		void StretchWatermark(bool bStretchWatermark)
 		{
-			ATLASSERT(m_hWnd == NULL);   // can't do this after it's created
+			SASSERT(m_hWnd == NULL);   // can't do this after it's created
 			if (bStretchWatermark)
 				m_psh.dwFlags |= PSH_STRETCHWATERMARK;
 			else
@@ -4569,64 +4488,64 @@ namespace WTL
 		// Attributes
 		CPropertySheetWindow GetPropertySheet() const
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return CPropertySheetWindow(GetParent());
 		}
 
 		// Operations
 		BOOL Apply()
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT(GetParent() != NULL);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT(GetParent() != NULL);
 			return GetPropertySheet().Apply();
 		}
 
 		void CancelToClose()
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT(GetParent() != NULL);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT(GetParent() != NULL);
 			GetPropertySheet().CancelToClose();
 		}
 
 		void SetModified(BOOL bChanged = TRUE)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT(GetParent() != NULL);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT(GetParent() != NULL);
 			GetPropertySheet().SetModified(m_hWnd, bChanged);
 		}
 
 		LRESULT QuerySiblings(WPARAM wParam, LPARAM lParam)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT(GetParent() != NULL);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT(GetParent() != NULL);
 			return GetPropertySheet().QuerySiblings(wParam, lParam);
 		}
 
 		void RebootSystem()
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT(GetParent() != NULL);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT(GetParent() != NULL);
 			GetPropertySheet().RebootSystem();
 		}
 
 		void RestartWindows()
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT(GetParent() != NULL);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT(GetParent() != NULL);
 			GetPropertySheet().RestartWindows();
 		}
 
 		void SetWizardButtons(DWORD dwFlags)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT(GetParent() != NULL);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT(GetParent() != NULL);
 			GetPropertySheet().SetWizardButtons(dwFlags);
 		}
 
 		// Implementation - overrides to prevent usage
 		HWND Create(LPCTSTR, HWND, ATL::_U_RECT = NULL, LPCTSTR = NULL, DWORD = 0, DWORD = 0, ATL::_U_MENUorID = 0U, LPVOID = NULL)
 		{
-			ATLASSERT(FALSE);
+			SASSERT(FALSE);
 			return NULL;
 		}
 	};
@@ -4664,7 +4583,7 @@ namespace WTL
 		static UINT CALLBACK PropPageCallback(HWND hWnd, UINT uMsg, LPPROPSHEETPAGE ppsp)
 		{
 			hWnd;   // avoid level 4 warning
-			ATLASSERT(hWnd == NULL);
+			SASSERT(hWnd == NULL);
 			T* pT = (T*)ppsp->lParam;
 			UINT uRet = 0;
 
@@ -4723,14 +4642,14 @@ namespace WTL
 #if (_WIN32_IE >= 0x0500) && !defined(_WIN32_WCE)
 		void SetHeaderTitle(LPCTSTR lpstrHeaderTitle)
 		{
-			ATLASSERT(m_hWnd == NULL);   // can't do this after it's created
+			SASSERT(m_hWnd == NULL);   // can't do this after it's created
 			m_psp.dwFlags |= PSP_USEHEADERTITLE;
 			m_psp.pszHeaderTitle = lpstrHeaderTitle;
 		}
 
 		void SetHeaderSubTitle(LPCTSTR lpstrHeaderSubTitle)
 		{
-			ATLASSERT(m_hWnd == NULL);   // can't do this after it's created
+			SASSERT(m_hWnd == NULL);   // can't do this after it's created
 			m_psp.dwFlags |= PSP_USEHEADERSUBTITLE;
 			m_psp.pszHeaderSubTitle = lpstrHeaderSubTitle;
 		}
@@ -4753,7 +4672,7 @@ namespace WTL
 		{
 #ifndef _WIN32_WCE
 			// This notification is sometimes received on Windows CE after the window is already destroyed
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 #endif
 			NMHDR* pNMHDR = (NMHDR*)lParam;
 
@@ -4764,7 +4683,7 @@ namespace WTL
 				return 1;
 			}
 #ifdef _WIN32_WCE
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 #endif
 
 			T* pT = static_cast<T*>(this);
@@ -5114,12 +5033,12 @@ namespace WTL
 				}
 				else
 				{
-					ATLASSERT(FALSE && _T("CAxPropertyPageImpl - ActiveX initializtion failed!"));
+					SASSERT(FALSE && _T("CAxPropertyPageImpl - ActiveX initializtion failed!"));
 				}
 			}
 			else
 			{
-				ATLASSERT(FALSE && _T("CAxPropertyPageImpl - Cannot find dialog template!"));
+				SASSERT(FALSE && _T("CAxPropertyPageImpl - Cannot find dialog template!"));
 			}
 		}
 
@@ -5199,7 +5118,7 @@ namespace WTL
 				HRESULT hr;
 				if (FAILED(hr = pThis->CreateActiveXControls(pThis->GetIDD())))
 				{
-					ATLASSERT(FALSE);
+					SASSERT(FALSE);
 					return FALSE;
 				}
 			}
@@ -5491,13 +5410,13 @@ namespace WTL
 		// Operations
 		HFONT GetExteriorPageTitleFont(void)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return (HFONT)::SendMessage(m_hWnd, GetMessage_GetExteriorPageTitleFont(), 0, 0L);
 		}
 
 		HFONT GetBulletFont(void)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return (HFONT)::SendMessage(m_hWnd, GetMessage_GetBulletFont(), 0, 0L);
 		}
 
@@ -5511,7 +5430,7 @@ namespace WTL
 				if (FAILED(lock.Lock()))
 				{
 					ATLTRACE2(atlTraceUI, 0, _T("ERROR : Unable to lock critical section in CWizard97SheetWindow::GetMessage_GetExteriorPageTitleFont().\n"));
-					ATLASSERT(FALSE);
+					SASSERT(FALSE);
 					return 0;
 				}
 
@@ -5520,7 +5439,7 @@ namespace WTL
 
 				lock.Unlock();
 			}
-			ATLASSERT(uGetExteriorPageTitleFont != 0);
+			SASSERT(uGetExteriorPageTitleFont != 0);
 			return uGetExteriorPageTitleFont;
 		}
 
@@ -5533,7 +5452,7 @@ namespace WTL
 				if (FAILED(lock.Lock()))
 				{
 					ATLTRACE2(atlTraceUI, 0, _T("ERROR : Unable to lock critical section in CWizard97SheetWindow::GetMessage_GetBulletFont().\n"));
-					ATLASSERT(FALSE);
+					SASSERT(FALSE);
 					return 0;
 				}
 
@@ -5542,14 +5461,14 @@ namespace WTL
 
 				lock.Unlock();
 			}
-			ATLASSERT(uGetBulletFont != 0);
+			SASSERT(uGetBulletFont != 0);
 			return uGetBulletFont;
 		}
 
 		// Implementation - override to prevent usage
 		HWND Create(LPCTSTR, HWND, ATL::_U_RECT = NULL, LPCTSTR = NULL, DWORD = 0, DWORD = 0, ATL::_U_MENUorID = 0U, LPVOID = NULL)
 		{
-			ATLASSERT(FALSE);
+			SASSERT(FALSE);
 			return NULL;
 		}
 	};
@@ -5705,27 +5624,27 @@ namespace WTL
 		// Attributes
 		CWizard97SheetWindow GetPropertySheet() const
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return CWizard97SheetWindow(GetParent());
 		}
 
 		// Operations
 		HFONT GetExteriorPageTitleFont(void)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return GetPropertySheet().GetExteriorPageTitleFont();
 		}
 
 		HFONT GetBulletFont(void)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			return GetPropertySheet().GetBulletFont();
 		}
 
 		// Implementation - overrides to prevent usage
 		HWND Create(LPCTSTR, HWND, ATL::_U_RECT = NULL, LPCTSTR = NULL, DWORD = 0, DWORD = 0, ATL::_U_MENUorID = 0U, LPVOID = NULL)
 		{
-			ATLASSERT(FALSE);
+			SASSERT(FALSE);
 			return NULL;
 		}
 
@@ -5838,25 +5757,25 @@ namespace WTL
 		// Operations - new, Aero Wizard only
 		void SetNextText(LPCWSTR lpszText)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			::SendMessage(m_hWnd, PSM_SETNEXTTEXT, 0, (LPARAM)lpszText);
 		}
 
 		void ShowWizardButtons(DWORD dwButtons, DWORD dwStates)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			::PostMessage(m_hWnd, PSM_SHOWWIZBUTTONS, (WPARAM)dwStates, (LPARAM)dwButtons);
 		}
 
 		void EnableWizardButtons(DWORD dwButtons, DWORD dwStates)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			::PostMessage(m_hWnd, PSM_ENABLEWIZBUTTONS, (WPARAM)dwStates, (LPARAM)dwButtons);
 		}
 
 		void SetButtonText(DWORD dwButton, LPCWSTR lpszText)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			::SendMessage(m_hWnd, PSM_SETBUTTONTEXT, (WPARAM)dwButton, (LPARAM)lpszText);
 		}
 	};
@@ -5879,26 +5798,26 @@ namespace WTL
 		// Operations
 		void EnableResizing()
 		{
-			ATLASSERT(m_hWnd == NULL);   // can't do this after it's created
+			SASSERT(m_hWnd == NULL);   // can't do this after it's created
 			m_psh.dwFlags |= PSH_RESIZABLE;
 		}
 
 		void UseHeaderBitmap()
 		{
-			ATLASSERT(m_hWnd == NULL);   // can't do this after it's created
+			SASSERT(m_hWnd == NULL);   // can't do this after it's created
 			m_psh.dwFlags |= PSH_HEADERBITMAP;
 		}
 
 		void SetNoMargin()
 		{
-			ATLASSERT(m_hWnd == NULL);   // can't do this after it's created
+			SASSERT(m_hWnd == NULL);   // can't do this after it's created
 			m_psh.dwFlags |= PSH_NOMARGIN;
 		}
 
 		// Override to prevent use
 		HWND Create(HWND /*hWndParent*/ = NULL)
 		{
-			ATLASSERT(FALSE);   // not supported for Aero Wizard
+			SASSERT(FALSE);   // not supported for Aero Wizard
 			return NULL;
 		}
 	};
@@ -5939,7 +5858,7 @@ namespace WTL
 		// Attributes
 		CAeroWizardFrameWindow GetAeroWizardFrame() const
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
+			SASSERT(::IsWindow(m_hWnd));
 			// This is not really top-level frame window, but it processes all frame messages
 			return CAeroWizardFrameWindow(GetParent());
 		}
@@ -5947,29 +5866,29 @@ namespace WTL
 		// Operations - new, Aero Wizard only
 		void SetNextText(LPCWSTR lpszText)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT(GetParent() != NULL);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT(GetParent() != NULL);
 			GetAeroWizardFrame().SetNextText(lpszText);
 		}
 
 		void ShowWizardButtons(DWORD dwButtons, DWORD dwStates)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT(GetParent() != NULL);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT(GetParent() != NULL);
 			GetAeroWizardFrame().ShowWizardButtons(dwButtons, dwStates);
 		}
 
 		void EnableWizardButtons(DWORD dwButtons, DWORD dwStates)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT(GetParent() != NULL);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT(GetParent() != NULL);
 			GetAeroWizardFrame().EnableWizardButtons(dwButtons, dwStates);
 		}
 
 		void SetButtonText(DWORD dwButton, LPCWSTR lpszText)
 		{
-			ATLASSERT(::IsWindow(m_hWnd));
-			ATLASSERT(GetParent() != NULL);
+			SASSERT(::IsWindow(m_hWnd));
+			SASSERT(GetParent() != NULL);
 			GetAeroWizardFrame().SetButtonText(dwButton, lpszText);
 		}
 	};
@@ -6476,7 +6395,7 @@ namespace WTL
 		static HRESULT CALLBACK TaskDialogCallback(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LONG_PTR lpRefData)
 		{
 			T* pT = (T*)lpRefData;
-			ATLASSERT(pT->m_hWnd == NULL || pT->m_hWnd == hWnd);
+			SASSERT(pT->m_hWnd == NULL || pT->m_hWnd == hWnd);
 
 			BOOL bRet = FALSE;
 			switch (uMsg)
@@ -6574,7 +6493,7 @@ namespace WTL
 		// Commands - valid to call only from handlers
 		void NavigatePage(TASKDIALOGCONFIG& tdc)
 		{
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 
 			tdc.cbSize = sizeof(TASKDIALOGCONFIG);
 			if (tdc.hwndParent == NULL)
@@ -6589,108 +6508,108 @@ namespace WTL
 		// modify TASKDIALOGCONFIG values, then call this to update task dialog
 		void NavigatePage()
 		{
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 			::SendMessage(m_hWnd, TDM_NAVIGATE_PAGE, 0, (LPARAM)&m_tdc);
 		}
 
 		void ClickButton(int nButton)
 		{
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 			::SendMessage(m_hWnd, TDM_CLICK_BUTTON, nButton, 0L);
 		}
 
 		void SetMarqueeProgressBar(BOOL bMarquee)
 		{
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 			::SendMessage(m_hWnd, TDM_SET_MARQUEE_PROGRESS_BAR, bMarquee, 0L);
 		}
 
 		BOOL SetProgressBarState(int nNewState)
 		{
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 			return (BOOL)::SendMessage(m_hWnd, TDM_SET_PROGRESS_BAR_STATE, nNewState, 0L);
 		}
 
 		DWORD SetProgressBarRange(int nMinRange, int nMaxRange)
 		{
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 			return (DWORD)::SendMessage(m_hWnd, TDM_SET_PROGRESS_BAR_RANGE, 0, MAKELPARAM(nMinRange, nMaxRange));
 		}
 
 		int SetProgressBarPos(int nNewPos)
 		{
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 			return (int)::SendMessage(m_hWnd, TDM_SET_PROGRESS_BAR_POS, nNewPos, 0L);
 		}
 
 		BOOL SetProgressBarMarquee(BOOL bMarquee, UINT uSpeed)
 		{
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 			return (BOOL)::SendMessage(m_hWnd, TDM_SET_PROGRESS_BAR_MARQUEE, bMarquee, uSpeed);
 		}
 
 		void SetElementText(TASKDIALOG_ELEMENTS element, LPCWSTR lpstrText)
 		{
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 			::SendMessage(m_hWnd, TDM_SET_ELEMENT_TEXT, element, (LPARAM)lpstrText);
 		}
 
 		void ClickRadioButton(int nRadioButton)
 		{
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 			::SendMessage(m_hWnd, TDM_CLICK_RADIO_BUTTON, nRadioButton, 0L);
 		}
 
 		void EnableButton(int nButton, BOOL bEnable)
 		{
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 			::SendMessage(m_hWnd, TDM_ENABLE_BUTTON, nButton, bEnable);
 		}
 
 		void EnableRadioButton(int nButton, BOOL bEnable)
 		{
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 			::SendMessage(m_hWnd, TDM_ENABLE_RADIO_BUTTON, nButton, bEnable);
 		}
 
 		void ClickVerification(BOOL bCheck, BOOL bFocus)
 		{
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 			::SendMessage(m_hWnd, TDM_CLICK_VERIFICATION, bCheck, bFocus);
 		}
 
 		void UpdateElementText(TASKDIALOG_ELEMENTS element, LPCWSTR lpstrText)
 		{
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 			::SendMessage(m_hWnd, TDM_UPDATE_ELEMENT_TEXT, element, (LPARAM)lpstrText);
 		}
 
 		void SetButtonElevationRequiredState(int nButton, BOOL bElevation)
 		{
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 			::SendMessage(m_hWnd, TDM_SET_BUTTON_ELEVATION_REQUIRED_STATE, nButton, bElevation);
 		}
 
 		void UpdateIcon(TASKDIALOG_ICON_ELEMENTS element, HICON hIcon)
 		{
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 #ifdef _DEBUG
 			if (element == TDIE_ICON_MAIN)
-				ATLASSERT((m_tdc.dwFlags & TDF_USE_HICON_MAIN) != 0);
+				SASSERT((m_tdc.dwFlags & TDF_USE_HICON_MAIN) != 0);
 			else if (element == TDIE_ICON_FOOTER)
-				ATLASSERT((m_tdc.dwFlags & TDF_USE_HICON_FOOTER) != 0);
+				SASSERT((m_tdc.dwFlags & TDF_USE_HICON_FOOTER) != 0);
 #endif // _DEBUG
 			::SendMessage(m_hWnd, TDM_UPDATE_ICON, element, (LPARAM)hIcon);
 		}
 
 		void UpdateIcon(TASKDIALOG_ICON_ELEMENTS element, LPCWSTR lpstrIcon)
 		{
-			ATLASSERT(m_hWnd != NULL);
+			SASSERT(m_hWnd != NULL);
 #ifdef _DEBUG
 			if (element == TDIE_ICON_MAIN)
-				ATLASSERT((m_tdc.dwFlags & TDF_USE_HICON_MAIN) == 0);
+				SASSERT((m_tdc.dwFlags & TDF_USE_HICON_MAIN) == 0);
 			else if (element == TDIE_ICON_FOOTER)
-				ATLASSERT((m_tdc.dwFlags & TDF_USE_HICON_FOOTER) == 0);
+				SASSERT((m_tdc.dwFlags & TDF_USE_HICON_FOOTER) == 0);
 #endif // _DEBUG
 			::SendMessage(m_hWnd, TDM_UPDATE_ICON, element, (LPARAM)lpstrIcon);
 		}
@@ -6711,6 +6630,7 @@ namespace WTL
 
 #endif // ((_WIN32_WINNT >= 0x0600) || defined(_WTL_TASKDIALOG)) && !defined(_WIN32_WCE)
 #endif // complete
-}; // namespace WTL
+
+SNSEND
 
 #endif // __ATLDLGS_H__

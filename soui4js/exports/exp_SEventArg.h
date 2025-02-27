@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_SEVENTARG__H__
+#define __EXP_SEVENTARG__H__
 #include <event/SEvents.h>
 #include "toobj.h"
 
@@ -398,3 +399,5 @@ void Exp_SEventArg(qjsbind::Module* module) {
 	DEF_CAST_IOBJ(module, EventSetHotKey); }
 
 }
+
+#endif // __EXP_SEVENTARG__H__

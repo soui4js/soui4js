@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_SREGKEY__H__
+#define __EXP_SREGKEY__H__
 #include "regkey.h"
 
 enum {
@@ -83,3 +84,4 @@ void Exp_SRegKey(qjsbind::Module* module) {
 	jsCls.AddFunc("GetDwordValue", &SRegKey::GetDwordValue);
 	jsCls.AddFunc("SetDwordValue", &SRegKey::SetDwordValue);
 }
+#endif // __EXP_SREGKEY__H__

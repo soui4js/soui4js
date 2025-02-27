@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_TYPES__H__
+#define __EXP_TYPES__H__
 #include <souistd.h>
 using namespace SOUI;
 
@@ -188,3 +189,4 @@ namespace qjsbind {
 		dst = (LPCSTR)src;
 	}
 }
+#endif // __EXP_TYPES__H__

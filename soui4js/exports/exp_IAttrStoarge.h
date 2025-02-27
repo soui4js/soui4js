@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_IATTRSTOARGE__H__
+#define __EXP_IATTRSTOARGE__H__
 #include "SAttrStorage.h"
 
 void Exp_IAttrStorage(qjsbind::Module* module)
@@ -9,3 +10,4 @@ void Exp_IAttrStorage(qjsbind::Module* module)
 	jsCls.AddSet("cbHandler", &JsAttrStorageFactory::m_cbHandler);
 	jsCls.AddSet("onNeedStorage", &JsAttrStorageFactory::m_onNeedStorage);
 }
+#endif // __EXP_IATTRSTOARGE__H__

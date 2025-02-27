@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_IHTTPCLIENT__H__
+#define __EXP_IHTTPCLIENT__H__
 #include <interface/SHttpClient-i.h>
 #include <helper/SFunctor.hpp>
 
@@ -222,3 +223,4 @@ void Exp_HttpRequest(qjsbind::Module* module) {
 	jsCls.AddGetSet("onError", &HttpRequest::m_onError);
 	jsCls.AddGetSet("onProg", &HttpRequest::m_onProg);
 }
+#endif // __EXP_IHTTPCLIENT__H__

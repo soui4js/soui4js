@@ -1,5 +1,6 @@
-#pragma once
-#include <control/souictrls.h>
+﻿#ifndef __EXP_ICTRLS__H__
+#define __EXP_ICTRLS__H__
+#include <control/SouiCtrls.h>
 #include "toobj.h"
 
 template<typename T1, typename T2>
@@ -400,3 +401,4 @@ void Exp_ICtrls(qjsbind::Module* module) {
 		DEF_QICTRL(module, IStackView, SStackView);
 	}
 }
+#endif // __EXP_ICTRLS__H__

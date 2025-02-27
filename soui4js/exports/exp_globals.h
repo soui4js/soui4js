@@ -1,4 +1,5 @@
-#pragma once
+ï»¿#ifndef __EXP_GLOBALS__H__
+#define __EXP_GLOBALS__H__
 #include <souistd.h>
 #include <interface/SFactory-i.h>
 #include "SFuncSlot.h"
@@ -148,7 +149,7 @@ BOOL SetXmlTranslator(IApplication * pApp,LPCSTR xmlId) {
 		SStringW strFont;
 		langCN->getFontInfo(&strFont);
 		if (!strFont.IsEmpty())
-		{//´Ó·­ÒëÎÄ¼şÖĞ»ñÈ¡²¢ÉèÖÃ³ÌĞòµÄ×ÖÌåĞÅÏ¢
+		{//ä»ç¿»è¯‘æ–‡ä»¶ä¸­è·å–å¹¶è®¾ç½®ç¨‹åºçš„å­—ä½“ä¿¡æ¯
 			pApp->SetDefaultFontInfo(strFont.c_str());
 		}
 		bRet = TRUE;
@@ -242,7 +243,7 @@ string GetSpecialPath(const char * pszType) {
 	if (ClsId == -1)
 		return "";
 	wchar_t buf[MAX_PATH] = { 0 };
-	SHGetSpecialFolderPath(NULL, buf, ClsId, TRUE);
+	SHGetSpecialFolderPathW(NULL, buf, ClsId, TRUE);
 	SStringA ret= S_CW2A(buf, CP_UTF8);
 	return string(ret.c_str(), ret.GetLength());
 }
@@ -283,12 +284,12 @@ int RunAsAdmin(LPCSTR szFolder, LPCSTR szJs,BOOL waitEnd) {
 	SHELLEXECUTEINFO sei = { 0 };
 	sei.cbSize = sizeof(SHELLEXECUTEINFO);
 	sei.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_FLAG_NO_UI;
-	sei.lpVerb = _T("runas"); // ÒÔ¹ÜÀíÔ±Éí·İÔËĞĞ
-	sei.lpFile = szExe; // ÒªÆô¶¯µÄ³ÌĞò
+	sei.lpVerb = _T("runas"); // ä»¥ç®¡ç†å‘˜èº«ä»½è¿è¡Œ
+	sei.lpFile = szExe; // è¦å¯åŠ¨çš„ç¨‹åº
 	sei.lpParameters = strParam.c_str();
 	sei.nShow = SW_SHOWNORMAL;
 	if (!ShellExecuteEx(&sei)) {
-		// ´¦ÀíÆô¶¯Ê§°ÜµÄÇé¿ö
+		// å¤„ç†å¯åŠ¨å¤±è´¥çš„æƒ…å†µ
 		SLOGE2("soui4js")<<"RunAsAdmin failed! err="<< GetLastError();
 		return -1;
 	}
@@ -385,3 +386,5 @@ void Exp_Global(qjsbind::Module* module)
 	module->ExportFunc("IsX64", &IsX64);
 	module->ExportFunc("NotifySettingChange", &NotifySettingChange);
 }
+
+#endif // __EXP_GLOBALS__H__

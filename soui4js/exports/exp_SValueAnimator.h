@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_SVALUEANIMATOR__H__
+#define __EXP_SVALUEANIMATOR__H__
 
 enum {
 	Ani_None=0,
@@ -412,3 +413,5 @@ void Exp_SValueAnimator(qjsbind::Module* module) {
 		jsCls.AddGetSet("onAnimatorGroupEnd", &JsAnimatorGroup::m_onAnimatorGroupEnd);
 	}
 }
+
+#endif // __EXP_SVALUEANIMATOR__H__

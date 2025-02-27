@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_SADAPTER__H__
+#define __EXP_SADAPTER__H__
 #pragma once
 #include <helper/SAdapterBase.h>
 #include <qjsbind.h>
@@ -472,3 +473,4 @@ void Exp_SAdapter(qjsbind::Module* module) {
 		jsCls.AddGetSet("onIsViewWidthMatchParent", &STvAdapter::m_funIsViewWidthMatchParent);
 	}
 }
+#endif // __EXP_SADAPTER__H__
