@@ -16,6 +16,7 @@
 
 using namespace SOUI;
 
+#define kLogTag "soui4js-host"
 
 void SetDefaultDir()
 {
@@ -23,11 +24,12 @@ void SetDefaultDir()
 	GetModuleFileName(NULL, szCurrentDir, sizeof(szCurrentDir));
 #ifdef _WIN32
 	LPTSTR lpInsertPos = _tcsrchr(szCurrentDir, _T('\\'));
-#elif
+#else
 	LPTSTR lpInsertPos = _tcsrchr(szCurrentDir, _T('/'));
 #endif//_WIN32
 	_tcscpy(lpInsertPos + 1, _T("\0"));
 	SetCurrentDirectory(szCurrentDir);
+	SLOGI()<<"current dir="<<szCurrentDir;
 }
 
 BOOL InitApp(SComMgr2 & comMgr,IApplication *theApp){
