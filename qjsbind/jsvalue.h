@@ -309,6 +309,19 @@ namespace qjsbind {
 			return JS_ToCStringLen(context_, NULL, value_);
 		}
 
+		operator wchar_t const*() const{
+			if (!IsString())
+				return NULL;
+			const char *str = JS_ToCStringLen(context_, NULL, value_);
+			if(!str)
+				return NULL;
+			static std::wstring strW;
+			int len = MultiByteToWideChar(CP_UTF8,0,str,-1,NULL,0);
+			strW.resize(len);
+			MultiByteToWideChar(CP_UTF8,0,str,-1,(wchar_t*)strW.c_str(),len);
+			return strW.c_str();
+		}
+
 		uint8_t* ToBuffer(size_t* psize) const;
 
 		void SetOpaque(void* opaque) {
