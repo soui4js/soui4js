@@ -7,7 +7,7 @@ source_group("Header Files" FILES ${QJSBIND_HEADERS})
 
 source_group("Source Files" FILES ${QJSBIND_SRCS})
 
-add_library(${PROJECT_NAME} STATIC ${QJSBIND_SRCS})
+add_library(${PROJECT_NAME} STATIC ${QJSBIND_SRCS} ${QJSBIND_HEADERS})
 
 if (NOT CMAKE_SYSTEM_NAME MATCHES Windows)
 target_compile_options(${PROJECT_NAME} PRIVATE -fPIC)
