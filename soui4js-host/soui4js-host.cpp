@@ -48,12 +48,16 @@ BOOL InitApp(SComMgr2 & comMgr,IApplication *theApp){
 	}
 	BOOL bLoaded = TRUE;
 	do{
+		#ifdef _WIN32
 		if(render.Find(L"gdi")!=-1)
 			bLoaded = comMgr.CreateRender_GDI((IObjRef * *)& pRenderFactory);
 		else if(render.Find(L"d2d")!=-1)
 			bLoaded = comMgr.CreateRender_D2D((IObjRef**)&pRenderFactory);
 		else
 			bLoaded = comMgr.CreateRender_Skia((IObjRef**)&pRenderFactory);
+		#else
+		bLoaded = comMgr.CreateRender_GDI((IObjRef * *)& pRenderFactory);
+		#endif//_WIN32
 		SASSERT_FMT(bLoaded, _T("load interface [render] failed!"));
 		if(!bLoaded) break;
 		SAutoRefPtr<IImgDecoderFactory> pImgDecoderFactory;
