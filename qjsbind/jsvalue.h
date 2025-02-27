@@ -208,7 +208,7 @@ namespace qjsbind {
 		}
 #endif
 		template<typename T>
-		operator T*() {
+		operator T*() const{
 			if (IsObject()) {
 				JSClassID id = JS_GetClassID(value_);
 				JsProxy<T>* pThis;

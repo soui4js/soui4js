@@ -48,7 +48,6 @@ set(SOUI4JS_HEADER
     "exports/exp_Sxml.h"
     "exports/exp_SZipExtractor.h"
     "exports/exp_types.h"
-    "exports/exp_Worker.h"
     "exports/regkey.h"
     "exports/SAttrStorage.h"
     "exports/SFuncSlot.h"
@@ -70,7 +69,7 @@ source_group("Sources" FILES ${SOUI4JS_SRC})
 ################################################################################
 # Target
 ################################################################################
-add_library(${PROJECT_NAME} SHARED ${SOUI4JS_SRC})
+add_library(${PROJECT_NAME} SHARED ${SOUI4JS_HEADER} ${SOUI4JS_SRC})
 
 
 target_include_directories(${PROJECT_NAME} PUBLIC
