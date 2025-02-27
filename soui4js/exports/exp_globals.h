@@ -1,4 +1,4 @@
-#ifndef _EXP_GLOBALS_H_
+﻿#ifndef _EXP_GLOBALS_H_
 #define _EXP_GLOBALS_H_
 
 
@@ -158,7 +158,7 @@ BOOL SetXmlTranslator(IApplication * pApp,LPCSTR xmlId) {
 		SStringW strFont;
 		langCN->getFontInfo(&strFont);
 		if (!strFont.IsEmpty())
-		{//�ӷ����ļ��л�ȡ�����ó����������Ϣ
+		{//从翻译文件中获取并设置程序的字体信息
 			pApp->SetDefaultFontInfo(strFont.c_str());
 		}
 		bRet = TRUE;
@@ -315,12 +315,12 @@ int RunAsAdmin(LPCSTR szFolder, LPCSTR szJs,BOOL waitEnd) {
 	SHELLEXECUTEINFO sei = { 0 };
 	sei.cbSize = sizeof(SHELLEXECUTEINFO);
 	sei.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_FLAG_NO_UI;
-	sei.lpVerb = _T("runas"); // �Թ���Ա��������
-	sei.lpFile = szExe; // Ҫ�����ĳ���
+	sei.lpVerb = _T("runas"); // 以管理员身份运行
+	sei.lpFile = szExe; // 要启动的程序
 	sei.lpParameters = strParam.c_str();
 	sei.nShow = SW_SHOWNORMAL;
 	if (!ShellExecuteEx(&sei)) {
-		// ��������ʧ�ܵ����
+		// 处理启动失败的情况
 		SLOGE2("soui4js")<<"RunAsAdmin failed! err="<< GetLastError();
 		return -1;
 	}

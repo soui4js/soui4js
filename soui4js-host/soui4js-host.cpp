@@ -21,8 +21,11 @@ void SetDefaultDir()
 {
 	TCHAR szCurrentDir[MAX_PATH] = { 0 };
 	GetModuleFileName(NULL, szCurrentDir, sizeof(szCurrentDir));
-
+#ifdef _WIN32
+	LPTSTR lpInsertPos = _tcsrchr(szCurrentDir, _T('\\'));
+#elif
 	LPTSTR lpInsertPos = _tcsrchr(szCurrentDir, _T('/'));
+#endif//_WIN32
 	_tcscpy(lpInsertPos + 1, _T("\0"));
 	SetCurrentDirectory(szCurrentDir);
 }
@@ -124,60 +127,75 @@ BOOL LoadScriptModule(IApplication*theApp,SComMgr2 & comMgr)
 	return bLoaded;
 }
 
-int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpstrCmdLine, int nCmdShow)
+int Run(HINSTANCE hInstance, const SStringA& jsfile)
 {
 	HRESULT hRes = OleInitialize(NULL);
 	SASSERT(SUCCEEDED(hRes));
-	int argc = 0;
-
-	SStringA jsfile="main.js";//default to run main.js
-#ifdef _WIN32
-	SetCurrentDirectoryW(L"D:\\work\\soui4js\\out\\vs2022\\bin\\Debug");
-#else
-	SetCurrentDirectory("/home/flyhigh/work/soui4js/build/bin64");
-#endif//_WIN32
 	int nRet = 0;
 	{
-#if WIN32
-		WSADATA wsaData;
-		WSAStartup(MAKEWORD(2, 2), &wsaData);
-#endif // WIN32
-
 		SouiFactory souiFac;
 		SComMgr2 comMgr;
 		IApplication* theApp = souiFac.CreateApp(NULL, hInstance);
-		if(InitApp(comMgr, theApp))
+		if (InitApp(comMgr, theApp))
 		{
-			LoadSystemRes(theApp, souiFac,comMgr);//load system resource
+			LoadSystemRes(theApp, souiFac, comMgr);//load system resource
 			LoadScriptModule(theApp, comMgr); //load script module.
 
 			WCHAR szDir[MAX_PATH];
 			GetCurrentDirectoryW(MAX_PATH, szDir);
-			SStringA strDir = S_CW2A(szDir,CP_UTF8);
+			SStringA strDir = S_CW2A(szDir, CP_UTF8);
 			SAutoRefPtr<IScriptModule> script;
 			theApp->CreateScriptModule(&script); //create a qjs instance
 
-			if(script->executeScriptFile(strDir+"/"+ jsfile))//load qjs script
-				nRet = script->executeMain(hInstance,strDir.c_str(),NULL);//execute the main function defined in lua script
+			if (script->executeScriptFile(strDir + "/" + jsfile))//load qjs script
+				nRet = script->executeMain(hInstance, strDir.c_str(), NULL);//execute the main function defined in lua script
 			else {
-
-				MessageBox(0, lpstrCmdLine, _T("error"), MB_OK);
+				SStringT msg = SStringT().Format(_T("load js file %s failed!"), S_CA2T(jsfile).c_str());
+				MessageBox(0, msg, _T("error"), MB_OK);
 				nRet = -1;
 			}
 		}
 		theApp->Release();
-#if WIN32
-		WSACleanup();
-#endif // WIN32
-
 	}
 	OleUninitialize();
 	return nRet;
 }
 
-#ifndef _WIN32
+#ifdef _WIN32
+int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpstrCmdLine, int nCmdShow)
+{
+	WSADATA wsaData;
+	WSAStartup(MAKEWORD(2, 2), &wsaData);
+
+	SStringA jsfile = "main.js";//default to run main.js
+	int argc = 0;
+	LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+	if (argc > 1)
+	{
+		SetCurrentDirectoryW(argv[1]);
+		if (argc > 2)
+			jsfile = S_CW2A(argv[2],CP_UTF8);
+	}
+	else
+		SetDefaultDir();
+	LocalFree(argv);
+
+	int nRet = Run(hInstance,jsfile);
+	WSACleanup();
+	return nRet;
+}
+#else
 int main(int argc, char** argv) {
 	HINSTANCE hInst = GetModuleHandle(NULL);
-	return _tWinMain(hInst, 0, NULL, SW_SHOWNORMAL);
+	SStringA jsfile = "main.js";//default to run main.js
+	if (argc > 1)
+	{
+		SetCurrentDirectory(argv[1]);
+		if (argc > 2)
+			jsfile = argv[2];
+	}
+	else
+		SetDefaultDir();
+	return Run(hInst,jsfile);
 }
 #endif//_WIN32

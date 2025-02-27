@@ -1,7 +1,6 @@
 ﻿#ifndef __EXP_ICTRLS__H__
 #define __EXP_ICTRLS__H__
 #include <control/SouiCtrls.h>
-#include <sguid.h>
 #include "toobj.h"
 
 template<typename T1, typename T2>
