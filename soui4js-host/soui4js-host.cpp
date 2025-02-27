@@ -102,13 +102,18 @@ BOOL LoadSystemRes(IApplication *theApp,SouiFactory & souiFac,SComMgr2 & comMgr)
 	FreeLibrary(hModSysResource);	
 	return TRUE;
 	#else
+	TCHAR szAppDir[MAX_PATH] = { 0 };
+	GetModuleFileName(NULL, szAppDir, sizeof(szAppDir));
+	LPTSTR lpInsertPos = _tcsrchr(szAppDir, _T('/'));
+	_tcscpy(lpInsertPos + 1, _T("\0"));
 
 	IResProvider* sysResProvider;
 	BOOL bLoaded = comMgr.CreateResProvider_ZIP((IObjRef**)&sysResProvider);
 	SASSERT_FMT(bLoaded, _T("load interface [%s] failed!"), _T("resprovider_zip"));
 
+	SStringA strPath=SStringA().Format("%ssoui-sys-resource.zip",szAppDir);
 	ZIPRES_PARAM param;
-	ZipFile(&param,theApp->GetRenderFactory(),"soui-sys-resource.zip");
+	ZipFile(&param,theApp->GetRenderFactory(),strPath);
 	bLoaded = sysResProvider->Init((WPARAM)&param, 0);
 	SASSERT(bLoaded);
 	if(bLoaded){
