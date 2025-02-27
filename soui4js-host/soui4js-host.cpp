@@ -48,16 +48,16 @@ BOOL InitApp(SComMgr2 & comMgr,IApplication *theApp){
 	}
 	BOOL bLoaded = TRUE;
 	do{
-		#ifdef _WIN32
+#ifdef _WIN32
 		if(render.Find(L"gdi")!=-1)
 			bLoaded = comMgr.CreateRender_GDI((IObjRef * *)& pRenderFactory);
 		else if(render.Find(L"d2d")!=-1)
 			bLoaded = comMgr.CreateRender_D2D((IObjRef**)&pRenderFactory);
 		else
 			bLoaded = comMgr.CreateRender_Skia((IObjRef**)&pRenderFactory);
-		#else
+#else
 		bLoaded = comMgr.CreateRender_GDI((IObjRef * *)& pRenderFactory);
-		#endif//_WIN32
+#endif//_WIN32
 		SASSERT_FMT(bLoaded, _T("load interface [render] failed!"));
 		if(!bLoaded) break;
 		SAutoRefPtr<IImgDecoderFactory> pImgDecoderFactory;
@@ -65,21 +65,14 @@ BOOL InitApp(SComMgr2 & comMgr,IApplication *theApp){
 #ifdef _WIN32
 		if (imgDecoder.Find(L"wic") != -1)
 			pszImgDecoderName = _T("imgdecoder-wic");
-		else if(imgDecoder.Find(L"png") != -1)
-			pszImgDecoderName = _T("imgdecoder-png");
+		else if(imgDecoder.Find(L"gdip") != -1)
+			pszImgDecoderName = _T("imgdecoder-gdip");
 		else if (imgDecoder.Find(L"stb") != -1)
 			pszImgDecoderName = _T("imgdecoder-stb");
 		else
 			pszImgDecoderName = _T("imgdecoder-stb");
 #else
-		if (imgDecoder.Find(L"wic") != -1)
-			pszImgDecoderName = _T("libimgdecoder-wic");
-		else if (imgDecoder.Find(L"png") != -1)
-			pszImgDecoderName = _T("libimgdecoder-png");
-		else if (imgDecoder.Find(L"stb") != -1)
-			pszImgDecoderName = _T("libimgdecoder-stb");
-		else
-			pszImgDecoderName = _T("libimgdecoder-stb");
+		pszImgDecoderName = _T("libimgdecoder-stb");
 #endif//_WIN32
 		bLoaded = comMgr.CreateImgDecoder((IObjRef * *)& pImgDecoderFactory,pszImgDecoderName);
 		SASSERT_FMT(bLoaded, _T("load interface [%s] failed!"), _T("imgdecoder"));
