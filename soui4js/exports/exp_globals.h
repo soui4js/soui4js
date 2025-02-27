@@ -167,28 +167,19 @@ BOOL SetXmlTranslator(IApplication * pApp,LPCSTR xmlId) {
 	return bRet;
 }
 
-HINSTANCE SFork(LPCSTR pszParam) {
-#ifdef WIN32
+UINT SFork(LPCSTR pszParam) {
 	TCHAR szHostPath[MAX_PATH];
 	::GetModuleFileName(NULL, szHostPath, MAX_PATH);
 	SStringT strParam = S_CA2T(pszParam, CP_UTF8);
-	return ::ShellExecute(NULL,_T("open"),szHostPath, strParam.c_str(),NULL,SW_SHOWNORMAL);
-#else
-	return 0;
-#endif
+	return (UINT)::ShellExecute((HWND)0,_T("open"),szHostPath, strParam.c_str(),NULL,SW_SHOWNORMAL);
 }
 
-HINSTANCE SShellExecute(HWND hWnd,LPCSTR pszOp,LPCSTR pszFile,LPCSTR pszParam,LPCSTR pszDir,int show) {
-#ifdef WIN32
+UINT SShellExecute(HWND hWnd,LPCSTR pszOp,LPCSTR pszFile,LPCSTR pszParam,LPCSTR pszDir,int show) {
 	SStringT strOp = S_CA2T(pszOp, CP_UTF8);
 	SStringT strFile = S_CA2T(pszFile, CP_UTF8);
 	SStringT strParam = S_CA2T(pszParam, CP_UTF8);
 	SStringT strDir = S_CA2T(pszDir, CP_UTF8);
-	HINSTANCE hRet = ::ShellExecute(hWnd, strOp, strFile, strParam, strDir, show);
-	return hRet;
-#else
-	return 0;
-#endif
+	return (UINT)::ShellExecute(hWnd, strOp, strFile, strParam, strDir, show);
 }
 
 typedef HRESULT(WINAPI* FunSHCreateItemFromParsingName)(PCWSTR, IBindCtx*, REFIID, void**);

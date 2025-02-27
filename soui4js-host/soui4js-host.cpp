@@ -18,7 +18,7 @@ using namespace SOUI;
 
 #define kLogTag "soui4js-host"
 
-void SetDefaultDir()
+SStringT GetAppDir()
 {
 	TCHAR szCurrentDir[MAX_PATH] = { 0 };
 	GetModuleFileName(NULL, szCurrentDir, sizeof(szCurrentDir));
@@ -28,8 +28,7 @@ void SetDefaultDir()
 	LPTSTR lpInsertPos = _tcsrchr(szCurrentDir, _T('/'));
 #endif//_WIN32
 	_tcscpy(lpInsertPos + 1, _T("\0"));
-	SetCurrentDirectory(szCurrentDir);
-	SLOGI()<<"current dir="<<szCurrentDir;
+	return szCurrentDir;
 }
 
 BOOL InitApp(SComMgr2 & comMgr,IApplication *theApp){
@@ -131,7 +130,7 @@ BOOL LoadScriptModule(IApplication*theApp,SComMgr2 & comMgr)
 	return bLoaded;
 }
 
-int Run(HINSTANCE hInstance, const SStringA& jsfile)
+int Run(HINSTANCE hInstance, const SStringA &strDir ,const SStringA& jsfile)
 {
 	HRESULT hRes = OleInitialize(NULL);
 	SASSERT(SUCCEEDED(hRes));
@@ -145,9 +144,7 @@ int Run(HINSTANCE hInstance, const SStringA& jsfile)
 			LoadSystemRes(theApp, souiFac, comMgr);//load system resource
 			LoadScriptModule(theApp, comMgr); //load script module.
 
-			WCHAR szDir[MAX_PATH];
-			GetCurrentDirectoryW(MAX_PATH, szDir);
-			SStringA strDir = S_CW2A(szDir, CP_UTF8);
+
 			SAutoRefPtr<IScriptModule> script;
 			theApp->CreateScriptModule(&script); //create a qjs instance
 
@@ -172,34 +169,47 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpstrC
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 
 	SStringA jsfile = "main.js";//default to run main.js
+	SStringW strDir;
 	int argc = 0;
 	LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc);
 	if (argc > 1)
 	{
-		SetCurrentDirectoryW(argv[1]);
+		strDir = argv[1];
 		if (argc > 2)
 			jsfile = S_CW2A(argv[2],CP_UTF8);
 	}
 	else
-		SetDefaultDir();
+	{
+		strDir= S_CT2W(GetAppDir());
+	}
 	LocalFree(argv);
 
-	int nRet = Run(hInstance,jsfile);
+	SetCurrentDirectoryW(strDir);
+	int nRet = Run(hInstance,S_CW2A(strDir,CP_UTF8),jsfile);
 	WSACleanup();
 	return nRet;
 }
 #else
 int main(int argc, char** argv) {
-	HINSTANCE hInst = GetModuleHandle(NULL);
+	for(int i=0;i<argc;i++){
+		printf("arg %d=%s\n",i,argv[i]);
+	}
 	SStringA jsfile = "main.js";//default to run main.js
+	char szDir[MAX_PATH];
+	GetCurrentDirectoryA(MAX_PATH, szDir);
+	SStringA strDir = szDir;
 	if (argc > 1)
 	{
-		SetCurrentDirectory(argv[1]);
+		strDir = argv[1];
 		if (argc > 2)
-			jsfile = argv[2];
+		 	jsfile = argv[2];
 	}
 	else
-		SetDefaultDir();
-	return Run(hInst,jsfile);
+	{
+		strDir = S_CT2A(GetAppDir());
+	}
+	SetCurrentDirectoryA(strDir);
+	HINSTANCE hInst = GetModuleHandle(NULL);
+	return Run(hInst,strDir,jsfile);
 }
 #endif//_WIN32

@@ -106,7 +106,7 @@ class AppLvAdapter extends soui4.SLvAdapter{
 		let iApp = ctx;
 		let appInfo = this.appList[iApp];
 		let theApp = soui4.GetApp();
-		let localUrl = g_workDir + "\\cache\\app_"+iApp+".png";
+		let localUrl = g_workDir + "/cache/app_"+iApp+".png";
 		let img = theApp.LoadImage("file:"+localUrl);
 		if(img!=0){
 			appInfo.img = img;
@@ -133,8 +133,8 @@ class AppLvAdapter extends soui4.SLvAdapter{
 		this.reqIcon.cbHandler = this;
 		this.reqIcon.onResp = this.onIconResp;
 		this.reqIcon.onError = this.onIconError;
-		os.mkdir(g_workDir + "\\cache");
-		let localUrl = g_workDir + "\\cache\\app_"+iApp+".png";
+		os.mkdir(g_workDir + "/cache");
+		let localUrl = g_workDir + "/cache/app_"+iApp+".png";
 		this.reqIcon.DownloadFile(localUrl);
 	}
 
@@ -170,6 +170,7 @@ class MainDialog extends soui4.JsHostWnd{
 	}
 
 	onInit(){
+		soui4.log("fuck init");
 		let lv_applist=this.FindIChildByName("lv_applist");
 		let lvapi = soui4.QiIListView(lv_applist);
 		this.lvAdapter = new AppLvAdapter(this);
@@ -220,7 +221,7 @@ class MainDialog extends soui4.JsHostWnd{
 			soui4.SMessageBox(this.GetHwnd(),"程序加载中...","错误",0);
 			return;
 		}
-		let infoPath=g_workDir + "\\"+appInfo.name+"\\appInfo.json";
+		let infoPath=g_workDir + "/"+appInfo.name+"/appInfo.json";
 		let bDownNow=true;
 		try{
 			let strAppInfo = std.loadFile(infoPath);
@@ -231,14 +232,14 @@ class MainDialog extends soui4.JsHostWnd{
 				bDownNow=false;
 			}else{
 				//remove cache
-				soui4.DelDir(g_workDir + "\\"+appInfo.name);
+				soui4.DelDir(g_workDir + "/"+appInfo.name);
 			}
 		}catch(e){
 			soui4.log("load file failed,err="+e.toString());
 		}
 		if(!bDownNow){
 			//open app directly.
-			let localPath = "\""+g_workDir + "\\"+appInfo.name+"\"";
+			let localPath = "\""+g_workDir + "/"+appInfo.name+"\"";
 			soui4.Fork(localPath);
 		}else{
 			this.isLoading = true;
@@ -249,9 +250,9 @@ class MainDialog extends soui4.JsHostWnd{
 			this.download.onResp = this.onDownloadResp;
 			this.download.onError = this.onDownloadError;
 			this.download.SetOpaque(100);
-			os.mkdir(g_workDir+"\\cache");
+			os.mkdir(g_workDir+"/cache");
 			this.appInfo = appInfo;
-			this.localFile = g_workDir + "\\cache\\"+appInfo.name+".zip";
+			this.localFile = g_workDir + "/cache/"+appInfo.name+".zip";
 			this.download.DownloadFile(this.localFile);
 		}
 	}
@@ -313,12 +314,12 @@ class MainDialog extends soui4.JsHostWnd{
 			if(p1==1){
 				//try to open.
 				let strAppInfo = JSON.stringify(this.appInfo);
-				let localAppInfo = g_workDir + "\\"+this.appInfo.name+"\\appInfo.json";
+				let localAppInfo = g_workDir + "/"+this.appInfo.name+"/appInfo.json";
 				let f = std.open(localAppInfo, "w");
 				f.puts(strAppInfo);
 				f.close();
 
-				let localPath = "\""+g_workDir + "\\"+this.appInfo.name+"\"";
+				let localPath = "\""+g_workDir + "/"+this.appInfo.name+"\"";
 				soui4.Fork(localPath);
 			}else{
 				soui4.SMessageBox(this.GetHwnd(),"extract failed!","error",0);
@@ -337,7 +338,7 @@ function main(inst,workDir,args)
 	let souiFac = soui4.CreateSouiFactory();
 	//*
 	let resProvider = souiFac.CreateResProvider(1);
-	soui4.InitFileResProvider(resProvider,workDir + "\\uires");
+	soui4.InitFileResProvider(resProvider,workDir + "/uires");
 	//*/
 	/*
 	// show how to load resource from a zip file
@@ -356,7 +357,7 @@ function main(inst,workDir,args)
 	hostWnd.SendMessage(0x110,0,0);//send init dialog message.
 	hostWnd.ShowWindow(1); //1==SW_SHOWNORMAL
 	souiFac.Release();
-	let ret= theApp.Run(hostWnd.GetHwnd());
+	let ret=  theApp.Run(hostWnd.GetHwnd());
 	hostWnd=null;
 	soui4.log("js quit");
 	return ret;
