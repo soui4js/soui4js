@@ -1,17 +1,26 @@
-﻿#ifndef __EXP_GLOBALS__H__
-#define __EXP_GLOBALS__H__
+﻿#ifndef _EXP_GLOBALS_H_
+#define _EXP_GLOBALS_H_
+
+
 #include <souistd.h>
 #include <interface/SFactory-i.h>
 #include "SFuncSlot.h"
 #include <commgr2.h>
 #include <resprovider-zip/zipresprovider-param.h>
 #include <resprovider-7zip/zip7resprovider-param.h>
+#ifdef WIN32
 #include <shellapi.h>
 #include "souidlgs.h"
+#endif // WIN32
+
 
 void Slog(const char* szLog) {
+#ifdef _WIN32
 	SStringW str = S_CA2W(szLog, CP_UTF8);
 	SLOGI2("qjs") << str.c_str();
+#else
+	SLOGI2("qjs") << szLog;
+#endif//_WIN32
 }
 
 void SDebugBreak(int id) {
@@ -62,7 +71,7 @@ LPARAM SGetItemIndex(IWindow* pItem) {
 	pItem = pItem->GetIRoot();
 	IItemPanel* pItemPanel = NULL;
 	LPARAM ret = -1;
-	pItem->QueryInterface(IID_IItemPanel, (IObjRef**) & (pItemPanel));
+	pItem->QueryInterface(IItemPanel::GetIID(), (IObjRef**)&(pItemPanel));
 	if (pItemPanel) {
 		ret = pItemPanel->GetItemIndex();
 		pItemPanel->Release();
@@ -159,24 +168,33 @@ BOOL SetXmlTranslator(IApplication * pApp,LPCSTR xmlId) {
 }
 
 HINSTANCE SFork(LPCSTR pszParam) {
+#ifdef WIN32
 	TCHAR szHostPath[MAX_PATH];
 	::GetModuleFileName(NULL, szHostPath, MAX_PATH);
 	SStringT strParam = S_CA2T(pszParam, CP_UTF8);
 	return ::ShellExecute(NULL,_T("open"),szHostPath, strParam.c_str(),NULL,SW_SHOWNORMAL);
+#else
+	return 0;
+#endif
 }
 
 HINSTANCE SShellExecute(HWND hWnd,LPCSTR pszOp,LPCSTR pszFile,LPCSTR pszParam,LPCSTR pszDir,int show) {
+#ifdef WIN32
 	SStringT strOp = S_CA2T(pszOp, CP_UTF8);
 	SStringT strFile = S_CA2T(pszFile, CP_UTF8);
 	SStringT strParam = S_CA2T(pszParam, CP_UTF8);
 	SStringT strDir = S_CA2T(pszDir, CP_UTF8);
 	HINSTANCE hRet = ::ShellExecute(hWnd, strOp, strFile, strParam, strDir, show);
 	return hRet;
+#else
+	return 0;
+#endif
 }
 
 typedef HRESULT(WINAPI* FunSHCreateItemFromParsingName)(PCWSTR, IBindCtx*, REFIID, void**);
 
 string PickFolder(const char * initPath) {
+#ifdef WIN32
 	SStringA defPath(initPath);
 	SStringA ret;
 	bool bNewDialog = false;
@@ -218,9 +236,13 @@ string PickFolder(const char * initPath) {
 		}
 	}
 	return string(ret.c_str(), ret.GetLength());
+#else
+	return "";
+#endif
 }
 
 string GetSpecialPath(const char * pszType) {
+#ifdef WIN32
 	SStringA type(pszType);
 	type.MakeLower();
 	int ClsId = -1;
@@ -243,13 +265,17 @@ string GetSpecialPath(const char * pszType) {
 	if (ClsId == -1)
 		return "";
 	wchar_t buf[MAX_PATH] = { 0 };
-	SHGetSpecialFolderPathW(NULL, buf, ClsId, TRUE);
+	SHGetSpecialFolderPath(NULL, buf, ClsId, TRUE);
 	SStringA ret= S_CW2A(buf, CP_UTF8);
 	return string(ret.c_str(), ret.GetLength());
+#else
+	return "";
+#endif
 }
 
 BOOL IsRunAsAdmin()         
 {
+#ifdef WIN32
 	SID_IDENTIFIER_AUTHORITY NtAuthority = SECURITY_NT_AUTHORITY;
 	PSID AdministratorsGroup;
 
@@ -268,9 +294,14 @@ BOOL IsRunAsAdmin()
 	}
 
 	return  b;
+#else
+	return FALSE;
+#endif
 }
 
 int RunAsAdmin(LPCSTR szFolder, LPCSTR szJs,BOOL waitEnd) {
+#ifdef WIN32
+
 	TCHAR szExe[MAX_PATH] = { 0 };
 	GetModuleFileName(NULL, szExe, MAX_PATH);
 
@@ -302,9 +333,14 @@ int RunAsAdmin(LPCSTR szFolder, LPCSTR szJs,BOOL waitEnd) {
 	}
 	CloseHandle(sei.hProcess);
 	return nRet;
+#else
+	return -1;
+#endif
+
 }
 
 BOOL MkPath(LPCSTR path, LPCSTR root) {
+#ifdef WIN32
 	if (!path || !root)
 		return FALSE;
 	SStringT strPath = S_CA2T(path, CP_UTF8);
@@ -340,6 +376,9 @@ BOOL MkPath(LPCSTR path, LPCSTR root) {
 		}
 	}
 	return bRet;
+#else
+	return FALSE;
+#endif
 }
 
 BOOL IsX64() {
@@ -387,4 +426,4 @@ void Exp_Global(qjsbind::Module* module)
 	module->ExportFunc("NotifySettingChange", &NotifySettingChange);
 }
 
-#endif // __EXP_GLOBALS__H__
+#endif // !_EXP_GLOBALS_H_
