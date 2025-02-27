@@ -232,7 +232,7 @@ namespace SOUI {
 #endif//_WIN32
 		BOOL CreateScrpit_Lua(IObjRef **ppObj)
 		{
-			return scriptLoader.CreateInstance(m_strDllPath + COM_SCRIPT_LUA, ppObj);
+			return scriptLoader.CreateInstance(m_strDllPath + COM_SCRIPT_QJS, ppObj);
 		}
 
 		BOOL CreateTranslator(IObjRef **ppObj)

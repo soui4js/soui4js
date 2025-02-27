@@ -207,8 +207,8 @@
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>libquickjs.dll.a;qjsbind.lib;soui4.lib;utilities4.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\depends\soui4\lib\x86;$(OutDir);..\depends\quickjs\bin\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libquickjs.lib;qjsbind.lib;soui4.lib;utilities4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\depends\soui4\lib_win\x86;$(OutDir);..\depends\quickjs\lib_win\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration />
       <OutputFile>$(OutDir)soui4js.dll</OutputFile>
@@ -253,7 +253,7 @@
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>libquickjs.dll.a;qjsbind.lib;soui4.lib;utilities4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libquickjs.lib;qjsbind.lib;soui4.lib;utilities4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\depends\soui4\lib\x64;$(OutDir);..\depends\quickjs\bin\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>

@@ -170,6 +170,8 @@ class MainDialog extends soui4.JsHostWnd{
 	}
 
 	onInit(){
+				soui4.log("fuck onInit");
+
 		let lv_applist=this.FindIChildByName("lv_applist");
 		let lvapi = soui4.QiIListView(lv_applist);
 		this.lvAdapter = new AppLvAdapter(this);
