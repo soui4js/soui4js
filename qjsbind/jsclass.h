@@ -95,7 +95,8 @@ namespace qjsbind {
 	template<typename T, typename MEM>
 	JSValue MemGet(JSContext* ctx, JSValueConst this_val, int magic)
 	{
-		MEM T::* member = NULL;
+		MEM T::* member;
+		memset(&member,0,sizeof(member));
 		memcpy(&member, &magic, 4);
 		JsProxy<T> * pThis;
 		if (!GetSafeThis(this_val, &pThis)) {
@@ -116,7 +117,8 @@ namespace qjsbind {
 	template<typename T, typename MEM>
 	JSValue MemSet(JSContext* ctx, JSValueConst this_val, JSValueConst val, int magic)
 	{
-		MEM T::* member = NULL;
+		MEM T::* member;
+		memset(&member,0,sizeof(member));
 		memcpy(&member, &magic, 4);
 
 		JsProxy<T> * pThis;
