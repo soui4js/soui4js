@@ -64,7 +64,8 @@ private:
 		info->iFile++;
 		size_t sz = info->pThis->m_pResProvider->GetRawBufferSize(NULL, pszFile);
 		SStringT strFile(pszFile);
-		int pos = strFile.ReverseFind('\\');
+		strFile.ReplaceChar('\\','/');
+		int pos = strFile.ReverseFind('/');
 		if (pos != -1) {
 			SStringT path = strFile.Left(pos);
 			SStringA pathU8 = S_CT2A(path, CP_UTF8);
@@ -72,7 +73,7 @@ private:
 			if (!MkPath(pathU8.c_str(), rootU8.c_str()))
 				return FALSE;
 		}
-		SStringT strTarget = info->dstPath + _T("\\") + pszFile;
+		SStringT strTarget = info->dstPath + _T("/") + pszFile;
 		FILE* f = NULL;
 		BOOL bOK = FALSE;
 		do {

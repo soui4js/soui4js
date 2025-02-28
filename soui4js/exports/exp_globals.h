@@ -331,7 +331,6 @@ int RunAsAdmin(LPCSTR szFolder, LPCSTR szJs,BOOL waitEnd) {
 }
 
 BOOL MkPath(LPCSTR path, LPCSTR root) {
-#ifdef WIN32
 	if (!path || !root)
 		return FALSE;
 	SStringT strPath = S_CA2T(path, CP_UTF8);
@@ -340,25 +339,22 @@ BOOL MkPath(LPCSTR path, LPCSTR root) {
 	SStringT strFullPath;
 	if (!strRoot.IsEmpty()) {
 		strFullPath = strRoot;
-		if (!strFullPath.EndsWith('\\'))
-			strFullPath += '\\';
+		if (!strFullPath.EndsWith('/'))
+			strFullPath += '/';
 	}
-	strPath.ReplaceChar('/', '\\');
+	strPath.ReplaceChar('\\','/');
 
-	struct _stat64i32 st;
-	int ret = _tstat(strFullPath + strPath, &st);
-	if (ret == 0 && st.st_mode & _S_IFDIR) {
+	DWORD fileAttr = GetFileAttributes(strFullPath + strPath);
+	if(fileAttr!=INVALID_FILE_ATTRIBUTES && (fileAttr & FILE_ATTRIBUTE_DIRECTORY))
 		return TRUE;
-	}
 
 	BOOL bRet = TRUE;
 	SStringTList subPaths;
-	SplitString(strPath, '\\', subPaths);
+	SplitString(strPath, '/', subPaths);
 	for (UINT i = 0; i < subPaths.GetCount(); i++) {
-		strFullPath += subPaths[i] + _T('\\');
-		struct _stat64i32 st;
-		int ret = _tstat(strFullPath, &st);
-		if (ret != 0 || (st.st_mode & _S_IFDIR) == 0) {
+		strFullPath += subPaths[i] + _T('/');
+		DWORD fileAttr = GetFileAttributes(strFullPath);
+		if(fileAttr== INVALID_FILE_ATTRIBUTES || !(fileAttr & FILE_ATTRIBUTE_DIRECTORY)){
 			if (!CreateDirectory(strFullPath, NULL))
 			{
 				bRet = FALSE;
@@ -367,9 +363,6 @@ BOOL MkPath(LPCSTR path, LPCSTR root) {
 		}
 	}
 	return bRet;
-#else
-	return FALSE;
-#endif
 }
 
 BOOL IsX64() {
