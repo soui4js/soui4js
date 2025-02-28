@@ -33,6 +33,6 @@ endif()
 add_subdirectory(qjsbind)
 add_subdirectory(soui4js)
 add_subdirectory(soui4js-host)
-#add_subdirectory(utils)
+add_subdirectory(utils)
 #add_subdirectory(ws4js)
 
