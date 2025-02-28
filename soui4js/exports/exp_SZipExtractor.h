@@ -73,7 +73,7 @@ private:
 			if (!MkPath(pathU8.c_str(), rootU8.c_str()))
 				return FALSE;
 		}
-		SStringT strTarget = info->dstPath + _T("/") + pszFile;
+		SStringT strTarget = info->dstPath + _T("/") + strFile;
 		FILE* f = NULL;
 		BOOL bOK = FALSE;
 		do {
