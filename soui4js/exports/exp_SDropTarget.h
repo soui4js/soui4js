@@ -1,5 +1,10 @@
-#pragma once
+﻿#ifndef __EXP_SDROPTARGET__H__
+#define __EXP_SDROPTARGET__H__
 #include <shellapi.h>
+
+#ifndef __RPC_FAR
+#define __RPC_FAR
+#endif//__RPC_FAR
 
 class SDropTarget :public IDropTarget
 {
@@ -138,3 +143,5 @@ void Exp_SDropTarget(qjsbind::Module* module) {
 		jsCls.AddGetSet("onDrop", &SDropTarget::m_onDrop);
 	}
 }
+
+#endif // __EXP_SDROPTARGET__H__

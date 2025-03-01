@@ -464,11 +464,11 @@ void Exp_SAdapter(qjsbind::Module* module) {
 		jsCls.AddFunc("GetPrevSibling", &STvAdapter::GetPrevSibling);
 
 
-		jsCls.AddGetSet("cbHandler", &STvAdapter::m_cbHandler);
-		jsCls.AddGetSet("onGetView", &STvAdapter::m_funGetView);
-		jsCls.AddGetSet("onInitByTemplate", &STvAdapter::m_funInitByTemplate);
-		jsCls.AddGetSet("onGetItemViewType", &STvAdapter::m_funGetViewType);
-		jsCls.AddGetSet("onGetViewTypeCount", &STvAdapter::m_funGetViewTypeCount);
-		jsCls.AddGetSet("onIsViewWidthMatchParent", &STvAdapter::m_funIsViewWidthMatchParent);
+		jsCls.AddGetSet<Value>("cbHandler", &STvAdapter::m_cbHandler);
+		jsCls.AddGetSet<Value>("onGetView", &STvAdapter::m_funGetView);
+		jsCls.AddGetSet<Value>("onInitByTemplate", &STvAdapter::m_funInitByTemplate);
+		jsCls.AddGetSet<Value>("onGetItemViewType", &STvAdapter::m_funGetViewType);
+		jsCls.AddGetSet<Value>("onGetViewTypeCount", &STvAdapter::m_funGetViewTypeCount);
+		jsCls.AddGetSet<Value>("onIsViewWidthMatchParent", &STvAdapter::m_funIsViewWidthMatchParent);
 	}
 }

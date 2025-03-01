@@ -1,5 +1,6 @@
-#pragma once
-#include <interface/SApp-i.h>
+﻿#ifndef __EXP_IAPP__H__
+#define __EXP_IAPP__H__
+#include <interface/sapp-i.h>
 
 BOOL ITranslatorMgr_UninstallTranslator(Context* ctx, ITranslatorMgr* _this, ArgList& args);
 
@@ -80,3 +81,5 @@ void Exp_IApp(qjsbind::Module* module)
 	jsCls.AddFunc("CreateObject", &IApplication::CreateObject);
 	jsCls.AddFunc("SetCreateObjectCallback", &IApplication::SetCreateObjectCallback);
 }
+
+#endif // __EXP_IAPP__H__

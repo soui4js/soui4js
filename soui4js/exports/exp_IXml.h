@@ -1,5 +1,6 @@
-#pragma once
-#include <interface/Sxml-i.h>
+﻿#ifndef __EXP_IXML__H__
+#define __EXP_IXML__H__
+#include <interface/sxml-i.h>
 
 void Exp_IXml(qjsbind::Module* module)
 {
@@ -63,3 +64,5 @@ void Exp_IXml(qjsbind::Module* module)
 		jsCls.AddFunc("Root", &IXmlDoc::Root);
 	}
 }
+
+#endif // __EXP_IXML__H__

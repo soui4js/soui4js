@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_ISTRING__H__
+#define __EXP_ISTRING__H__
 #include <interface/sstring-i.h>
 
 void Exp_IStringA(qjsbind::Module* module)
@@ -92,3 +93,4 @@ void Exp_IStringW(qjsbind::Module* module)
 	jsCls.AddFunc("AppendChar", &IStringW::AppendChar);
 	jsCls.AddFunc("AppendStr", &IStringW::AppendStr);
 }
+#endif // __EXP_ISTRING__H__

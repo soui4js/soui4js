@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __JSGFUNC__H__
+#define __JSGFUNC__H__
 #include "jsarglist.h"
 
 namespace qjsbind {
@@ -371,3 +372,4 @@ namespace qjsbind {
 		return undefined_value;
 	}
 }
+#endif // __JSGFUNC__H__

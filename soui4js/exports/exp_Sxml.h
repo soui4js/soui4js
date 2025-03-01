@@ -1,7 +1,7 @@
-#pragma once
-#include <interface/Sxml-i.h>
+﻿#ifndef __EXP_SXML__H__
+#define __EXP_SXML__H__
+#include <interface/sxml-i.h>
 
-void Slog(const char*);
 namespace qjsbind {
 	Value NewValue(Context& context, SXmlNode v)
 	{
@@ -54,3 +54,5 @@ void Exp_SXml(qjsbind::Module* module)
 		jsCls.AddFunc("Root", &SXmlDoc::root);
 	}
 }
+
+#endif // __EXP_SXML__H__

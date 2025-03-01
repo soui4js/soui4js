@@ -1,8 +1,9 @@
-﻿#pragma once
+﻿#ifndef __JSCLASS__H__
+#define __JSCLASS__H__
 #include "jscontext.h"
 #include "jsmemfunc.h"
 #include "jsproxy.h"
-#include "qjsbind.h"
+#include "jsmodule.h"
 
 namespace qjsbind {
 
@@ -94,7 +95,8 @@ namespace qjsbind {
 	template<typename T, typename MEM>
 	JSValue MemGet(JSContext* ctx, JSValueConst this_val, int magic)
 	{
-		MEM T::* member = NULL;
+		MEM T::* member;
+		memset(&member,0,sizeof(member));
 		memcpy(&member, &magic, 4);
 		JsProxy<T> * pThis;
 		if (!GetSafeThis(this_val, &pThis)) {
@@ -115,7 +117,8 @@ namespace qjsbind {
 	template<typename T, typename MEM>
 	JSValue MemSet(JSContext* ctx, JSValueConst this_val, JSValueConst val, int magic)
 	{
-		MEM T::* member = NULL;
+		MEM T::* member;
+		memset(&member,0,sizeof(member));
 		memcpy(&member, &magic, 4);
 
 		JsProxy<T> * pThis;
@@ -199,7 +202,7 @@ namespace qjsbind {
 			assert(class_inited_);
 		}
 
-		template<void Mark(T*,JS_MarkFunc* markFun)=0>
+		template<void Mark(T*,JS_MarkFunc* markFun)=nullptr>
 		void Init(JSClassID parent_id = 0) {
 			assert(!class_inited_);
 
@@ -332,3 +335,5 @@ namespace qjsbind {
 }//namespace
 
 
+
+#endif // __JSCLASS__H__

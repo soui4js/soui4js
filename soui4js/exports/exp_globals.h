@@ -1,16 +1,42 @@
-#pragma once
+Ôªø#ifndef _EXP_GLOBALS_H_
+#define _EXP_GLOBALS_H_
+
+
 #include <souistd.h>
 #include <interface/SFactory-i.h>
 #include "SFuncSlot.h"
 #include <commgr2.h>
 #include <resprovider-zip/zipresprovider-param.h>
 #include <resprovider-7zip/zip7resprovider-param.h>
+#ifdef WIN32
 #include <shellapi.h>
 #include "souidlgs.h"
+#endif // WIN32
 
-void Slog(const char* szLog) {
+
+extern "C" void soui4js_printer(const char* szLog,int len) {
+	if (len < 0) len = (int)strlen(szLog);
+	SOUI::SStringA strA(szLog, len);
+	SOUI::SStringW str = SOUI::S_CA2W(strA, CP_UTF8);
+	if (str.GetLength() > SOUI::Log::MAX_LOGLEN) {
+		int pos = 0;
+		while (pos < str.GetLength()) {
+			SLOGI2("qjs") << (pos==0?"":"--continue")<<str.Mid(pos, SOUI::Log::MAX_LOGLEN - 50).c_str();
+			pos += SOUI::Log::MAX_LOGLEN;
+		}
+	}
+	else {
+		SLOGI2("qjs") << str.c_str();
+	}
+}
+
+void Slog(const char *log){
+	soui4js_printer(log,strlen(log));
+}
+
+void Slog2(const char* szLog,int level) {
 	SStringW str = S_CA2W(szLog, CP_UTF8);
-	SLOGI2("qjs") << str.c_str();
+	SLOG("qjs",level) << str.c_str();
 }
 
 void SDebugBreak(int id) {
@@ -23,11 +49,6 @@ IWindow* GetCaptured(IObject* pObj) {
 	SWND hCap = pWnd->GetCapture();
 	SWindow* pCap = SWindowMgr::GetWindow(hCap);
 	return (IWindow*)pCap;
-}
-
-void Slog2(const char* szLog,int level) {
-	SStringW str = S_CA2W(szLog, CP_UTF8);
-	SLOG("qjs",level) << str.c_str();
 }
 
 BOOL InitFileResProvider(IResProvider* pResProvider, const char* path)
@@ -61,7 +82,7 @@ LPARAM SGetItemIndex(IWindow* pItem) {
 	pItem = pItem->GetIRoot();
 	IItemPanel* pItemPanel = NULL;
 	LPARAM ret = -1;
-	pItem->QueryInterface(__uuidof(IItemPanel), (IObjRef**) & (pItemPanel));
+	pItem->QueryInterface(IItemPanel::GetIID(), (IObjRef**)&(pItemPanel));
 	if (pItemPanel) {
 		ret = pItemPanel->GetItemIndex();
 		pItemPanel->Release();
@@ -148,7 +169,7 @@ BOOL SetXmlTranslator(IApplication * pApp,LPCSTR xmlId) {
 		SStringW strFont;
 		langCN->getFontInfo(&strFont);
 		if (!strFont.IsEmpty())
-		{//¥”∑≠“ÎŒƒº˛÷–ªÒ»°≤¢…Ë÷√≥Ã–Úµƒ◊÷ÃÂ–≈œ¢
+		{//‰ªéÁøªËØëÊñá‰ª∂‰∏≠Ëé∑ÂèñÂπ∂ËÆæÁΩÆÁ®ãÂ∫èÁöÑÂ≠ó‰Ωì‰ø°ÊÅØ
 			pApp->SetDefaultFontInfo(strFont.c_str());
 		}
 		bRet = TRUE;
@@ -157,25 +178,25 @@ BOOL SetXmlTranslator(IApplication * pApp,LPCSTR xmlId) {
 	return bRet;
 }
 
-HINSTANCE SFork(LPCSTR pszParam) {
+UINT SFork(LPCSTR pszParam) {
 	TCHAR szHostPath[MAX_PATH];
 	::GetModuleFileName(NULL, szHostPath, MAX_PATH);
 	SStringT strParam = S_CA2T(pszParam, CP_UTF8);
-	return ::ShellExecute(NULL,_T("open"),szHostPath, strParam.c_str(),NULL,SW_SHOWNORMAL);
+	return (UINT)::ShellExecute((HWND)0,_T("open"),szHostPath, strParam.c_str(),NULL,SW_SHOWNORMAL);
 }
 
-HINSTANCE SShellExecute(HWND hWnd,LPCSTR pszOp,LPCSTR pszFile,LPCSTR pszParam,LPCSTR pszDir,int show) {
+UINT SShellExecute(HWND hWnd,LPCSTR pszOp,LPCSTR pszFile,LPCSTR pszParam,LPCSTR pszDir,int show) {
 	SStringT strOp = S_CA2T(pszOp, CP_UTF8);
 	SStringT strFile = S_CA2T(pszFile, CP_UTF8);
 	SStringT strParam = S_CA2T(pszParam, CP_UTF8);
 	SStringT strDir = S_CA2T(pszDir, CP_UTF8);
-	HINSTANCE hRet = ::ShellExecute(hWnd, strOp, strFile, strParam, strDir, show);
-	return hRet;
+	return (UINT)::ShellExecute(hWnd, strOp, strFile, strParam, strDir, show);
 }
 
 typedef HRESULT(WINAPI* FunSHCreateItemFromParsingName)(PCWSTR, IBindCtx*, REFIID, void**);
 
 string PickFolder(const char * initPath) {
+#ifdef WIN32
 	SStringA defPath(initPath);
 	SStringA ret;
 	bool bNewDialog = false;
@@ -217,9 +238,13 @@ string PickFolder(const char * initPath) {
 		}
 	}
 	return string(ret.c_str(), ret.GetLength());
+#else
+	return "";
+#endif
 }
 
 string GetSpecialPath(const char * pszType) {
+#ifdef WIN32
 	SStringA type(pszType);
 	type.MakeLower();
 	int ClsId = -1;
@@ -245,10 +270,14 @@ string GetSpecialPath(const char * pszType) {
 	SHGetSpecialFolderPath(NULL, buf, ClsId, TRUE);
 	SStringA ret= S_CW2A(buf, CP_UTF8);
 	return string(ret.c_str(), ret.GetLength());
+#else
+	return "";
+#endif
 }
 
 BOOL IsRunAsAdmin()         
 {
+#ifdef WIN32
 	SID_IDENTIFIER_AUTHORITY NtAuthority = SECURITY_NT_AUTHORITY;
 	PSID AdministratorsGroup;
 
@@ -267,9 +296,14 @@ BOOL IsRunAsAdmin()
 	}
 
 	return  b;
+#else
+	return FALSE;
+#endif
 }
 
 int RunAsAdmin(LPCSTR szFolder, LPCSTR szJs,BOOL waitEnd) {
+#ifdef WIN32
+
 	TCHAR szExe[MAX_PATH] = { 0 };
 	GetModuleFileName(NULL, szExe, MAX_PATH);
 
@@ -283,12 +317,12 @@ int RunAsAdmin(LPCSTR szFolder, LPCSTR szJs,BOOL waitEnd) {
 	SHELLEXECUTEINFO sei = { 0 };
 	sei.cbSize = sizeof(SHELLEXECUTEINFO);
 	sei.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_FLAG_NO_UI;
-	sei.lpVerb = _T("runas"); // “‘π‹¿Ì‘±…Ì∑›‘À––
-	sei.lpFile = szExe; // “™∆Ù∂Øµƒ≥Ã–Ú
+	sei.lpVerb = _T("runas"); // ‰ª•ÁÆ°ÁêÜÂëòË∫´‰ªΩËøêË°å
+	sei.lpFile = szExe; // Ë¶ÅÂêØÂä®ÁöÑÁ®ãÂ∫è
 	sei.lpParameters = strParam.c_str();
 	sei.nShow = SW_SHOWNORMAL;
 	if (!ShellExecuteEx(&sei)) {
-		// ¥¶¿Ì∆Ù∂Ø ß∞‹µƒ«Èøˆ
+		// Â§ÑÁêÜÂêØÂä®Â§±Ë¥•ÁöÑÊÉÖÂÜµ
 		SLOGE2("soui4js")<<"RunAsAdmin failed! err="<< GetLastError();
 		return -1;
 	}
@@ -301,6 +335,10 @@ int RunAsAdmin(LPCSTR szFolder, LPCSTR szJs,BOOL waitEnd) {
 	}
 	CloseHandle(sei.hProcess);
 	return nRet;
+#else
+	return -1;
+#endif
+
 }
 
 BOOL MkPath(LPCSTR path, LPCSTR root) {
@@ -312,25 +350,22 @@ BOOL MkPath(LPCSTR path, LPCSTR root) {
 	SStringT strFullPath;
 	if (!strRoot.IsEmpty()) {
 		strFullPath = strRoot;
-		if (!strFullPath.EndsWith('\\'))
-			strFullPath += '\\';
+		if (!strFullPath.EndsWith('/'))
+			strFullPath += '/';
 	}
-	strPath.ReplaceChar('/', '\\');
+	strPath.ReplaceChar('\\','/');
 
-	struct _stat64i32 st;
-	int ret = _tstat(strFullPath + strPath, &st);
-	if (ret == 0 && st.st_mode & _S_IFDIR) {
+	DWORD fileAttr = GetFileAttributes(strFullPath + strPath);
+	if(fileAttr!=INVALID_FILE_ATTRIBUTES && (fileAttr & FILE_ATTRIBUTE_DIRECTORY))
 		return TRUE;
-	}
 
 	BOOL bRet = TRUE;
 	SStringTList subPaths;
-	SplitString(strPath, '\\', subPaths);
+	SplitString(strPath, '/', subPaths);
 	for (UINT i = 0; i < subPaths.GetCount(); i++) {
-		strFullPath += subPaths[i] + _T('\\');
-		struct _stat64i32 st;
-		int ret = _tstat(strFullPath, &st);
-		if (ret != 0 || (st.st_mode & _S_IFDIR) == 0) {
+		strFullPath += subPaths[i] + _T('/');
+		DWORD fileAttr = GetFileAttributes(strFullPath);
+		if(fileAttr== INVALID_FILE_ATTRIBUTES || !(fileAttr & FILE_ATTRIBUTE_DIRECTORY)){
 			if (!CreateDirectory(strFullPath, NULL))
 			{
 				bRet = FALSE;
@@ -385,3 +420,5 @@ void Exp_Global(qjsbind::Module* module)
 	module->ExportFunc("IsX64", &IsX64);
 	module->ExportFunc("NotifySettingChange", &NotifySettingChange);
 }
+
+#endif // !_EXP_GLOBALS_H_

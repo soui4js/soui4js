@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_MSGHANDLERPROXY__H__
+#define __EXP_MSGHANDLERPROXY__H__
 #include <qjsbind.h>
 
 using namespace qjsbind;
@@ -78,3 +79,4 @@ void Exp_MsgHandlerProxy(qjsbind::Module *module) {
 		jsCls.AddGetSet("msgHandled",&MsgHandle::msgHandled);
 	}
 }
+#endif // __EXP_MSGHANDLERPROXY__H__

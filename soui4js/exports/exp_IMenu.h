@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_IMENU__H__
+#define __EXP_IMENU__H__
 #include <interface/smenu-i.h>
 
 
@@ -27,3 +28,4 @@ void Exp_IMenu(qjsbind::Module* module)
 	jsCls.AddFunc("GetSubMenu", &IMenu::GetSubMenu);
 
 }
+#endif // __EXP_IMENU__H__

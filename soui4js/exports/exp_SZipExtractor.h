@@ -1,4 +1,5 @@
-#pragma once
+﻿#ifndef __EXP_SZIPEXTRACTOR__H__
+#define __EXP_SZIPEXTRACTOR__H__
 
 BOOL MkPath(const std::string& path, const std::string& root);
 
@@ -63,7 +64,8 @@ private:
 		info->iFile++;
 		size_t sz = info->pThis->m_pResProvider->GetRawBufferSize(NULL, pszFile);
 		SStringT strFile(pszFile);
-		int pos = strFile.ReverseFind('\\');
+		strFile.ReplaceChar('\\','/');
+		int pos = strFile.ReverseFind('/');
 		if (pos != -1) {
 			SStringT path = strFile.Left(pos);
 			SStringA pathU8 = S_CT2A(path, CP_UTF8);
@@ -71,7 +73,7 @@ private:
 			if (!MkPath(pathU8.c_str(), rootU8.c_str()))
 				return FALSE;
 		}
-		SStringT strTarget = info->dstPath + _T("\\") + pszFile;
+		SStringT strTarget = info->dstPath + _T("/") + strFile;
 		FILE* f = NULL;
 		BOOL bOK = FALSE;
 		do {
@@ -144,3 +146,4 @@ void Exp_SZipExtractor(Module* module) {
 	jsCls.AddGetSet("cbHandler", &SZipExtractor::m_cbHandler);
 	jsCls.AddGetSet("onMsg", &SZipExtractor::m_onMsg);
 }
+#endif // __EXP_SZIPEXTRACTOR__H__

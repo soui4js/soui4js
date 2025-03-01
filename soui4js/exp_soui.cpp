@@ -55,10 +55,14 @@ using namespace qjsbind;
 #include "exports/exp_SMenu.h"
 #include "exports/exp_globals.h"
 #include "exports/exp_types.h"
-#include "exports/exp_SDropTarget.h"
 #include "exports/exp_SZipExtractor.h"
+#include "exports/exp_SDropTarget.h"
+
+#ifdef WIN32
 #include "exports/exp_SFileOpenDlg.h"
 #include "exports/exp_SRegKey.h"
+#endif
+
 #include "exports/exp_SValueAnimator.h"
 #include "exports/exp_IAttrStoarge.h"
 #include "exports/exp_SMatrix.h"
@@ -111,16 +115,17 @@ namespace SOUI {
 		Exp_HttpRequest(module);
 		Exp_SEventArg(module);
 		Exp_SAdapter(module);
-		Exp_SDropTarget(module);
 		Exp_SXml(module);
 		Exp_SMenu(module);
 		Exp_SMenuEx(module);
 		Exp_SZipExtractor(module);
-		Exp_FileOpenDlg(module);
-		Exp_SRegKey(module);
+		Exp_SDropTarget(module);
 		Exp_SValueAnimator(module);
 		Exp_SMatrix(module);
-
+#ifdef WIN32
+		Exp_FileOpenDlg(module);
+		Exp_SRegKey(module);
+#endif
 		return TRUE;
 	}
 
