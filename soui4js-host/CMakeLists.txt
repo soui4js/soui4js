@@ -16,6 +16,14 @@ set(HOST_SRC
     "soui4js-host.cpp"
     "stdafx.cpp"
 )
+
+if (CMAKE_SYSTEM_NAME MATCHES Windows)
+set(HOST_SRC
+    ${HOST_SRC}
+    "soui4js-host.rc"
+)
+endif()
+
 source_group("Sources" FILES ${HOST_SRC})
 
 ################################################################################
