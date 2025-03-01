@@ -118,6 +118,11 @@ class MainDialog extends soui4.JsHostWnd{
 
 function main(inst,workDir,args)
 {
+	workDir.replaceAll("\\","/");
+	if(workDir.endsWith("/"))
+	{
+		workDir=workDir.substr(0,workDir.length-1);
+	}
 	soui4.log(workDir);
 	g_workDir = workDir;
 	let theApp = soui4.GetApp();
