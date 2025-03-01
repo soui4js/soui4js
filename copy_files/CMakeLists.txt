@@ -1,13 +1,11 @@
 # copy_files/CMakeLists.txt
 
-# 定义目标目录
-set(TARGET_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(Configuration)")
-
 # 初始化SOURCE_DIRS变量
 set(SOURCE_DIRS "")
 
 # 根据系统和架构设置源目录
 if(CMAKE_SYSTEM_NAME MATCHES "Windows")
+    set(TARGET_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(Configuration)")
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         message(STATUS "Copying prebuild files for x64 on Windows platform")
         set(SOURCE_DIRS
@@ -24,6 +22,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Windows")
         message(WARNING "Unknown architecture. Pointer size is ${CMAKE_SIZEOF_VOID_P}")
     endif()
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    set(TARGET_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         message(STATUS "Copying prebuild files for x64 on Linux platform")
         set(SOURCE_DIRS
