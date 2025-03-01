@@ -14,21 +14,7 @@
 using namespace qjsbind;
 using namespace SOUI;
 
-void Slog(const char* szLog);
-extern "C" void js_printer(const char* szLog, int len) {
-    if (len < 0) len = (int)strlen(szLog);
-    SOUI::SStringW str = SOUI::S_CA2W(SOUI::SStringA(szLog, len), CP_UTF8);
-    if (str.GetLength() > SOUI::Log::MAX_LOGLEN) {
-        int pos = 0;
-        while (pos < str.GetLength()) {
-            SLOGI2("log") << (pos==0?"":"--continue")<<str.Mid(pos, SOUI::Log::MAX_LOGLEN - 50).c_str();
-            pos += SOUI::Log::MAX_LOGLEN;
-        }
-    }
-    else {
-        SLOGI2("log") << str.c_str();
-    }
-}
+extern "C" void soui4js_printer(const char* szLog,int len);
 
 static void Soui4jsLog(const char* tag, const char* pLogStr, int level, const char* file, int line, const char* fun, void* retAddr)
 {
@@ -90,7 +76,7 @@ namespace SOUI
     Soui4Js::Soui4Js(qjsbind::Runtime* pRuntime)
     {
         m_context = new qjsbind::Context(pRuntime);
-        m_context->SetLogFunc(Slog);
+        m_context->SetLogFunc(soui4js_printer);
 
         ExportSoui(m_context);
     }
@@ -217,7 +203,6 @@ namespace SOUI
 	}
 
     SScriptFactory::SScriptFactory() {
-        js_set_printer(js_printer);
         m_runtime = new qjsbind::Runtime();
     }
 

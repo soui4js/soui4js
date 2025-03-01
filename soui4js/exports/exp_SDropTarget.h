@@ -2,6 +2,10 @@
 #define __EXP_SDROPTARGET__H__
 #include <shellapi.h>
 
+#ifndef __RPC_FAR
+#define __RPC_FAR
+#endif//__RPC_FAR
+
 class SDropTarget :public IDropTarget
 {
 public:

@@ -202,7 +202,6 @@ void Exp_IHttpClient(qjsbind::Module* module)
 	jsCls.Init(JsClass<IObjRef>::class_id());
 	jsCls.AddFunc("SetDownloadCallback", &IHttpClient::SetDownloadCallback);
 	jsCls.AddFunc("DownloadFile", &IHttpClient::DownloadFile);
-	jsCls.AddFunc("DownloadToMem", &IHttpClient::DownloadToMem);
 	jsCls.AddFunc("GetErrorCode", &IHttpClient::GetErrorCode);
 	jsCls.AddFunc("Request", &IHttpClient::Request);
 	jsCls.AddFunc("GetHttpCode", &IHttpClient::GetHttpCode);

@@ -16,18 +16,19 @@
 
 using namespace SOUI;
 
+#define kLogTag "soui4js-host"
 
-void SetDefaultDir()
+SStringT GetAppDir()
 {
 	TCHAR szCurrentDir[MAX_PATH] = { 0 };
 	GetModuleFileName(NULL, szCurrentDir, sizeof(szCurrentDir));
 #ifdef _WIN32
 	LPTSTR lpInsertPos = _tcsrchr(szCurrentDir, _T('\\'));
-#elif
+#else
 	LPTSTR lpInsertPos = _tcsrchr(szCurrentDir, _T('/'));
 #endif//_WIN32
 	_tcscpy(lpInsertPos + 1, _T("\0"));
-	SetCurrentDirectory(szCurrentDir);
+	return szCurrentDir;
 }
 
 BOOL InitApp(SComMgr2 & comMgr,IApplication *theApp){
@@ -46,12 +47,16 @@ BOOL InitApp(SComMgr2 & comMgr,IApplication *theApp){
 	}
 	BOOL bLoaded = TRUE;
 	do{
+#ifdef _WIN32
 		if(render.Find(L"gdi")!=-1)
 			bLoaded = comMgr.CreateRender_GDI((IObjRef * *)& pRenderFactory);
 		else if(render.Find(L"d2d")!=-1)
 			bLoaded = comMgr.CreateRender_D2D((IObjRef**)&pRenderFactory);
 		else
 			bLoaded = comMgr.CreateRender_Skia((IObjRef**)&pRenderFactory);
+#else
+		bLoaded = comMgr.CreateRender_GDI((IObjRef * *)& pRenderFactory);
+#endif//_WIN32
 		SASSERT_FMT(bLoaded, _T("load interface [render] failed!"));
 		if(!bLoaded) break;
 		SAutoRefPtr<IImgDecoderFactory> pImgDecoderFactory;
@@ -59,21 +64,14 @@ BOOL InitApp(SComMgr2 & comMgr,IApplication *theApp){
 #ifdef _WIN32
 		if (imgDecoder.Find(L"wic") != -1)
 			pszImgDecoderName = _T("imgdecoder-wic");
-		else if(imgDecoder.Find(L"png") != -1)
-			pszImgDecoderName = _T("imgdecoder-png");
+		else if(imgDecoder.Find(L"gdip") != -1)
+			pszImgDecoderName = _T("imgdecoder-gdip");
 		else if (imgDecoder.Find(L"stb") != -1)
 			pszImgDecoderName = _T("imgdecoder-stb");
 		else
 			pszImgDecoderName = _T("imgdecoder-stb");
 #else
-		if (imgDecoder.Find(L"wic") != -1)
-			pszImgDecoderName = _T("libimgdecoder-wic");
-		else if (imgDecoder.Find(L"png") != -1)
-			pszImgDecoderName = _T("libimgdecoder-png");
-		else if (imgDecoder.Find(L"stb") != -1)
-			pszImgDecoderName = _T("libimgdecoder-stb");
-		else
-			pszImgDecoderName = _T("libimgdecoder-stb");
+		pszImgDecoderName = _T("libimgdecoder-stb");
 #endif//_WIN32
 		bLoaded = comMgr.CreateImgDecoder((IObjRef * *)& pImgDecoderFactory,pszImgDecoderName);
 		SASSERT_FMT(bLoaded, _T("load interface [%s] failed!"), _T("imgdecoder"));
@@ -100,13 +98,18 @@ BOOL LoadSystemRes(IApplication *theApp,SouiFactory & souiFac,SComMgr2 & comMgr)
 	FreeLibrary(hModSysResource);	
 	return TRUE;
 	#else
+	TCHAR szAppDir[MAX_PATH] = { 0 };
+	GetModuleFileName(NULL, szAppDir, sizeof(szAppDir));
+	LPTSTR lpInsertPos = _tcsrchr(szAppDir, _T('/'));
+	_tcscpy(lpInsertPos + 1, _T("\0"));
 
 	IResProvider* sysResProvider;
 	BOOL bLoaded = comMgr.CreateResProvider_ZIP((IObjRef**)&sysResProvider);
 	SASSERT_FMT(bLoaded, _T("load interface [%s] failed!"), _T("resprovider_zip"));
 
+	SStringA strPath=SStringA().Format("%ssoui-sys-resource.zip",szAppDir);
 	ZIPRES_PARAM param;
-	ZipFile(&param,theApp->GetRenderFactory(),"soui-sys-resource.zip");
+	ZipFile(&param,theApp->GetRenderFactory(),strPath);
 	bLoaded = sysResProvider->Init((WPARAM)&param, 0);
 	SASSERT(bLoaded);
 	if(bLoaded){
@@ -120,14 +123,14 @@ BOOL LoadSystemRes(IApplication *theApp,SouiFactory & souiFac,SComMgr2 & comMgr)
 BOOL LoadScriptModule(IApplication*theApp,SComMgr2 & comMgr)
 {
 	BOOL bLoaded =FALSE;
-	SAutoRefPtr<IScriptFactory> pScriptLuaFactory;
-	bLoaded = comMgr.CreateScrpit_Qjs((IObjRef * *)& pScriptLuaFactory);
+	SAutoRefPtr<IScriptFactory> pScriptFactory;
+	bLoaded = comMgr.CreateScrpit_Qjs((IObjRef * *)& pScriptFactory);
 	SASSERT_FMT(bLoaded, _T("load interface [%s] failed!"), _T("scirpt_qjs"));
-	theApp->SetScriptFactory(pScriptLuaFactory);
+	theApp->SetScriptFactory(pScriptFactory);
 	return bLoaded;
 }
 
-int Run(HINSTANCE hInstance, const SStringA& jsfile)
+int Run(HINSTANCE hInstance, const SStringA &strDir ,const SStringA& jsfile)
 {
 	HRESULT hRes = OleInitialize(NULL);
 	SASSERT(SUCCEEDED(hRes));
@@ -141,9 +144,7 @@ int Run(HINSTANCE hInstance, const SStringA& jsfile)
 			LoadSystemRes(theApp, souiFac, comMgr);//load system resource
 			LoadScriptModule(theApp, comMgr); //load script module.
 
-			WCHAR szDir[MAX_PATH];
-			GetCurrentDirectoryW(MAX_PATH, szDir);
-			SStringA strDir = S_CW2A(szDir, CP_UTF8);
+
 			SAutoRefPtr<IScriptModule> script;
 			theApp->CreateScriptModule(&script); //create a qjs instance
 
@@ -168,34 +169,48 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpstrC
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 
 	SStringA jsfile = "main.js";//default to run main.js
+	SStringW strDir;
 	int argc = 0;
 	LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc);
 	if (argc > 1)
 	{
-		SetCurrentDirectoryW(argv[1]);
+		strDir = argv[1];
 		if (argc > 2)
 			jsfile = S_CW2A(argv[2],CP_UTF8);
 	}
 	else
-		SetDefaultDir();
+	{
+		strDir= S_CT2W(GetAppDir());
+	}
 	LocalFree(argv);
 
-	int nRet = Run(hInstance,jsfile);
+	SetCurrentDirectoryW(strDir);
+	int nRet = Run(hInstance,S_CW2A(strDir,CP_UTF8),jsfile);
 	WSACleanup();
 	return nRet;
 }
 #else
 int main(int argc, char** argv) {
-	HINSTANCE hInst = GetModuleHandle(NULL);
+	for(int i=0;i<argc;i++){
+		printf("arg %d=%s\n",i,argv[i]);
+	}
 	SStringA jsfile = "main.js";//default to run main.js
+	char szDir[MAX_PATH];
+	GetCurrentDirectoryA(MAX_PATH, szDir);
+	SStringA strDir = szDir;
 	if (argc > 1)
 	{
-		SetCurrentDirectory(argv[1]);
+		strDir = argv[1];
 		if (argc > 2)
-			jsfile = argv[2];
+		 	jsfile = argv[2];
 	}
 	else
-		SetDefaultDir();
-	return Run(hInst,jsfile);
+	{
+		strDir = S_CT2A(GetAppDir());
+	}
+	//strDir = "/home/flyhigh/work/soui4js/build/bin/somine";
+	SetCurrentDirectoryA(strDir);
+	HINSTANCE hInst = GetModuleHandle(NULL);
+	return Run(hInst,strDir,jsfile);
 }
 #endif//_WIN32

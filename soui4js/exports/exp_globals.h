@@ -14,13 +14,29 @@
 #endif // WIN32
 
 
-void Slog(const char* szLog) {
-#ifdef _WIN32
+extern "C" void soui4js_printer(const char* szLog,int len) {
+	if (len < 0) len = (int)strlen(szLog);
+	SOUI::SStringA strA(szLog, len);
+	SOUI::SStringW str = SOUI::S_CA2W(strA, CP_UTF8);
+	if (str.GetLength() > SOUI::Log::MAX_LOGLEN) {
+		int pos = 0;
+		while (pos < str.GetLength()) {
+			SLOGI2("qjs") << (pos==0?"":"--continue")<<str.Mid(pos, SOUI::Log::MAX_LOGLEN - 50).c_str();
+			pos += SOUI::Log::MAX_LOGLEN;
+		}
+	}
+	else {
+		SLOGI2("qjs") << str.c_str();
+	}
+}
+
+void Slog(const char *log){
+	soui4js_printer(log,strlen(log));
+}
+
+void Slog2(const char* szLog,int level) {
 	SStringW str = S_CA2W(szLog, CP_UTF8);
-	SLOGI2("qjs") << str.c_str();
-#else
-	SLOGI2("qjs") << szLog;
-#endif//_WIN32
+	SLOG("qjs",level) << str.c_str();
 }
 
 void SDebugBreak(int id) {
@@ -33,11 +49,6 @@ IWindow* GetCaptured(IObject* pObj) {
 	SWND hCap = pWnd->GetCapture();
 	SWindow* pCap = SWindowMgr::GetWindow(hCap);
 	return (IWindow*)pCap;
-}
-
-void Slog2(const char* szLog,int level) {
-	SStringW str = S_CA2W(szLog, CP_UTF8);
-	SLOG("qjs",level) << str.c_str();
 }
 
 BOOL InitFileResProvider(IResProvider* pResProvider, const char* path)
@@ -167,28 +178,19 @@ BOOL SetXmlTranslator(IApplication * pApp,LPCSTR xmlId) {
 	return bRet;
 }
 
-HINSTANCE SFork(LPCSTR pszParam) {
-#ifdef WIN32
+UINT SFork(LPCSTR pszParam) {
 	TCHAR szHostPath[MAX_PATH];
 	::GetModuleFileName(NULL, szHostPath, MAX_PATH);
 	SStringT strParam = S_CA2T(pszParam, CP_UTF8);
-	return ::ShellExecute(NULL,_T("open"),szHostPath, strParam.c_str(),NULL,SW_SHOWNORMAL);
-#else
-	return 0;
-#endif
+	return (UINT)::ShellExecute((HWND)0,_T("open"),szHostPath, strParam.c_str(),NULL,SW_SHOWNORMAL);
 }
 
-HINSTANCE SShellExecute(HWND hWnd,LPCSTR pszOp,LPCSTR pszFile,LPCSTR pszParam,LPCSTR pszDir,int show) {
-#ifdef WIN32
+UINT SShellExecute(HWND hWnd,LPCSTR pszOp,LPCSTR pszFile,LPCSTR pszParam,LPCSTR pszDir,int show) {
 	SStringT strOp = S_CA2T(pszOp, CP_UTF8);
 	SStringT strFile = S_CA2T(pszFile, CP_UTF8);
 	SStringT strParam = S_CA2T(pszParam, CP_UTF8);
 	SStringT strDir = S_CA2T(pszDir, CP_UTF8);
-	HINSTANCE hRet = ::ShellExecute(hWnd, strOp, strFile, strParam, strDir, show);
-	return hRet;
-#else
-	return 0;
-#endif
+	return (UINT)::ShellExecute(hWnd, strOp, strFile, strParam, strDir, show);
 }
 
 typedef HRESULT(WINAPI* FunSHCreateItemFromParsingName)(PCWSTR, IBindCtx*, REFIID, void**);
@@ -340,7 +342,6 @@ int RunAsAdmin(LPCSTR szFolder, LPCSTR szJs,BOOL waitEnd) {
 }
 
 BOOL MkPath(LPCSTR path, LPCSTR root) {
-#ifdef WIN32
 	if (!path || !root)
 		return FALSE;
 	SStringT strPath = S_CA2T(path, CP_UTF8);
@@ -349,25 +350,22 @@ BOOL MkPath(LPCSTR path, LPCSTR root) {
 	SStringT strFullPath;
 	if (!strRoot.IsEmpty()) {
 		strFullPath = strRoot;
-		if (!strFullPath.EndsWith('\\'))
-			strFullPath += '\\';
+		if (!strFullPath.EndsWith('/'))
+			strFullPath += '/';
 	}
-	strPath.ReplaceChar('/', '\\');
+	strPath.ReplaceChar('\\','/');
 
-	struct _stat64i32 st;
-	int ret = _tstat(strFullPath + strPath, &st);
-	if (ret == 0 && st.st_mode & _S_IFDIR) {
+	DWORD fileAttr = GetFileAttributes(strFullPath + strPath);
+	if(fileAttr!=INVALID_FILE_ATTRIBUTES && (fileAttr & FILE_ATTRIBUTE_DIRECTORY))
 		return TRUE;
-	}
 
 	BOOL bRet = TRUE;
 	SStringTList subPaths;
-	SplitString(strPath, '\\', subPaths);
+	SplitString(strPath, '/', subPaths);
 	for (UINT i = 0; i < subPaths.GetCount(); i++) {
-		strFullPath += subPaths[i] + _T('\\');
-		struct _stat64i32 st;
-		int ret = _tstat(strFullPath, &st);
-		if (ret != 0 || (st.st_mode & _S_IFDIR) == 0) {
+		strFullPath += subPaths[i] + _T('/');
+		DWORD fileAttr = GetFileAttributes(strFullPath);
+		if(fileAttr== INVALID_FILE_ATTRIBUTES || !(fileAttr & FILE_ATTRIBUTE_DIRECTORY)){
 			if (!CreateDirectory(strFullPath, NULL))
 			{
 				bRet = FALSE;
@@ -376,9 +374,6 @@ BOOL MkPath(LPCSTR path, LPCSTR root) {
 		}
 	}
 	return bRet;
-#else
-	return FALSE;
-#endif
 }
 
 BOOL IsX64() {
