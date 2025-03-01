@@ -32,7 +32,6 @@ namespace qjsbind {
 		static std::stack<JSContext*> s_ctxStack;
 	};
 
-	typedef void (*LogFun)(const char* log);
 
 	class JobEvent{
 		HANDLE hEvent;
@@ -89,8 +88,9 @@ namespace qjsbind {
 				JS_GetContextOpaque(ctx));
 		}
 
-		void SetLogFunc(LogFun func) {
+		void SetLogFunc(fun_printer func) {
 			log_func_ = func;
+			js_set_printer(func);
 		}
 
 		Value ParseJson(const char* buf, size_t buf_len,
@@ -292,7 +292,7 @@ namespace qjsbind {
 
 		void Log(const std::string& msg) {
 			if (log_func_)
-				log_func_(msg.c_str());
+				log_func_(msg.c_str(),msg.length());
 		}
 
 		void AddClassId(JSClassID classid, JSClassID parent_classid);
@@ -310,7 +310,7 @@ namespace qjsbind {
 		JSContext* context_;
 		std::map<JSModuleDef*, std::unique_ptr<Module>> modules_;
 
-		LogFun log_func_;
+		fun_printer log_func_;
 		bool   is_attach_;
 		std::unordered_map<JSClassID, JSClassID> class_ids_;
 	};

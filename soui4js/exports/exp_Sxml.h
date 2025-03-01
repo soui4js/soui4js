@@ -2,7 +2,6 @@
 #define __EXP_SXML__H__
 #include <interface/sxml-i.h>
 
-void Slog(const char*);
 namespace qjsbind {
 	Value NewValue(Context& context, SXmlNode v)
 	{

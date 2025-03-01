@@ -14,13 +14,29 @@
 #endif // WIN32
 
 
-void Slog(const char* szLog) {
-#ifdef _WIN32
+extern "C" void soui4js_printer(const char* szLog,int len) {
+	if (len < 0) len = (int)strlen(szLog);
+	SOUI::SStringA strA(szLog, len);
+	SOUI::SStringW str = SOUI::S_CA2W(strA, CP_UTF8);
+	if (str.GetLength() > SOUI::Log::MAX_LOGLEN) {
+		int pos = 0;
+		while (pos < str.GetLength()) {
+			SLOGI2("qjs") << (pos==0?"":"--continue")<<str.Mid(pos, SOUI::Log::MAX_LOGLEN - 50).c_str();
+			pos += SOUI::Log::MAX_LOGLEN;
+		}
+	}
+	else {
+		SLOGI2("qjs") << str.c_str();
+	}
+}
+
+void Slog(const char *log){
+	soui4js_printer(log,strlen(log));
+}
+
+void Slog2(const char* szLog,int level) {
 	SStringW str = S_CA2W(szLog, CP_UTF8);
-	SLOGI2("qjs") << str.c_str();
-#else
-	SLOGI2("qjs") << szLog;
-#endif//_WIN32
+	SLOG("qjs",level) << str.c_str();
 }
 
 void SDebugBreak(int id) {
@@ -33,11 +49,6 @@ IWindow* GetCaptured(IObject* pObj) {
 	SWND hCap = pWnd->GetCapture();
 	SWindow* pCap = SWindowMgr::GetWindow(hCap);
 	return (IWindow*)pCap;
-}
-
-void Slog2(const char* szLog,int level) {
-	SStringW str = S_CA2W(szLog, CP_UTF8);
-	SLOG("qjs",level) << str.c_str();
 }
 
 BOOL InitFileResProvider(IResProvider* pResProvider, const char* path)
