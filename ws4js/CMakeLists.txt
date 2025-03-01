@@ -33,27 +33,6 @@ set(ALL_FILES
 ################################################################################
 add_library(${PROJECT_NAME} SHARED ${ALL_FILES})
 
-target_precompile_headers(${PROJECT_NAME} PRIVATE
-    "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/stdafx.h>"
-)
-
-use_props(${PROJECT_NAME} "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
-
-set(ROOT_NAMESPACE ws4js)
-
-target_include_directories(${PROJECT_NAME} PUBLIC
-        "${CMAKE_CURRENT_SOURCE_DIR}/."
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/quickjs/include"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../qjsbind"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/soui4/config"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/soui4/components"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/soui4/soui/include"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/soui4/utilities/include"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/ws/include"
-        PRIVATE 
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/soui4/swinx/include"
-
-    )
 ################################################################################
 # Dependencies
 ################################################################################
@@ -61,19 +40,27 @@ add_dependencies(${PROJECT_NAME}
     qjsbind
 )
 
+target_include_directories(${PROJECT_NAME} PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/qjsbind
+    ${CMAKE_SOURCE_DIR}/depends/quickjs/include
+    ${CMAKE_SOURCE_DIR}/depends/soui4/include/config
+    ${CMAKE_SOURCE_DIR}/depends/soui4/include/utilities/include
+    ${CMAKE_SOURCE_DIR}/depends/soui4/include/SOUI/include
+    ${CMAKE_SOURCE_DIR}/depends/soui4/include/components
+    ${CMAKE_SOURCE_DIR}/depends/ws/include
+)
 
-    set(ADDITIONAL_LIBRARY_DEPENDENCIES
-        "libquickjs.a;"
-        "qjsbind;"
-        "utilities4;"
-        "soui4"
-    )
+################################################################################
+# Dependencies
+################################################################################
+add_dependencies(${PROJECT_NAME}
+    soui4js
+)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
-
-target_link_directories(${PROJECT_NAME} PUBLIC
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/soui4/lib/x64;"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../depends/quickjs/bin/x64;"
-        "${OUTPUT_DIRECTORY}"
-    )
+target_link_directories(${PROJECT_NAME} PRIVATE
+${CMAKE_SOURCE_DIR}/depends/quickjs/lib_win/$(Platform)
+${CMAKE_SOURCE_DIR}/depends/soui4/lib_win/$(Platform)
+)
+target_link_libraries(${PROJECT_NAME} soui4js qjsbind libquickjs soui4 utilities4)
 
