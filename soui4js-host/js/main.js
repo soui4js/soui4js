@@ -266,11 +266,11 @@ class MainDialog extends soui4.JsHostWnd{
 
 	doExtractor(){
 		this.extractor = new soui4.SZipExtractor();
-			if(this.extractor.Open(true,this.localFile,""))
+			if(this.extractor.Open(false,this.localFile,""))//using zip. 7zip is not avaiable for linux now.
 			{
 				this.extractor.cbHandler = this;
 				this.extractor.onMsg = this.onExtractMsg;
-				let destDir = g_workDir+"\\"+this.appInfo.name;
+				let destDir = g_workDir+"/"+this.appInfo.name;
 				os.mkdir(destDir);
 				this.extractor.ExtractTo(destDir);
 			}else{
@@ -315,10 +315,14 @@ class MainDialog extends soui4.JsHostWnd{
 				//try to open.
 				let strAppInfo = JSON.stringify(this.appInfo);
 				let localAppInfo = g_workDir + "/"+this.appInfo.name+"/appInfo.json";
-				let f = std.open(localAppInfo, "w");
-				f.puts(strAppInfo);
-				f.close();
-
+				soui4.log("save appinfo to "+localAppInfo);
+				try{
+					let f = std.open(localAppInfo, "w");
+					f.puts(strAppInfo);
+					f.close();
+				}catch(err){
+					console.log(err);
+				}
 				let localPath = "\""+g_workDir + "/"+this.appInfo.name+"\"";
 				soui4.Fork(localPath);
 			}else{
@@ -332,6 +336,11 @@ class MainDialog extends soui4.JsHostWnd{
 
 function main(inst,workDir,args)
 {
+	workDir.replaceAll("\\","/");
+	if(workDir.endsWith("/"))
+	{
+		workDir=workDir.substr(0,workDir.length-1);
+	}
 	soui4.log(workDir);
 	g_workDir = workDir;
 	let theApp = soui4.GetApp();
@@ -342,7 +351,7 @@ function main(inst,workDir,args)
 	//*/
 	/*
 	// show how to load resource from a zip file
-	let resProvider = soui4.CreateZipResProvider(theApp,workDir +"\\uires.zip","souizip");
+	let resProvider = soui4.CreateZipResProvider(theApp,workDir +"/uires.zip","souizip");
 	if(resProvider === 0){
 		soui4.log("load res from uires.zip failed");
 		return -1;
