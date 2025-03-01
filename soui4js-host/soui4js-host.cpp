@@ -208,7 +208,7 @@ int main(int argc, char** argv) {
 	{
 		strDir = S_CT2A(GetAppDir());
 	}
-	//strDir = "/home/flyhigh/work/soui4js/build/bin/somine";
+	strDir = "/home/flyhigh/work/soui4js/build/bin/somine";
 	SetCurrentDirectoryA(strDir);
 	HINSTANCE hInst = GetModuleHandle(NULL);
 	return Run(hInst,strDir,jsfile);

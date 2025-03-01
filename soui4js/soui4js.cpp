@@ -49,6 +49,9 @@ namespace SOUI
         }
 
         BOOL WINAPI WaitMsg() override{
+            RunIdle();
+            if(m_bQuit)
+                return FALSE;
             HANDLE handles[MAXIMUM_WAIT_OBJECTS-1] = { 0 };
             int rws = 0, msgs = 0;
             uint32_t waitTime = INFINITE;
