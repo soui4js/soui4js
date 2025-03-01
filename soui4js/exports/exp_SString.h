@@ -11,9 +11,11 @@ SStringW* newStringW(ArgList& args)
 		SStringA str((const char*)args[0], (int)args[1]);
 		return new SStringW(S_CA2W(str, CP_UTF8));
 	}
-	else {
+	else if(args.size()==1){
 		SStringA str((const char*)args[0]);
 		return new SStringW(S_CA2W(str, CP_UTF8));
+	}else{
+		return new SStringW();
 	}
 }
 
@@ -23,8 +25,10 @@ SStringA* newStringA(ArgList& args)
 	{
 		return new SStringA((const char*)args[0], (int)args[1]);
 	}
-	else {
+	else if(args.size()==1){
 		return new SStringA((const char*)args[0]);
+	}else{
+		return new SStringA();
 	}
 }
 
