@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SOUI name="mainWindow" title="@string/title" bigIcon="ICON_LOGO:32" smallIcon="ICON_LOGO:16" margin="5,5,5,5"  resizable="1" wndType="appMain"
+translucent="1"
+>
+  <root skin="_skin.sys.wnd.bkgnd" cache="1"  width="400" height="420">
+    <caption layout="hbox" gravity="center" padding="10,0">
+      <icon src="ICON_LOGO:16"/>
+      <text >@string/title</text>
+      <window size="0,0" weight="1"/>
+      <imgbtn id="10" skin="_skin.sys.btn.close"   tip="close" animate="1"/>
+    </caption>
+    <window pos="5,[2,-5,-5" layout="vbox" interval="10">
+		<text text="选择启动APP:"/>
+		<listview size="-2,0" weight="1" name="lv_applist">
+			<template itemHeight="110" layout="hbox" interval="10" gravity="center" skin="skin_item_bk" trackMouseEvent="1">
+				<img size="64,64" name="img_icon"/>
+				<window size="0,-2" weight="1" layout="vbox" interval="5">
+					<window size="-2,-1" layout="hbox" interval="2">
+						<text name="txt_name"/>
+						<text text="["/>
+						<text name="txt_size" colorText="@color/red"/>
+						<text text="]"/>
+					</window>
+					<text name="txt_ver"/>
+					<text name="txt_md5"/>
+					<text name="txt_desc" size="-2,0" weight="1" multiLines="1" clipClient="1" dot="1" valign="top"/>
+				</window>
+			</template>
+		</listview>
+		<text text="下载进度:"/>
+		<progress size="-2,20" name="prog_download" min="0" max="100" value="0"/>
+		<text text="解压进度:"/>
+		<progress size="-2,20" name="prog_extract" min="0" max="100" value="0"/>
+	</window>
+  </root>
+</SOUI>

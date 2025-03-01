@@ -15,7 +15,7 @@
 #define COM_RENDER_GDI  _T("render-gdi")
 #define COM_RENDER_SKIA _T("render-skia")
 #define COM_RENDER_D2D _T("render-d2d")
-#define COM_SCRIPT_QJS _T("soui4js")
+#define COM_SCRIPT_LUA _T("scriptmodule-lua")
 #define COM_TRANSLATOR _T("translator")
 #define COM_ZIPRESPROVIDER _T("resprovider-zip")
 #define COM_LOG4Z   _T("log4z")
@@ -27,7 +27,7 @@
 #define COM_IMGDECODER  _T("libimgdecoder-stb")
 #define COM_RENDER_GDI  _T("librender-gdi")
 #define COM_RENDER_SKIA _T("librender-skia")
-#define COM_SCRIPT_QJS _T("libsoui4js")
+#define COM_SCRIPT_LUA _T("libscriptmodule-lua")
 #define COM_TRANSLATOR _T("libtranslator")
 #define COM_ZIPRESPROVIDER _T("libresprovider-zip")
 #define COM_LOG4Z   _T("liblog4z")
@@ -318,9 +318,9 @@ public:
 		return renderLoader.CreateInstance(m_strDllPath+COM_RENDER_D2D,ppObj);
 	}
 	
-	BOOL CreateScrpit_Qjs(IObjRef **ppObj)
+	BOOL CreateScrpit_Lua(IObjRef **ppObj)
     {
-        return scriptLoader.CreateInstance(m_strDllPath+COM_SCRIPT_QJS,ppObj);
+        return scriptLoader.CreateInstance(m_strDllPath+COM_SCRIPT_LUA,ppObj);
     }
 
     BOOL CreateTranslator(IObjRef **ppObj)
