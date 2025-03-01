@@ -13,7 +13,7 @@
 
 #include <commdlg.h>
 #include <shlobj.h>
-#include <core\SNativeWnd.h>
+#include <core/SNativeWnd.h>
 #include <atl.mini/SComCli.h>
 
 #ifndef _Post_writable_byte_size_
