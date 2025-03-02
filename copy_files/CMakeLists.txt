@@ -11,12 +11,14 @@ if(CMAKE_SYSTEM_NAME MATCHES "Windows")
         set(SOURCE_DIRS
             ${CMAKE_SOURCE_DIR}/depends/quickjs/bin/x64
             ${CMAKE_SOURCE_DIR}/depends/soui4/bin/x64
+            ${CMAKE_SOURCE_DIR}/depends/ws/bin/x64
         )
     elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
         message(STATUS "Copying prebuild files for x86 on Windows platform")
         set(SOURCE_DIRS
             ${CMAKE_SOURCE_DIR}/depends/quickjs/bin/x86
             ${CMAKE_SOURCE_DIR}/depends/soui4/bin/x86
+            ${CMAKE_SOURCE_DIR}/depends/ws/bin/x86
         )
     else()
         message(WARNING "Unknown architecture. Pointer size is ${CMAKE_SIZEOF_VOID_P}")
