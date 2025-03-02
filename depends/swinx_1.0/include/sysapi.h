@@ -101,6 +101,13 @@ typedef struct _PROCESS_INFORMATION {
     tid_t dwThreadId;
 } PROCESS_INFORMATION,  *LPPROCESS_INFORMATION;
 
+
+enum {
+    Verb_Unknown=0,
+    Verb_Open,
+    Verb_RunAs, //root user
+};
+
 #define __in
 #define __out
 BOOL WINAPI CreateProcessAsUserA(
@@ -156,22 +163,18 @@ BOOL WINAPI CreateProcessAsUserW(
     __out         LPPROCESS_INFORMATION lpProcessInformation
   );
 
-  BOOL WINAPI ShellExecuteA(HWND hwnd, LPCSTR lpOperation, LPCSTR lpFile, LPCSTR lpParameters, LPCSTR lpDirectory, INT nShowCmd);
-
-  BOOL WINAPI ShellExecuteW(HWND hwnd, LPCWSTR lpOperation, LPCWSTR lpFile, LPCWSTR lpParameters, LPCWSTR lpDirectory, INT nShowCmd);
-
   #undef __in
   #undef __out
 
 #ifdef UNICODE
 #define CreateProcessAsUser CreateProcessAsUserW
 #define CreateProcess CreateProcessW
-#define ShellExecute ShellExecuteW
 #else
 #define CreateProcessAsUser CreateProcessAsUserA
 #define CreateProcess   CreateProcessA
-#define ShellExecute    ShellExecuteA
 #endif//UNICODE
+
+    BOOL WINAPI GetExitCodeProcess(HANDLE hProcess, LPDWORD lpExitCode);
 
     void GetLocalTime(SYSTEMTIME *pSysTime);
     void GetSystemTime(SYSTEMTIME *lpSystemTime);
@@ -425,6 +428,8 @@ typedef int(WINAPI *PROC)();
     DWORD WINAPI WaitForMultipleObjects(DWORD nCount, const HANDLE *lpHandles, BOOL bWaitAll, DWORD dwMilliseconds);
 
     DWORD WINAPI MsgWaitForMultipleObjects(DWORD nCount, const HANDLE *pHandles, BOOL fWaitAll, DWORD dwMilliseconds, DWORD dwWakeMask);
+
+    BOOL WINAPI GetHandleName(HANDLE h,char szName[1001]); 
 
     VOID WINAPI Sleep(DWORD dwMilliseconds);
 

@@ -35,6 +35,7 @@
 #include <winnls.h>
 #include <richedit.h>
 #include <multimon.h>
+#include <shellapi.h>
 
 #undef NULL
 #define NULL 0

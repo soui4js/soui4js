@@ -17,6 +17,8 @@ set(HOST_SRC
     "stdafx.cpp"
 )
 
+file(GLOB_RECURSE HOST_JS  js/*.*)
+
 if (CMAKE_SYSTEM_NAME MATCHES Windows)
 set(HOST_SRC
     ${HOST_SRC}
@@ -25,7 +27,7 @@ set(HOST_SRC
 endif()
 
 source_group("Sources" FILES ${HOST_SRC})
-
+source_group("Js" FILES ${HOST_JS})
 ################################################################################
 # Target
 ################################################################################

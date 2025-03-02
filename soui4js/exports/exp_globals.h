@@ -302,8 +302,6 @@ BOOL IsRunAsAdmin()
 }
 
 int RunAsAdmin(LPCSTR szFolder, LPCSTR szJs,BOOL waitEnd) {
-#ifdef WIN32
-
 	TCHAR szExe[MAX_PATH] = { 0 };
 	GetModuleFileName(NULL, szExe, MAX_PATH);
 
@@ -335,10 +333,6 @@ int RunAsAdmin(LPCSTR szFolder, LPCSTR szJs,BOOL waitEnd) {
 	}
 	CloseHandle(sei.hProcess);
 	return nRet;
-#else
-	return -1;
-#endif
-
 }
 
 BOOL MkPath(LPCSTR path, LPCSTR root) {
@@ -377,10 +371,22 @@ BOOL MkPath(LPCSTR path, LPCSTR root) {
 }
 
 BOOL IsX64() {
-#ifdef _WIN64
+#if defined(_M_AMD64) || defined(__amd64__) || defined(__x86_64__) || defined(_WIN64)
 	return TRUE;
 #else
 	return FALSE;
+#endif
+}
+
+int OsType() {
+#ifdef _WIN32
+	return 1;
+#elif defined(__linux__)
+	return 2;
+#elif defined(__APPLE__)
+	return 4;
+#else
+	return 0;
 #endif
 }
 
@@ -418,6 +424,7 @@ void Exp_Global(qjsbind::Module* module)
 	module->ExportFunc("RunAsAdmin", &RunAsAdmin);
 	module->ExportFunc("MkPath", &MkPath);
 	module->ExportFunc("IsX64", &IsX64);
+	module->ExportFunc("OsType", &OsType);
 	module->ExportFunc("NotifySettingChange", &NotifySettingChange);
 }
 

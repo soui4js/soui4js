@@ -74,14 +74,20 @@ class AppLvAdapter extends soui4.SLvAdapter{
 				if(!attrName.IsEmpty()){
 					alias = attrName.Value();
 				}
-				let attrPlatform = xmlApp.Attribute("platform",false);
 				let bValidPlatform = true;
-				if(!attrPlatform.IsEmpty()){
-					let strPlatform = attrPlatform.Value();
-					if(g_isX64 && strPlatform.indexOf("x64")==-1)
-						bValidPlatform = false;
-					else if(!g_isX64 && strPlatform.indexOf("x86")==-1)
-						bValidPlatform = false;
+				let osType = xmlApp.Attribute("osType",false).AsInt(0);//default to 0
+				if(osType!=0 && (osType & soui4.OsType())==0)
+					bValidPlatform = false;
+				else{
+					let attrPlatform = xmlApp.Attribute("platform",false);
+
+					if(!attrPlatform.IsEmpty()){
+						let strPlatform = attrPlatform.Value();
+						if(g_isX64 && strPlatform.indexOf("x64")==-1)
+							bValidPlatform = false;
+						else if(!g_isX64 && strPlatform.indexOf("x86")==-1)
+							bValidPlatform = false;
+					}
 				}
 				if(bValidPlatform){
 					let url = xmlApp.Attribute("url",false).Value();
@@ -93,7 +99,7 @@ class AppLvAdapter extends soui4.SLvAdapter{
 					let appInfo = {"name":name,"alias":alias,"url":url,"ver":ver,"icon":icon,"md5":md5,"desc":desc,"img":null,"size":size};
 					this.appList.push(appInfo);
 				}else{
-					console.log("disable app",name,"for isX64",g_isX64);
+					console.log("disable app",name,"for isX64",g_isX64," this ostype",soui4.OsType()," app ostype",osType);
 				}
 				xmlApp = xmlApp.NextSibling();
 			}

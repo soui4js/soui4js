@@ -125,6 +125,7 @@ typedef CONST void *LPCVOID;
 
 typedef WORD LCID;    // todo:hjx
 typedef DWORD HACCEL; // todo:hjx
+typedef DWORD HKEY;   // todo:hjx
 
 typedef int INT;
 typedef unsigned int UINT;
