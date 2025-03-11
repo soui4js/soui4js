@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 
+option(BUILD_WS_MODULE "build websocket module" OFF)
 set(BUILD_WS OFF)
+if(BUILD_WS_MODULE)
 if(CMAKE_SYSTEM_NAME MATCHES "Windows")
 set(WS_OPENSSL_INCLUDE "" CACHE PATH "Path to the openSSL include directory" )
 set(WS_LWS_INCLUDE "" CACHE PATH "Path to the libwebsodket include directory " )
@@ -20,6 +22,7 @@ set(WS_LWS_LIB ${LIBWEBSOCKETS_LIBRARIES})
 set(BUILD_WS ON)
 endif()
 endif()
+endif(BUILD_WS_MODULE)
 
 if(BUILD_WS)
     

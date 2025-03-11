@@ -62,14 +62,13 @@ target_link_directories(${PROJECT_NAME} PRIVATE
 ${CMAKE_SOURCE_DIR}/depends/quickjs/lib_win/$(Platform)
 ${CMAKE_SOURCE_DIR}/depends/soui4/lib_win/$(Platform)
 )
-#target_link_libraries(${PROJECT_NAME} soui4js qjsbind libquickjs soui4 utilities4)
+target_link_libraries(${PROJECT_NAME} soui4js qjsbind libquickjs soui4 utilities4)
 else()
 target_link_directories(${PROJECT_NAME} PRIVATE
 ${CMAKE_SOURCE_DIR}/depends/quickjs/lib_deb/x64
 ${CMAKE_SOURCE_DIR}/depends/soui4/lib_deb/x64
 )
-#target_link_libraries(${PROJECT_NAME} soui4js qjsbind quickjs soui4 utilities4)
+target_link_libraries(${PROJECT_NAME} soui4js qjsbind quickjs soui4 utilities4)
 endif()
 
-target_link_libraries(${PROJECT_NAME} soui4js qjsbind quickjs soui4 utilities4)
 
