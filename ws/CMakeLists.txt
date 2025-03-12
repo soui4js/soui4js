@@ -1,43 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
 
-option(BUILD_WS_MODULE "build websocket module" OFF)
-set(BUILD_WS OFF)
-if(BUILD_WS_MODULE)
-if(CMAKE_SYSTEM_NAME MATCHES "Windows")
-set(WS_OPENSSL_INCLUDE "" CACHE PATH "Path to the openSSL include directory" )
-set(WS_LWS_INCLUDE "" CACHE PATH "Path to the libwebsodket include directory " )
-set(WS_LWS_LIB CACHE PATH "libs" )
-
-if(NOT EXISTS "${WS_OPENSSL_INCLUDE}")
-    message(FATAL_ERROR "path of WS_OPENSSL_INCLUDE = ${WS_OPENSSL_INCLUDE} not found!")
-endif()
-set(BUILD_WS ON)
-else()
-find_package(libwebsockets REQUIRED)
-# 如果找到libwebsockets，执行后续操作
-if(libwebsockets_FOUND)
-message("libws dir=${LIBWEBSOCKETS_INCLUDE_DIRS}")
-set(WS_LWS_INCLUDE ${LIBWEBSOCKETS_INCLUDE_DIRS})
-set(WS_LWS_LIB ${LIBWEBSOCKETS_LIBRARIES})
-set(BUILD_WS ON)
-endif()
-endif()
-endif(BUILD_WS_MODULE)
-
-if(BUILD_WS)
-    
-include_directories(${WS_LWS_INCLUDE}
-${CMAKE_SOURCE_DIR}/depends/soui4/include/config
-${CMAKE_SOURCE_DIR}/depends/soui4/include/utilities/include
-${CMAKE_SOURCE_DIR}/depends/soui4/include/SOUI/include
-${CMAKE_SOURCE_DIR}/depends/soui4/include/components
-)
-if(CMAKE_SYSTEM_NAME MATCHES "Windows")
-include_directories(${WS_OPENSSL_INCLUDE})
-else()
-include_directories(${CMAKE_SOURCE_DIR}/depends/swinx/include)
-endif()
-# Building
 project(ws)
 
 set(SOURCES
@@ -59,7 +21,11 @@ link_directories(${CMAKE_SOURCE_DIR}/depends/swinx_1.0/lib_deb/x64
 set(LIBS ${LIBS} swinx)
 endif()
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${WS_LWS_INCLUDE}
+${CMAKE_SOURCE_DIR}/depends/soui4/include/config
+${CMAKE_SOURCE_DIR}/depends/soui4/include/utilities/include
+${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 target_link_libraries(${PROJECT_NAME} ${LIBS})
 
@@ -73,5 +39,4 @@ add_executable(${PROJECT_NAME} test/ClientTest.cpp)
 target_link_libraries(${PROJECT_NAME} ws)
 endif()
 
-endif()
 

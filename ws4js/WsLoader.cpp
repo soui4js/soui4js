@@ -12,6 +12,12 @@ WsLoader::WsLoader():m_funWsCreateInst(nullptr), m_wsModule(nullptr)
 	m_wsModule = LoadLibraryA(WS_DLL_NAME);
 	if(m_wsModule!=nullptr)
 		m_funWsCreateInst = (fun_Ws_CreateInstance)GetProcAddress(m_wsModule, "Ws_CreateInstance");
+	else{
+		#ifndef _WIN32
+		const char* err = dlerror();
+		perror(err);
+		#endif//_WIN32
+	}
 }
 
 WsLoader::~WsLoader()

@@ -1,0 +1,4 @@
+[submodule "libwebsockets"]
+	path = libwebsockets
+	url = https://gitee.com/setoutsoft/libwebsockets.git
+	branch = soui_ws

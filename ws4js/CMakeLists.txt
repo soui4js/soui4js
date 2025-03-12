@@ -47,7 +47,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}/depends/soui4/include/utilities/include
     ${CMAKE_SOURCE_DIR}/depends/soui4/include/SOUI/include
     ${CMAKE_SOURCE_DIR}/depends/soui4/include/components
-    ${CMAKE_SOURCE_DIR}/depends/ws/include
+    ${CMAKE_SOURCE_DIR}/ws/include
 )
 
 ################################################################################

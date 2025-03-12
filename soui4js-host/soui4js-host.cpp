@@ -27,7 +27,7 @@ SStringT GetAppDir()
 #else
 	LPTSTR lpInsertPos = _tcsrchr(szCurrentDir, _T('/'));
 #endif//_WIN32
-	_tcscpy(lpInsertPos + 1, _T("\0"));
+	_tcscpy(lpInsertPos, _T("\0"));
 	return szCurrentDir;
 }
 
@@ -168,22 +168,23 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpstrC
 	WSADATA wsaData;
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 
-	SStringA jsfile = "main.js";//default to run main.js
-	SStringW strDir;
 	int argc = 0;
-	LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+	LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+	SStringA jsfile = "main.js";//default to run main.js
+	SStringW appDir = S_CT2W(GetAppDir());
+	SStringW strDir = appDir;
 	if (argc > 1)
 	{
 		strDir = argv[1];
 		if (argc > 2)
 			jsfile = S_CW2A(argv[2],CP_UTF8);
 	}
-	else
-	{
-		strDir= S_CT2W(GetAppDir());
-	}
 	LocalFree(argv);
-
+	if (strDir != appDir && strDir.Find(L":")==-1) {
+		//receive relative app path.
+		strDir.Format(L"%s\\%s", appDir.c_str(), strDir.c_str());
+	}
+	//strDir = "/home/flyhigh/work/soui4js/build/bin/ws_client";
 	SetCurrentDirectoryW(strDir);
 	int nRet = Run(hInstance,S_CW2A(strDir,CP_UTF8),jsfile);
 	WSACleanup();
@@ -202,10 +203,6 @@ int main(int argc, char** argv) {
 		strDir = argv[1];
 		if (argc > 2)
 		 	jsfile = argv[2];
-	}
-	else
-	{
-		strDir = S_CT2A(GetAppDir());
 	}
 	//strDir = "/home/flyhigh/work/soui4js/build/bin/ws_client";
 	if(strDir != appDir && strDir[0]!='/'){

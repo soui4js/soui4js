@@ -44,6 +44,52 @@ add_subdirectory(qjsbind)
 add_subdirectory(soui4js)
 add_subdirectory(soui4js-host)
 add_subdirectory(utils)
-add_subdirectory(ws)
-add_subdirectory(ws4js)
 add_subdirectory(copy_files)
+
+option(BUILD_WS_MODULE "build websocket module" ON)
+
+if(BUILD_WS_MODULE)
+    if(CMAKE_SYSTEM_NAME MATCHES "Windows")
+        if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(platform "x64")
+        else()
+        set(platform "Win32")
+        endif()
+        set(LWS_OPENSSL_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/depends/openssl_1.1.1d/${platform}/include)
+        set(LWS_OPENSSL_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/depends/openssl_1.1.1d/${platform}/lib/$(Configuration)/libssl.lib;${CMAKE_CURRENT_SOURCE_DIR}/depends/openssl_1.1.1d/${platform}/lib/$(Configuration)/libcrypto.lib")
+        set(BUILD_WS ON)
+        message("LWS_OPENSSL_LIBRARIES is ${LWS_OPENSSL_LIBRARIES} first")
+    else()#CMAKE_SYSTEM_NAME MATCHES "Windows"
+        set(BUILD_WS ON)
+    endif()
+
+    if(BUILD_WS)
+        set(LWS_WITH_MINIMAL_EXAMPLES OFF)
+        set(LWS_WITHOUT_TESTAPPS ON)
+        set(LWS_WITH_STATIC ON)
+        set(LWS_WITH_SHARED OFF)
+        set(LWS_STATIC_PIC ON)
+        set_property(GLOBAL PROPERTY USE_FOLDERS ON) 
+        add_subdirectory(libwebsockets)
+        get_property(libwebsocket_targets DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/libwebsockets PROPERTY BUILDSYSTEM_TARGETS)
+        foreach(target ${libwebsocket_targets})
+            set_target_properties(${target} PROPERTIES FOLDER "libwebsocket")
+        endforeach()
+
+        
+        if(CMAKE_SYSTEM_NAME MATCHES "Windows")
+        set(LIBWS_INST_DIR ${PROJECT_BINARY_DIR}/libwebsockets)
+        set(WS_LWS_INCLUDE ${LIBWS_INST_DIR}/include ${LWS_OPENSSL_INCLUDE_DIRS})
+        set(WS_LWS_LIB 
+            ${LIBWS_INST_DIR}/lib/$(Configuration)/websockets_static.lib 
+            ${LWS_OPENSSL_LIBRARIES} 
+            Ws2_32.lib
+            Crypt32.lib)
+        else()
+            set(WS_LWS_LIB websockets)
+        endif()
+
+        add_subdirectory(ws)
+        add_subdirectory(ws4js)
+    endif(BUILD_WS)
+endif(BUILD_WS_MODULE)
