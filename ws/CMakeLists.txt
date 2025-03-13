@@ -27,6 +27,7 @@ ${CMAKE_SOURCE_DIR}/depends/soui4/include/utilities/include
 ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
+add_dependencies(${PROJECT_NAME} websockets)
 target_link_libraries(${PROJECT_NAME} ${LIBS})
 
 if(0)
