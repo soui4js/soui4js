@@ -1,5 +1,4 @@
 build
 .vs
-bin
-bin64
+build_rel
 out
