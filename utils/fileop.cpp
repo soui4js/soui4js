@@ -81,17 +81,13 @@ namespace fileop {
 #else // Linux implementation
 
     BOOL DelDir(LPCSTR pszDir, BOOL bAllowUndo) {
-        // bAllowUndo is not supported on Linux
-        (void)bAllowUndo;
-        std::string strDir(pszDir);
-        std::string cmd = "rm -rf " + strDir;
-        return system(cmd.c_str()) == 0;
+        return DelDir(pszDir,bAllowUndo)==0;
     }
 
     BOOL DelFile(LPCSTR pszFile, BOOL bAllowUndo) {
         // bAllowUndo is not supported on Linux
         (void)bAllowUndo;
-        return unlink(pszFile) == 0;
+        return DeleteFile(pszFile);
     }
 
     BOOL SelectFile(LPCSTR pszFile) {
@@ -100,22 +96,11 @@ namespace fileop {
     }
 
     BOOL JsCopyFile(LPCSTR pszFrom, LPCSTR pszTo, BOOL bReplace) {
-        std::string strFrom(pszFrom);
-        std::string strTo(pszTo);
-        if (!bReplace && access(strTo.c_str(), F_OK) == 0) {
-            return FALSE;
-        }
-        std::ifstream src(strFrom, std::ios::binary);
-        std::ofstream dst(strTo, std::ios::binary);
-        dst << src.rdbuf();
-        return src && dst;
+        return CopyFile(pszFrom,pszTo,!bReplace);
     }
 
     BOOL JsCopyDir(LPCSTR pszFrom, LPCSTR pszTo) {
-        std::string strFrom(pszFrom);
-        std::string strTo(pszTo);
-        std::string cmd = "cp -r " + strFrom + " " + strTo;
-        return system(cmd.c_str()) == 0;
+        return CopyDir(pszFrom,pszTo) == 0;
     }
 
 #endif
