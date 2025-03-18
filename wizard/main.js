@@ -42,7 +42,7 @@ class MainDialog extends soui4.JsHostWnd{
 		let workDir = g_workDir.substring(0,pos);
 		os.mkdir(strDest+"/.vscode");
 		{
-			let soui4js_host = workDir+"/bin/soui4js-host.exe";
+			let soui4js_host = workDir+"/bin/soui4js-host";
 			let launch={
 		    "version": "0.2.0",
 		    "configurations": [
@@ -64,7 +64,7 @@ class MainDialog extends soui4.JsHostWnd{
 			f.close();
 		}
 		{
-			let uiresbuilder = workDir+"/bin/uiresbuilder.exe";
+			let uiresbuilder = workDir+"/bin/uiresbuilder";
 			let task={
 				"version": "2.0.0",
 				"tasks": [

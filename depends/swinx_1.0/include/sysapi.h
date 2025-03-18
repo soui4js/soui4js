@@ -202,8 +202,8 @@ BOOL WINAPI CreateProcessAsUserW(
     BOOL GetMessage(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax);
     BOOL PeekMessage(LPMSG pMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg);
 
-    BOOL TranslateMessage(LPMSG pMsg);
-    BOOL DispatchMessage(LPMSG pMsg);
+    BOOL TranslateMessage(const LPMSG pMsg);
+    BOOL DispatchMessage(const LPMSG pMsg);
 
     int GetSystemScale();
     int GetSystemMetrics(int nIndex);
