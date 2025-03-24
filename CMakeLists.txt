@@ -34,7 +34,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 if (CMAKE_SYSTEM_NAME MATCHES Windows)
     add_definitions(-DUNICODE -D_UNICODE)
 else()
-    include_directories(depends/swinx_1.0/include)
+    include_directories(depends/soui4/include/swinx/include)
 endif()
 
 ################################################################################

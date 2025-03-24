@@ -28,14 +28,12 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
         set(SOURCE_DIRS
             ${CMAKE_SOURCE_DIR}/depends/quickjs/lib_deb/x64
             ${CMAKE_SOURCE_DIR}/depends/soui4/lib_deb/x64
-            ${CMAKE_SOURCE_DIR}/depends/swinx_1.0/lib_deb/x64
         )
     elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
         message(STATUS "Copying prebuild files for x86 on Linux platform")
         set(SOURCE_DIRS
             ${CMAKE_SOURCE_DIR}/depends/quickjs/lib_deb/x86
             ${CMAKE_SOURCE_DIR}/depends/soui4/lib_deb/x86
-            ${CMAKE_SOURCE_DIR}/depends/swinx_1.0/lib_deb/x86
         )
     else()
         message(WARNING "Unknown architecture. Pointer size is ${CMAKE_SIZEOF_VOID_P}")
@@ -47,6 +45,13 @@ endif()
 # 添加自定义目标
 add_custom_target(copy_files ALL
     COMMAND ${CMAKE_COMMAND} -E make_directory ${TARGET_DIR}
+)
+
+add_custom_command(TARGET copy_files PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_SOURCE_DIR}/copy_files/soui-sys-resource.zip
+            ${TARGET_DIR}
+    COMMENT "Copying ${FILE} to ${TARGET_DIR}/soui-sys-resource.zip"
 )
 
 # 遍历每个源目录并复制文件

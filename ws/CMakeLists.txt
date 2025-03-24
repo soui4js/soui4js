@@ -14,10 +14,8 @@ set(SOURCES
 )
 
 set(LIBS ${WS_LWS_LIB})
-
 if (NOT CMAKE_SYSTEM_NAME MATCHES Windows)
-link_directories(${CMAKE_SOURCE_DIR}/depends/swinx_1.0/lib_deb/x64
-)
+link_directories(${CMAKE_SOURCE_DIR}/depends/soui4/lib_deb/x64)
 set(LIBS ${LIBS} swinx)
 endif()
 

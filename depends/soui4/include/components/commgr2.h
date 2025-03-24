@@ -267,9 +267,9 @@ public:
 	
 #include <com-loader.hpp>
 #ifdef _WIN32
-#define PATH_SLASH _T("\\")
+#define SPATH_SLASH _T("\\")
 #else
-#define PATH_SLASH "/"
+#define SPATH_SLASH "/"
 #endif
 
 namespace SOUI{
@@ -288,9 +288,9 @@ public:
 		m_strDllPath = strDllPath;
 		if(!m_strDllPath.IsEmpty())
 		{
-			if(m_strDllPath.Right(1)!=PATH_SLASH)
+			if(m_strDllPath.Right(1)!=SPATH_SLASH)
 			{
-				m_strDllPath+=PATH_SLASH;
+				m_strDllPath+=SPATH_SLASH;
 			}
 		}
 	}
