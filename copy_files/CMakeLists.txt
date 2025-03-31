@@ -10,13 +10,13 @@ if(CMAKE_SYSTEM_NAME MATCHES "Windows")
         message(STATUS "Copying prebuild files for x64 on Windows platform")
         set(SOURCE_DIRS
             ${CMAKE_SOURCE_DIR}/depends/quickjs/bin/x64
-            ${CMAKE_SOURCE_DIR}/depends/soui4/bin/x64
+            ${CMAKE_SOURCE_DIR}/depends/soui4/bin/x64/$(Configuration)
         )
     elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
         message(STATUS "Copying prebuild files for Win32 on Windows platform")
         set(SOURCE_DIRS
             ${CMAKE_SOURCE_DIR}/depends/quickjs/bin/Win32
-            ${CMAKE_SOURCE_DIR}/depends/soui4/bin/Win32
+            ${CMAKE_SOURCE_DIR}/depends/soui4/bin/Win32/$(Configuration)
         )
     else()
         message(WARNING "Unknown architecture. Pointer size is ${CMAKE_SIZEOF_VOID_P}")
@@ -51,20 +51,17 @@ add_custom_command(TARGET copy_files PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
             ${CMAKE_SOURCE_DIR}/copy_files/soui-sys-resource.zip
             ${TARGET_DIR}
-    COMMENT "Copying ${FILE} to ${TARGET_DIR}/soui-sys-resource.zip"
+    COMMENT "Copying soui-sys-resource.zip to ${TARGET_DIR}"
 )
 
 # 遍历每个源目录并复制文件
 foreach(SOURCE_DIR IN LISTS SOURCE_DIRS)
-    file(GLOB FILES_TO_COPY "${SOURCE_DIR}/*")
-    foreach(FILE IN LISTS FILES_TO_COPY)
-        add_custom_command(TARGET copy_files PRE_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                    ${FILE}
+    add_custom_command(TARGET copy_files PRE_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+                    ${SOURCE_DIR}
                     ${TARGET_DIR}
-            COMMENT "Copying ${FILE} to ${TARGET_DIR}"
-        )
-    endforeach()
+            COMMENT "Copying ${SOURCE_DIR} to ${TARGET_DIR}"
+    )
 endforeach()
 
 
@@ -72,5 +69,5 @@ add_custom_command(TARGET copy_files PRE_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory
                     ${CMAKE_SOURCE_DIR}/soui4js-host/js
                     ${TARGET_DIR}
-            COMMENT "Copying ${FILE} to ${TARGET_DIR}"
+            COMMENT "Copying soui4js-host to ${TARGET_DIR}"
         )
