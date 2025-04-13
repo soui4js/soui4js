@@ -6,8 +6,9 @@ extern "C"
 {
 #endif //__cplusplus
 
-    enum LogPriority {
-        SLOG_VERBOSE=0,
+    enum LogPriority
+    {
+        SLOG_VERBOSE = 0,
         /** Debug logging. Should typically be disabled for a release apk. */
         SLOG_DEBUG,
         /** Informational logging. Should typically be disabled for a release apk. */
@@ -20,11 +21,11 @@ extern "C"
         SLOG_FATAL,
     };
 
-    typedef void (*SWinxLogCallback)(const char* pLogStr, int level);
+    typedef void (*SWinxLogCallback)(const char *pLogStr, int level);
 
-    void WINAPI SetSwinxLogCallback(SWinxLogCallback cb,int level);
+    void WINAPI SetSwinxLogCallback(SWinxLogCallback cb, int level);
 
 #ifdef __cplusplus
 }
 #endif //__cplusplus
-#endif//_LOG_DEF_H_
+#endif //_LOG_DEF_H_

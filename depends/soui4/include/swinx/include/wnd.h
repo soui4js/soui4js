@@ -74,7 +74,7 @@ extern "C"
 #define PostMessage         PostMessageA
 #define SendMessage         SendMessageA
 #define SendMessageTimeout  SendMessageTimeoutA
-#define SendMessageCallback SendMessageCallbackW
+#define SendMessageCallback SendMessageCallbackA
 #define MessageBox          MessageBoxA
 #define SendNotifyMessage   SendNotifyMessageA
 
@@ -190,6 +190,7 @@ extern "C"
 
     HWND GetParent(HWND hwnd);
     HWND SetParent(HWND hWnd, HWND hParent);
+    HWND GetAncestor(HWND hwnd, UINT gaFlags);
 
     BOOL GetCursorPos(LPPOINT ppt);
 
@@ -363,6 +364,18 @@ extern "C"
     BOOL WINAPI FlashWindow(HWND hWnd, BOOL bInvert);
 
     BOOL WINAPI AnimateWindow(HWND hwnd, DWORD time, DWORD flags);
+
+    HWND WINAPI FindWindowA(LPCSTR lpClassName, LPCSTR lpWindowName);
+    HWND WINAPI FindWindowW(LPCWSTR lpClassName, LPCWSTR lpWindowName);
+    HWND WINAPI FindWindowExA(HWND hParent, HWND hChildAfter, LPCSTR lpClassName, LPCSTR lpWindowName);
+    HWND WINAPI FindWindowExW(HWND hParent, HWND hChildAfter, LPCWSTR lpClassName, LPCWSTR lpWindowName);
+#ifdef UNICODE
+#define FindWindow   FindWindowW
+#define FindWindowEx FindWindowExW
+#else
+#define FindWindow   FindWindowA
+#define FindWindowEx FindWindowExA
+#endif // UNICODE
 
 #ifdef __cplusplus
 }

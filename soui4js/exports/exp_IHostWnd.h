@@ -25,11 +25,28 @@ void Exp_IHostWnd(qjsbind::Module* module)
 	jsCls.AddFunc("EnablePrivateUiDef", &IHostWnd::EnablePrivateUiDef);
 }
 
+INT_PTR IHostDialog_DoModal(Context* ctx, IHostDialog* _this, ArgList& args)
+{
+	HWND hParent = 0;
+	DWORD dwStyle = 0;
+	DWORD dwExStyle = 0;
+	if (args.size() >=1 ) {
+		hParent = (HWND)args[0];
+	}
+	if (args.size() >= 2) {
+		dwStyle = args[1].ToInt32();
+	}
+	if (args.size() >= 3) {
+		dwExStyle = args[2].ToInt32();
+	}
+	return _this->DoModal(hParent, dwStyle, dwExStyle);
+}
+
 void Exp_IHostDialog(qjsbind::Module* module)
 {
 	JsClass<IHostDialog> jsCls = module->ExportClass<IHostDialog>("IHostDialog");
 	jsCls.Init(JsClass<IHostWnd>::class_id());
-	jsCls.AddFunc("DoModal", &IHostDialog::DoModal);
+	jsCls.AddCFunc("DoModal", &IHostDialog_DoModal);
 	jsCls.AddFunc("EndDialog", &IHostDialog::EndDialog);
 
 }

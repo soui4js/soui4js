@@ -90,7 +90,7 @@ extern "C"
 
     HANDLE WINAPI CreateFileW(LPCWSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile);
 
-    int WINAPI _open_osfhandle(HANDLE hFile,int flags );
+    int WINAPI _open_osfhandle(HANDLE hFile, int flags);
 #ifdef UNICODE
 #define CreateFile CreateFileW
 #else
@@ -132,12 +132,7 @@ extern "C"
     BOOL WINAPI WriteFile(HANDLE hFile, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite, LPDWORD lpNumberOfBytesWritten, LPOVERLAPPED lpOverlapped);
 
     DWORD WINAPI SetFilePointer(HANDLE file, LONG distance, LONG *highword, DWORD method);
-    BOOL WINAPI SetFilePointerEx(
-            HANDLE hFile,
-            LARGE_INTEGER liDistanceToMove,
-            PLARGE_INTEGER lpNewFilePointer,
-            DWORD dwMoveMethod
-    );
+    BOOL WINAPI SetFilePointerEx(HANDLE hFile, LARGE_INTEGER liDistanceToMove, PLARGE_INTEGER lpNewFilePointer, DWORD dwMoveMethod);
 
     BOOL WINAPI SetEndOfFile(HANDLE file);
     BOOL WINAPI DosDateTimeToFileTime(WORD fatdate, WORD fattime, FILETIME *ft);
@@ -296,42 +291,30 @@ typedef LPWIN32_FIND_DATAA LPWIN32_FIND_DATA;
 
     BOOL WINAPI FindClose(HANDLE hFindFile);
 
-    BOOL WINAPI CopyFileW(
-        LPCWSTR lpExistingFileName,
-        LPCWSTR lpNewFileName,
-        BOOL bFailIfExists
-    );
+    BOOL WINAPI CopyFileW(LPCWSTR lpExistingFileName, LPCWSTR lpNewFileName, BOOL bFailIfExists);
 
-    BOOL WINAPI CopyFileA(
-        LPCSTR lpExistingFileName,
-        LPCSTR lpNewFileName,
-        BOOL bFailIfExists
-    );
+    BOOL WINAPI CopyFileA(LPCSTR lpExistingFileName, LPCSTR lpNewFileName, BOOL bFailIfExists);
 
     int WINAPI CopyDirA(const char *src_dir, const char *dest_dir);
     int WINAPI CopyDirW(const wchar_t *src_dir, const wchar_t *dest_dir);
 
-    BOOL WINAPI DeleteFileA(
-      LPCSTR lpFileName
-    );
+    BOOL WINAPI DeleteFileA(LPCSTR lpFileName);
 
-    BOOL WINAPI DeleteFileW(
-        LPCWSTR lpFileName
-    );
+    BOOL WINAPI DeleteFileW(LPCWSTR lpFileName);
 
     int WINAPI DelDirA(const char *src_dir, BOOL bAllowUndo);
     int WINAPI DelDirW(const wchar_t *src_dir, BOOL bAllowUndo);
 
 #ifdef UNICODE
-#define CopyFile CopyFileW
-#define CopyDir CopyDirW
+#define CopyFile   CopyFileW
+#define CopyDir    CopyDirW
 #define DeleteFile DeleteFileW
-#define DelDir DelDirW
+#define DelDir     DelDirW
 #else
-#define CopyFile CopyFileA
-#define CopyDir CopyDirA
+#define CopyFile   CopyFileA
+#define CopyDir    CopyDirA
 #define DeleteFile DeleteFileA
-#define DelDir DelDirA
+#define DelDir     DelDirA
 #endif // !UNICODE
 
 #ifdef __cplusplus

@@ -95,7 +95,7 @@ namespace qjsbind {
 
 	template<>
 	inline Value NewValue(Context& context, int64_t v) {
-		return Value(context.context(), JS_NewInt64(context.context(), v));
+		return Value(context.context(), JS_NewBigInt64(context.context(), v));
 	}
 
 	template<>

@@ -43,10 +43,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/qjsbind
     ${CMAKE_SOURCE_DIR}/depends/quickjs/include
-    ${CMAKE_SOURCE_DIR}/depends/soui4/include/config
-    ${CMAKE_SOURCE_DIR}/depends/soui4/include/utilities/include
-    ${CMAKE_SOURCE_DIR}/depends/soui4/include/SOUI/include
-    ${CMAKE_SOURCE_DIR}/depends/soui4/include/components
+    ${SOUI_INCLUDE}/config
+    ${SOUI_INCLUDE}/utilities/include
+    ${SOUI_INCLUDE}/SOUI/include
+    ${SOUI_INCLUDE}/components
     ${CMAKE_SOURCE_DIR}/ws/include
 )
 

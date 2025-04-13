@@ -7,6 +7,7 @@
 #include <ctypes.h>
 #include <errno.h>
 #include <tchar.h>
+#include <stdlib.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -36,6 +37,7 @@ extern "C"
 #define _ismbcspace                    isspace
 #define vswprintf_s                    vswprintf
 #define _wtoi(x)                       wcstol(x, NULL, 10)
+#define _wtol(x)                       wcstol(x, NULL, 10)
 #define memmove_s(dst, ndst, src, len) memmove(dst, src, len)
 #define swscanf_s                      swscanf
 #define snwprintf                      swprintf

@@ -3,6 +3,23 @@ cmake_minimum_required(VERSION 3.16.0)
 
 project(soui4js)
 
+include(__cmake/internal_utils.cmake)
+include(__cmake/global.cmake)
+
+set(SOUI_INCLUDE ${CMAKE_SOURCE_DIR}/depends/soui4/include)
+if(CMAKE_SYSTEM_NAME MATCHES "Windows")
+readSettingFile(${SOUI_INCLUDE}/config/build.cfg UNICODE "1" USE_UNICODE)
+readSettingFile(${SOUI_INCLUDE}/config/build.cfg WCHAR "1" WCHAR_AS_DEFAULT)
+readSettingFile(${SOUI_INCLUDE}/config/build.cfg MT "0" SHARED_CRT)
+readSettingFile(${SOUI_INCLUDE}/config/build.cfg SUPPORT_XP "1" XP_TOOLSET)
+else()
+set(USE_UNICODE 0)
+set(WCHAR_AS_DEFAULT 1)
+set(SHARED_CRT 1)
+endif()
+
+config_compiler_and_linker()
+
 
 if (CMAKE_SYSTEM_NAME STREQUAL "MSYS")
     message(STATUS "Overriding incorrect Linux detection for MSYS")
@@ -18,11 +35,13 @@ if(NOT CMAKE_BUILD_TYPE)
 set(CMAKE_BUILD_TYPE "Release")
 endif()
 
+if(NOT CMAKE_SYSTEM_NAME MATCHES "Windows")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -O0")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s")
+endif()
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -34,7 +53,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 if (CMAKE_SYSTEM_NAME MATCHES Windows)
     add_definitions(-DUNICODE -D_UNICODE)
 else()
-    include_directories(depends/soui4/include/swinx/include)
+    include_directories(${SOUI_INCLUDE}/swinx/include)
 endif()
 
 ################################################################################

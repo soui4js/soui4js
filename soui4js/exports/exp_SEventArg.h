@@ -6,7 +6,7 @@ void Exp_SEventArg(qjsbind::Module* module) {
 	{
 		JsClass<EventMenuCmd> jsCls = module->ExportClass<EventMenuCmd>("EventMenuCmd");
 		jsCls.Init(JsClass<IEvtArgs>::class_id());
-		jsCls.AddGetSet<int>(&"menuId"[0], &EventMenuCmd::menuId);
+		jsCls.AddGetSet<int>("menuId", &EventMenuCmd::menuId);
 		DEF_CAST_IOBJ(module, EventMenuCmd);
 	}
 	{

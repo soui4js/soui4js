@@ -140,7 +140,6 @@ typedef LPOPENFILENAMEA LPOPENFILENAME;
 #define GetSaveFileName GetSaveFileNameA
 #endif // !UNICODE
 
-
     typedef struct tagCHOOSECOLORA
     {
         DWORD lStructSize;
@@ -188,51 +187,50 @@ typedef LPOPENFILENAMEA LPOPENFILENAME;
 #define CC_ANYCOLOR   0x00000100
 #endif /* WINVER >= 0x0400 */
 
+    //-------------------------------------------------------------------------
+    //
+    // PickFolder API
+    //
+    //
+    //-------------------------------------------------------------------------
 
+    typedef struct _browseinfoA
+    {
+        HWND hwndOwner;
+        LPCSTR strlRoot;
+        LPSTR pszDisplayName; // Return display name of item selected.
+        LPCSTR lpszTitle;     // text to go in the banner over the tree.
+        LPSTR lpszPath;
+        int nMaxPath;
+    } BROWSEINFOA, *PBROWSEINFOA, *LPBROWSEINFOA;
 
-//-------------------------------------------------------------------------
-//
-// PickFolder API
-//
-//
-//-------------------------------------------------------------------------
+    typedef struct _browseinfoW
+    {
+        HWND hwndOwner;
+        LPCWSTR strlRoot;
+        LPWSTR pszDisplayName; // Return display name of item selected.
+        LPCWSTR lpszTitle;     // text to go in the banner over the tree.
+        LPWSTR lpszPath;
+        int nMaxPath;
+    } BROWSEINFOW, *PBROWSEINFOW, *LPBROWSEINFOW;
 
-typedef struct _browseinfoA {
-    HWND        hwndOwner;
-    LPCSTR strlRoot;
-    LPSTR        pszDisplayName;        // Return display name of item selected.
-    LPCSTR       lpszTitle;                     // text to go in the banner over the tree.
-    LPSTR        lpszPath;
-    int          nMaxPath;
-} BROWSEINFOA, *PBROWSEINFOA, *LPBROWSEINFOA;
-
-typedef struct _browseinfoW {
-    HWND        hwndOwner;
-    LPCWSTR strlRoot;
-    LPWSTR       pszDisplayName;        // Return display name of item selected.
-    LPCWSTR      lpszTitle;                     // text to go in the banner over the tree.
-    LPWSTR        lpszPath;
-    int          nMaxPath;
-} BROWSEINFOW, *PBROWSEINFOW, *LPBROWSEINFOW;
-
-BOOL WINAPI PickFolderA(_In_ LPBROWSEINFOA lpbi);
-BOOL WINAPI PickFolderW(_In_ LPBROWSEINFOW lpbi);
+    BOOL WINAPI PickFolderA(_In_ LPBROWSEINFOA lpbi);
+    BOOL WINAPI PickFolderW(_In_ LPBROWSEINFOW lpbi);
 
 #ifdef UNICODE
-#define BROWSEINFO      BROWSEINFOW
-#define PBROWSEINFO     PBROWSEINFOW
-#define LPBROWSEINFO    LPBROWSEINFOW
+#define BROWSEINFO   BROWSEINFOW
+#define PBROWSEINFO  PBROWSEINFOW
+#define LPBROWSEINFO LPBROWSEINFOW
 #else
-#define BROWSEINFO      BROWSEINFOA
-#define PBROWSEINFO     PBROWSEINFOA
-#define LPBROWSEINFO    LPBROWSEINFOA
+#define BROWSEINFO   BROWSEINFOA
+#define PBROWSEINFO  PBROWSEINFOA
+#define LPBROWSEINFO LPBROWSEINFOA
 #endif
 
-
 #ifdef UNICODE
-#define PickFolder   PickFolderW
+#define PickFolder PickFolderW
 #else
-#define PickFolder   PickFolderA
+#define PickFolder PickFolderA
 #endif
 
 #ifdef __cplusplus

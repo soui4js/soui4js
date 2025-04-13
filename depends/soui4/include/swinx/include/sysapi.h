@@ -83,150 +83,103 @@ extern "C"
 #define StrToIntEx   StrToIntExA
 #endif // UNICODE
 
+    typedef struct _SECURITY_ATTRIBUTES
+    {
+        DWORD nLength;
+        LPVOID lpSecurityDescriptor;
+        BOOL bInheritHandle;
+    } SECURITY_ATTRIBUTES, *PSECURITY_ATTRIBUTES, *LPSECURITY_ATTRIBUTES;
 
+#define STARTF_USESHOWWINDOW    0x00000001
+#define STARTF_USESIZE          0x00000002
+#define STARTF_USEPOSITION      0x00000004
+#define STARTF_USECOUNTCHARS    0x00000008
+#define STARTF_USEFILLATTRIBUTE 0x00000010
+#define STARTF_RUNFULLSCREEN    0x00000020 // ignored for non-x86 platforms
+#define STARTF_FORCEONFEEDBACK  0x00000040
+#define STARTF_FORCEOFFFEEDBACK 0x00000080
+#define STARTF_USESTDHANDLES    0x00000100
 
-typedef struct _SECURITY_ATTRIBUTES
-{
-    DWORD nLength;
-    LPVOID lpSecurityDescriptor;
-    BOOL bInheritHandle;
-} SECURITY_ATTRIBUTES, *PSECURITY_ATTRIBUTES, *LPSECURITY_ATTRIBUTES;
+    typedef struct _STARTUPINFOA
+    {
+        DWORD cb;
+        LPSTR lpReserved;
+        LPSTR lpDesktop;
+        LPSTR lpTitle;
+        DWORD dwX;
+        DWORD dwY;
+        DWORD dwXSize;
+        DWORD dwYSize;
+        DWORD dwXCountChars;
+        DWORD dwYCountChars;
+        DWORD dwFillAttribute;
+        DWORD dwFlags;
+        WORD wShowWindow;
+        WORD cbReserved2;
+        LPBYTE lpReserved2;
+        HANDLE hStdInput;
+        HANDLE hStdOutput;
+        HANDLE hStdError;
+    } STARTUPINFOA, *LPSTARTUPINFOA;
 
-#define STARTF_USESHOWWINDOW       0x00000001
-#define STARTF_USESIZE             0x00000002
-#define STARTF_USEPOSITION         0x00000004
-#define STARTF_USECOUNTCHARS       0x00000008
-#define STARTF_USEFILLATTRIBUTE    0x00000010
-#define STARTF_RUNFULLSCREEN       0x00000020  // ignored for non-x86 platforms
-#define STARTF_FORCEONFEEDBACK     0x00000040
-#define STARTF_FORCEOFFFEEDBACK    0x00000080
-#define STARTF_USESTDHANDLES       0x00000100
+    typedef struct _STARTUPINFOW
+    {
+        DWORD cb;
+        LPWSTR lpReserved;
+        LPWSTR lpDesktop;
+        LPWSTR lpTitle;
+        DWORD dwX;
+        DWORD dwY;
+        DWORD dwXSize;
+        DWORD dwYSize;
+        DWORD dwXCountChars;
+        DWORD dwYCountChars;
+        DWORD dwFillAttribute;
+        DWORD dwFlags;
+        WORD wShowWindow;
+        WORD cbReserved2;
+        LPBYTE lpReserved2;
+        HANDLE hStdInput;
+        HANDLE hStdOutput;
+        HANDLE hStdError;
+    } STARTUPINFOW, *LPSTARTUPINFOW;
 
+    typedef struct _PROCESS_INFORMATION
+    {
+        HANDLE hProcess;
+        HANDLE hThread;
+        DWORD dwProcessId;
+        tid_t dwThreadId;
+    } PROCESS_INFORMATION, *LPPROCESS_INFORMATION;
 
-typedef struct _STARTUPINFOA{
-DWORD cb;
-LPSTR lpReserved;
-LPSTR lpDesktop;
-LPSTR lpTitle;
-DWORD dwX;
-DWORD dwY;
-DWORD dwXSize;
-DWORD dwYSize;
-DWORD dwXCountChars;
-DWORD dwYCountChars;
-DWORD dwFillAttribute;
-DWORD dwFlags;
-WORD wShowWindow;
-WORD cbReserved2;
-LPBYTE lpReserved2;
-HANDLE hStdInput;
-HANDLE hStdOutput;
-HANDLE hStdError;    
-}STARTUPINFOA, * LPSTARTUPINFOA;
-
-
-typedef struct _STARTUPINFOW{
-DWORD cb;
-LPWSTR lpReserved;
-LPWSTR lpDesktop;
-LPWSTR lpTitle;
-DWORD dwX;
-DWORD dwY;
-DWORD dwXSize;
-DWORD dwYSize;
-DWORD dwXCountChars;
-DWORD dwYCountChars;
-DWORD dwFillAttribute;
-DWORD dwFlags;
-WORD wShowWindow;
-WORD cbReserved2;
-LPBYTE lpReserved2;
-HANDLE hStdInput;
-HANDLE hStdOutput;
-HANDLE hStdError;    
-}STARTUPINFOW, * LPSTARTUPINFOW;
-
-typedef struct _PROCESS_INFORMATION {
-    HANDLE hProcess;  
-    HANDLE hThread;  
-    DWORD dwProcessId;  
-    tid_t dwThreadId;
-} PROCESS_INFORMATION,  *LPPROCESS_INFORMATION;
-
-
-enum {
-    Verb_Unknown=0,
-    Verb_Open,
-    Verb_RunAs, //root user
-};
+    enum
+    {
+        Verb_Unknown = 0,
+        Verb_Open,
+        Verb_RunAs, // root user
+    };
 
 #define __in
 #define __out
-BOOL WINAPI CreateProcessAsUserA(
-    __in          HANDLE hToken,
-    __in          LPCSTR lpApplicationName,
-    __in          LPSTR lpCommandLine,
-    __in          LPSECURITY_ATTRIBUTES lpProcessAttributes,
-    __in          LPSECURITY_ATTRIBUTES lpThreadAttributes,
-    __in          BOOL bInheritHandles,
-    __in          DWORD dwCreationFlags,
-    __in          LPVOID lpEnvironment,
-    __in          LPCSTR lpCurrentDirectory,
-    __in          LPSTARTUPINFOA lpStartupInfo,
-    __out         LPPROCESS_INFORMATION lpProcessInformation
-  );
+    BOOL WINAPI CreateProcessAsUserA(__in HANDLE hToken, __in LPCSTR lpApplicationName, __in LPSTR lpCommandLine, __in LPSECURITY_ATTRIBUTES lpProcessAttributes, __in LPSECURITY_ATTRIBUTES lpThreadAttributes, __in BOOL bInheritHandles, __in DWORD dwCreationFlags, __in LPVOID lpEnvironment, __in LPCSTR lpCurrentDirectory, __in LPSTARTUPINFOA lpStartupInfo, __out LPPROCESS_INFORMATION lpProcessInformation);
 
-BOOL WINAPI CreateProcessAsUserW(
-    __in          HANDLE hToken,
-    __in          LPCWSTR lpApplicationName,
-    __in          LPWSTR lpCommandLine,
-    __in          LPSECURITY_ATTRIBUTES lpProcessAttributes,
-    __in          LPSECURITY_ATTRIBUTES lpThreadAttributes,
-    __in          BOOL bInheritHandles,
-    __in          DWORD dwCreationFlags,
-    __in          LPVOID lpEnvironment,
-    __in          LPCWSTR lpCurrentDirectory,
-    __in          LPSTARTUPINFOW lpStartupInfo,
-    __out         LPPROCESS_INFORMATION lpProcessInformation
-  );
+    BOOL WINAPI CreateProcessAsUserW(__in HANDLE hToken, __in LPCWSTR lpApplicationName, __in LPWSTR lpCommandLine, __in LPSECURITY_ATTRIBUTES lpProcessAttributes, __in LPSECURITY_ATTRIBUTES lpThreadAttributes, __in BOOL bInheritHandles, __in DWORD dwCreationFlags, __in LPVOID lpEnvironment, __in LPCWSTR lpCurrentDirectory, __in LPSTARTUPINFOW lpStartupInfo, __out LPPROCESS_INFORMATION lpProcessInformation);
 
-  BOOL WINAPI CreateProcessA(
-    __in          LPCSTR lpApplicationName,
-    __in          LPSTR lpCommandLine,
-    __in          LPSECURITY_ATTRIBUTES lpProcessAttributes,
-    __in          LPSECURITY_ATTRIBUTES lpThreadAttributes,
-    __in          BOOL bInheritHandles,
-    __in          DWORD dwCreationFlags,
-    __in          LPVOID lpEnvironment,
-    __in          LPCSTR lpCurrentDirectory,
-    __in          LPSTARTUPINFOA lpStartupInfo,
-    __out         LPPROCESS_INFORMATION lpProcessInformation
-  );
-  BOOL WINAPI CreateProcessW(
-    __in          LPCWSTR lpApplicationName,
-    __in          LPWSTR lpCommandLine,
-    __in          LPSECURITY_ATTRIBUTES lpProcessAttributes,
-    __in          LPSECURITY_ATTRIBUTES lpThreadAttributes,
-    __in          BOOL bInheritHandles,
-    __in          DWORD dwCreationFlags,
-    __in          LPVOID lpEnvironment,
-    __in          LPCWSTR lpCurrentDirectory,
-    __in          LPSTARTUPINFOW lpStartupInfo,
-    __out         LPPROCESS_INFORMATION lpProcessInformation
-  );
+    BOOL WINAPI CreateProcessA(__in LPCSTR lpApplicationName, __in LPSTR lpCommandLine, __in LPSECURITY_ATTRIBUTES lpProcessAttributes, __in LPSECURITY_ATTRIBUTES lpThreadAttributes, __in BOOL bInheritHandles, __in DWORD dwCreationFlags, __in LPVOID lpEnvironment, __in LPCSTR lpCurrentDirectory, __in LPSTARTUPINFOA lpStartupInfo, __out LPPROCESS_INFORMATION lpProcessInformation);
+    BOOL WINAPI CreateProcessW(__in LPCWSTR lpApplicationName, __in LPWSTR lpCommandLine, __in LPSECURITY_ATTRIBUTES lpProcessAttributes, __in LPSECURITY_ATTRIBUTES lpThreadAttributes, __in BOOL bInheritHandles, __in DWORD dwCreationFlags, __in LPVOID lpEnvironment, __in LPCWSTR lpCurrentDirectory, __in LPSTARTUPINFOW lpStartupInfo, __out LPPROCESS_INFORMATION lpProcessInformation);
 
-  #undef __in
-  #undef __out
+#undef __in
+#undef __out
 
 #ifdef UNICODE
-#define STARTUPINFO STARTUPINFOW
+#define STARTUPINFO         STARTUPINFOW
 #define CreateProcessAsUser CreateProcessAsUserW
-#define CreateProcess CreateProcessW
+#define CreateProcess       CreateProcessW
 #else
-#define STARTUPINFO STARTUPINFOA
+#define STARTUPINFO         STARTUPINFOA
 #define CreateProcessAsUser CreateProcessAsUserA
-#define CreateProcess   CreateProcessA
-#endif//UNICODE
+#define CreateProcess       CreateProcessA
+#endif // UNICODE
 
     BOOL WINAPI GetExitCodeProcess(HANDLE hProcess, LPDWORD lpExitCode);
 
@@ -235,7 +188,7 @@ BOOL WINAPI CreateProcessAsUserW(
 
     pid_t WINAPI GetCurrentProcessId();
 
-    pid_t WINAPI GetProcessId( HANDLE Process);
+    pid_t WINAPI GetProcessId(HANDLE Process);
     HANDLE WINAPI GetCurrentProcess(void);
 
     void GetLocalTime(SYSTEMTIME *pSysTime);
@@ -418,10 +371,18 @@ typedef int(WINAPI *PROC)();
 
     HMODULE WINAPI LoadLibraryW(LPCWSTR lpFileName);
 
+    DWORD WINAPI GetDllDirectoryA(DWORD nBufferLength, LPSTR lpBuffer);
+    DWORD WINAPI GetDllDirectoryW(DWORD nBufferLength, LPWSTR lpBuffer);
+    BOOL WINAPI SetDllDirectoryA(LPCSTR lpPathName);
+    BOOL WINAPI SetDllDirectoryW(LPCWSTR lpPathName);
 #ifdef _UNICODE
-#define LoadLibrary LoadLibraryW
+#define LoadLibrary     LoadLibraryW
+#define GetDllDirectory GetDllDirectoryW
+#define SetDllDirectory SetDllDirectoryW
 #else
-#define LoadLibrary LoadLibraryA
+#define LoadLibrary     LoadLibraryA
+#define GetDllDirectory GetDllDirectoryA
+#define SetDllDirectory SetDllDirectoryA
 #endif
 
     static inline BOOL WINAPI FreeLibrary(HMODULE hModule)
@@ -433,7 +394,6 @@ typedef int(WINAPI *PROC)();
     {
         return (FARPROC)dlsym(hModule, lpProcName);
     }
-
 
     HANDLE WINAPI CreateSemaphoreA(LPSECURITY_ATTRIBUTES lpSemaphoreAttributes, LONG lInitialCount, LONG lMaximumCount, LPCSTR name);
 
@@ -491,7 +451,7 @@ typedef int(WINAPI *PROC)();
 
     DWORD WINAPI MsgWaitForMultipleObjects(DWORD nCount, const HANDLE *pHandles, BOOL fWaitAll, DWORD dwMilliseconds, DWORD dwWakeMask);
 
-    BOOL WINAPI GetHandleName(HANDLE h,char szName[1001]); 
+    BOOL WINAPI GetHandleName(HANDLE h, char szName[1001]);
 
     VOID WINAPI Sleep(DWORD dwMilliseconds);
 
@@ -724,11 +684,24 @@ typedef int(WINAPI *PROC)();
     LPSTR WINAPI GetCommandLineA(void);
     LPWSTR WINAPI GetCommandLineW(void);
 
-    #ifdef UNICODE
-    #define GetCommandLine GetCommandLineW
-    #else
-    #define GetCommandLine GetCommandLineA
-    #endif // UNICODE
+#ifdef UNICODE
+#define GetCommandLine GetCommandLineW
+#else
+#define GetCommandLine GetCommandLineA
+#endif // UNICODE
+
+    HANDLE WINAPI FindFirstChangeNotificationA(LPCSTR lpPathName, BOOL bWatchSubtree, DWORD dwNotifyFilter);
+    HANDLE WINAPI FindFirstChangeNotificationW(LPCWSTR lpPathName, BOOL bWatchSubtree, DWORD dwNotifyFilter);
+
+    BOOL WINAPI FindNextChangeNotification(HANDLE hChangeHandle);
+
+    BOOL WINAPI FindCloseChangeNotification(HANDLE hChangeHandle);
+
+#ifdef UNICODE
+#define FindFirstChangeNotification FindFirstChangeNotificationW
+#else
+#define FindFirstChangeNotification FindFirstChangeNotificationA
+#endif // UNICODE
 
 #ifdef __cplusplus
 }

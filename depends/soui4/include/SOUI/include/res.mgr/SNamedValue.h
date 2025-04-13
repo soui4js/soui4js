@@ -37,7 +37,10 @@ class SNamedValue {
             if (ValueParser::ParseValue(xmlStr.attribute(L"value").as_string(), namedValue.value))
                 m_lstNamedValue.Add(namedValue);
             else
-                SASSERT_FMTW(false, L"parse value failed, name=%s,value=%s", xmlStr.name(), xmlStr.attribute(L"value").as_string());
+            {
+                SStringW msg = SStringW().Format(L"parse value failed, name=%s,value=%s", xmlStr.name(), xmlStr.attribute(L"value").as_string());
+                SASSERT_MSGW(false, msg);
+            }
         }
         qsort(m_lstNamedValue.GetData(), m_lstNamedValue.GetCount(), sizeof(NAMEDVALUE), Compare);
         return TRUE;

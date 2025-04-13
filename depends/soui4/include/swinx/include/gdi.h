@@ -271,7 +271,7 @@ typedef LPENUMLOGFONTA LPENUMLOGFONT;
 #define CreateFontIndirect CreateFontIndirectA
 #endif // UNICODE
 
-#pragma pack(push,1)
+#pragma pack(push, 1)
     /* Bitmap Header Definition */
     typedef struct tagBITMAP
     {
@@ -1200,12 +1200,10 @@ typedef LPENUMLOGFONTA LPENUMLOGFONT;
 
     BOOL WINAPI DrawEdge(HDC hdc, LPRECT rc, UINT edge, UINT flags);
 
-
-
-    int WINAPI AddFontResource(  LPCSTR lpszFilename  );
-    int WINAPI AddFontResourceEx(  LPCSTR lpszFilename, // font file name
-                        DWORD fl,             // font characteristics
-                        PVOID pdv             // reserved
+    int WINAPI AddFontResource(LPCSTR lpszFilename);
+    int WINAPI AddFontResourceEx(LPCSTR lpszFilename, // font file name
+                                 DWORD fl,            // font characteristics
+                                 PVOID pdv            // reserved
     );
 
 #ifdef __cplusplus
