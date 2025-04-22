@@ -50,17 +50,22 @@ extern "C"
 
 #define FILE_GENERIC_READ (STANDARD_RIGHTS_READ | FILE_READ_DATA | FILE_READ_ATTRIBUTES | FILE_READ_EA | SYNCHRONIZE)
 
-#define GENERIC_READ FILE_GENERIC_READ
-
 #define FILE_GENERIC_WRITE (STANDARD_RIGHTS_WRITE | FILE_WRITE_DATA | FILE_WRITE_ATTRIBUTES | FILE_WRITE_EA | FILE_APPEND_DATA | SYNCHRONIZE)
 
-#define GENERIC_WRITE        FILE_GENERIC_WRITE
 #define FILE_GENERIC_EXECUTE (STANDARD_RIGHTS_EXECUTE | FILE_READ_ATTRIBUTES | FILE_EXECUTE | SYNCHRONIZE)
-#define GENERIC_EXECUTE      FILE_GENERIC_EXECUTE
 // end_access
 #define FILE_SHARE_READ   0x00000001
 #define FILE_SHARE_WRITE  0x00000002
 #define FILE_SHARE_DELETE 0x00000004
+
+    //
+    //  These are the generic rights.
+    //
+
+#define GENERIC_READ    (0x80000000L)
+#define GENERIC_WRITE   (0x40000000L)
+#define GENERIC_EXECUTE (0x20000000L)
+#define GENERIC_ALL     (0x10000000L)
 
 //
 // Constants
@@ -156,7 +161,6 @@ extern "C"
     BOOL WINAPI WriteProfileStringA(LPCSTR section, LPCSTR entry, LPCSTR string);
     BOOL WINAPI WriteProfileStringW(LPCWSTR section, LPCWSTR entry, LPCWSTR string);
     UINT WINAPI GetPrivateProfileIntW(LPCWSTR section, LPCWSTR entry, INT def_val, LPCWSTR filename);
-
     UINT WINAPI GetPrivateProfileIntA(LPCSTR section, LPCSTR entry, INT def_val, LPCSTR filename);
 
     INT WINAPI GetPrivateProfileSectionW(LPCWSTR section, LPWSTR buffer, DWORD len, LPCWSTR filename);
@@ -166,12 +170,41 @@ extern "C"
     BOOL WINAPI WritePrivateProfileStringW(LPCWSTR section, LPCWSTR entry, LPCWSTR string, LPCWSTR filename);
     BOOL WINAPI WritePrivateProfileStringA(LPCSTR section, LPCSTR entry, LPCSTR string, LPCSTR filename);
     BOOL WINAPI WritePrivateProfileSectionW(LPCWSTR section, LPCWSTR string, LPCWSTR filename);
+    BOOL WINAPI WritePrivateProfileSectionA(LPCSTR section, LPCSTR string, LPCSTR filename);
     DWORD WINAPI GetPrivateProfileSectionNamesW(LPWSTR buffer, DWORD size, LPCWSTR filename);
     DWORD WINAPI GetPrivateProfileSectionNamesA(LPSTR buffer, DWORD size, LPCSTR filename);
     BOOL WINAPI GetPrivateProfileStructW(LPCWSTR section, LPCWSTR key, LPVOID buf, UINT len, LPCWSTR filename);
     BOOL WINAPI GetPrivateProfileStructA(LPCSTR section, LPCSTR key, LPVOID buffer, UINT len, LPCSTR filename);
     BOOL WINAPI WritePrivateProfileStructW(LPCWSTR section, LPCWSTR key, LPVOID buf, UINT bufsize, LPCWSTR filename);
     BOOL WINAPI WritePrivateProfileStructA(LPCSTR section, LPCSTR key, LPVOID buf, UINT bufsize, LPCSTR filename);
+
+ 
+    #ifdef UNICODE
+    #define GetProfileInt GetProfileIntW
+    #define GetProfileString GetProfileStringW
+    #define WriteProfileString WriteProfileStringW
+    #define GetPrivateProfileInt GetPrivateProfileIntW
+    #define GetPrivateProfileString GetPrivateProfileStringW
+    #define WritePrivateProfileString WritePrivateProfileStringW
+    #define GetPrivateProfileSection GetPrivateProfileSectionW
+    #define GetPrivateProfileSectionNames GetPrivateProfileSectionNamesW
+    #define WritePrivateProfileSection  WritePrivateProfileSectionW
+    #define GetPrivateProfileStruct GetPrivateProfileStructW
+    #define WritePrivateProfileStruct WritePrivateProfileStructW
+    #else
+    #define GetProfileInt GetProfileIntA
+    #define GetProfileString GetProfileStringA
+    #define WriteProfileString WriteProfileStringA
+    #define GetPrivateProfileInt GetPrivateProfileIntA
+    #define GetPrivateProfileString GetPrivateProfileStringA
+    #define WritePrivateProfileString WritePrivateProfileStringA
+    #define GetPrivateProfileSection GetPrivateProfileSectionA
+    #define GetPrivateProfileSectionNames GetPrivateProfileSectionNamesA
+    #define WritePrivateProfileSection  WritePrivateProfileSectionA
+    #define GetPrivateProfileStruct GetPrivateProfileStructA
+    #define WritePrivateProfileStruct WritePrivateProfileStructA
+
+    #endif // UNICODE
 
     BOOL WINAPI SetCurrentDirectoryA(LPCSTR lpPathName);
     BOOL WINAPI SetCurrentDirectoryW(LPCWSTR lpPathName);

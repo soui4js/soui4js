@@ -677,6 +677,9 @@ extern "C"
 #define SM_CXEDGE            45
 #define SM_CYEDGE            46
 
+#define SM_CXSMICON 49
+#define SM_CYSMICON 50
+
 #define SM_CXDRAG 68
 #define SM_CYDRAG 69
 

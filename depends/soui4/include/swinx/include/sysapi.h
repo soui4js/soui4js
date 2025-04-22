@@ -644,10 +644,15 @@ typedef int(WINAPI *PROC)();
     WINAPI
     GetTempPathW(_In_ DWORD nBufferLength, _Out_writes_to_opt_(nBufferLength, return +1) LPWSTR lpBuffer);
 
+    UINT WINAPI GetTempFileNameW(LPCWSTR lpPathName, LPCWSTR lpPrefixString, UINT uUnique, LPWSTR lpTempFileName);
+
+    UINT WINAPI GetTempFileNameA(LPCSTR lpPathName, LPCSTR lpPrefixString, UINT uUnique, LPSTR lpTempFileName);
 #ifdef UNICODE
-#define GetTempPath GetTempPathW
+#define GetTempPath     GetTempPathW
+#define GetTempFileName GetTempFileNameW
 #else
-#define GetTempPath GetTempPathA
+#define GetTempPath     GetTempPathA
+#define GetTempFileName GetTempFileNameA
 #endif
 
     BOOL WINAPI IsValidCodePage(UINT CodePage);
@@ -702,6 +707,14 @@ typedef int(WINAPI *PROC)();
 #else
 #define FindFirstChangeNotification FindFirstChangeNotificationA
 #endif // UNICODE
+
+    typedef DWORD(WINAPI *PTHREAD_START_ROUTINE)(LPVOID lpThreadParameter);
+    typedef PTHREAD_START_ROUTINE LPTHREAD_START_ROUTINE;
+
+    HANDLE WINAPI CreateThread(LPSECURITY_ATTRIBUTES lpThreadAttributes, SIZE_T dwStackSize, LPTHREAD_START_ROUTINE lpStartAddress, LPVOID lpParameter, DWORD dwCreationFlags, tid_t *lpThreadId);
+
+    // only support resume thread that was created with flag CREATE_SUSPENDED
+    DWORD WINAPI ResumeThread(HANDLE hThread);
 
 #ifdef __cplusplus
 }
