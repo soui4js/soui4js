@@ -71,3 +71,11 @@ add_custom_command(TARGET copy_files PRE_BUILD
                     ${TARGET_DIR}
             COMMENT "Copying soui4js-host to ${TARGET_DIR}"
         )
+
+
+add_custom_command(TARGET copy_files PRE_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+                    ${CMAKE_SOURCE_DIR}/depends/soui4/Config
+                    ${TARGET_DIR}
+            COMMENT "Copying uieditor.Config to ${TARGET_DIR}"
+        )
