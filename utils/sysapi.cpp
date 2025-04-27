@@ -1,11 +1,10 @@
 #include "stdafx.h"
 #include "sysapi.h"
+using namespace SOUI;
 
 #ifdef WIN32
 #include <Mmsystem.h>
 #pragma comment(lib,"Winmm.lib")
-
-using namespace SOUI;
 
 
 namespace sysapi {
