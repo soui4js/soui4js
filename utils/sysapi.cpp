@@ -7,6 +7,7 @@
 
 using namespace SOUI;
 
+
 namespace sysapi {
 	BOOL JsPlaySound(LPCSTR filename, BOOL purge) {
 		SStringT str = S_CA2T(filename, CP_UTF8);
@@ -29,36 +30,45 @@ namespace sysapi {
 
 namespace sysapi {
 
-    // ÓÃÓÚ¼ÇÂ¼ÉÏÒ»´ÎÆô¶¯µÄ×Ó½ø³Ì ID
+    // ï¿½ï¿½ï¿½Ú¼ï¿½Â¼ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½ ID
     static pid_t g_lastSoundPid = 0;
 
     BOOL JsPlaySound(LPCSTR filename, BOOL purge) {
-        // Èç¹ûÖ¸¶¨ purge »òÕß filename Îª¿Õ£¬ÔòÏÈÍ£Ö¹Ö®Ç°²¥·ÅµÄÉùÒô
+        // ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ purge ï¿½ï¿½ï¿½ï¿½ filename Îªï¿½Õ£ï¿½ï¿½ï¿½ï¿½ï¿½Í£Ö¹Ö®Ç°ï¿½ï¿½ï¿½Åµï¿½ï¿½ï¿½ï¿½ï¿½
         if (purge || filename == NULL || filename[0] == '\0') {
             if (g_lastSoundPid != 0) {
                 kill(g_lastSoundPid, SIGTERM);
                 waitpid(g_lastSoundPid, NULL, WNOHANG);
                 g_lastSoundPid = 0;
             }
-            // Èç¹û filename Îª¿Õ£¬Ôò·µ»Ø TRUE ±íÊ¾ÃüÁîÖ´ÐÐ³É¹¦
+            // ï¿½ï¿½ï¿½ filename Îªï¿½Õ£ï¿½ï¿½ò·µ»ï¿½ TRUE ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½Ö´ï¿½Ð³É¹ï¿½
             if (filename == NULL || filename[0] == '\0')
                 return TRUE;
         }
 
-        // ÔÚ Linux ÏÂÊ¹ÓÃ aplay ²¥·ÅÉùÒôÎÄ¼þ£¨ÒªÇóÉùÒôÎÄ¼þÎª WAV ¸ñÊ½£©
+        // ï¿½ï¿½ Linux ï¿½ï¿½Ê¹ï¿½ï¿½ aplay ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½Îª WAV ï¿½ï¿½Ê½ï¿½ï¿½
         pid_t pid = fork();
-        if (pid < 0) {  // fork Ê§°Ü
+        if (pid < 0) {  // fork Ê§ï¿½ï¿½
             return FALSE;
         }
-        if (pid == 0) { // ×Ó½ø³ÌÖÐ
-            // execlp Ìæ»»µ±Ç°½ø³ÌÓ³ÏñÀ´²¥·ÅÉùÒô
+        if (pid == 0) { // ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½
+            // execlp ï¿½æ»»ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½Ó³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             execlp("aplay", "aplay", filename, (char*)NULL);
-            // Èç¹û execlp Ö´ÐÐÊ§°Ü£¬ÔòÍË³ö×Ó½ø³Ì
+            // ï¿½ï¿½ï¿½ execlp Ö´ï¿½ï¿½Ê§ï¿½Ü£ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½Ó½ï¿½ï¿½ï¿½
             _exit(127);
         }
-        // ¸¸½ø³ÌÖÐ±£´æ×Ó½ø³Ì ID ÒÔ±ãºóÐøµ÷ÓÃ purge ÖÕÖ¹²¥·Å
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½ ID ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ purge ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½ï¿½
         g_lastSoundPid = pid;
         return TRUE;
     }
 }
 #endif // WIN32
+
+namespace sysapi {
+    std::string JsGetModuleFileName(HMODULE hModule){
+        WCHAR szPath[MAX_PATH] = { 0 };
+        GetModuleFileNameW(hModule, szPath, MAX_PATH);
+        return S_CW2A(szPath,CP_UTF8).c_str();
+    }
+    
+}

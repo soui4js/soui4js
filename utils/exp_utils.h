@@ -9,7 +9,7 @@
 using namespace qjsbind;
 
 /*
- ÊÖ¶¯ÊµÏÖÊäÈëÊä³ö²ÎÊı×ª»»Ê±Ê¹ÓÃÏÂÃæĞÎÊ½
+ æ‰‹åŠ¨å®ç°è¾“å…¥è¾“å‡ºå‚æ•°è½¬æ¢æ—¶ä½¿ç”¨ä¸‹é¢å½¢å¼
  */
 //Value Test(qjsbind::Context *ctx, ArgList& args) {
 //	SLOGI2("test") << args.size();
@@ -36,6 +36,7 @@ void Exp_Utils(qjsbind::Module* module)
 	module->ExportFunc("UrlEncode", &urlencode);
 
 	module->ExportFunc("PlaySound", &sysapi::JsPlaySound);
+	module->ExportFunc("GetModuleFileName", &sysapi::JsGetModuleFileName);
 	module->ExportFunc("WString2String", &WString2String);
 	module->ExportFunc("String2WString", &String2WString);
 	module->ExportFunc("Buffer2String", &Buffer2String);

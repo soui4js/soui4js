@@ -4,6 +4,7 @@ import * as os from "os";
 import * as std from "std";
 
 var g_workDir="";
+var g_appFile="";
 
 class MainDialog extends soui4.JsHostWnd{
 	constructor(){
@@ -35,14 +36,14 @@ class MainDialog extends soui4.JsHostWnd{
 			return;			
 		}
 		//code node_modules
-		utiles.CopyDir(g_workDir+"/../node_modules",strDest);
+		utiles.CopyDir(g_workDir+"/node_modules",strDest);
 		//*/
 		//prepare task.json
 		let pos = g_workDir.lastIndexOf("/");
 		let workDir = g_workDir.substring(0,pos);
+		try{
 		os.mkdir(strDest+"/.vscode");
 		{
-			let soui4js_host = workDir+"/bin/soui4js-host";
 			let launch={
 		    "version": "0.2.0",
 		    "configurations": [
@@ -51,7 +52,7 @@ class MainDialog extends soui4.JsHostWnd{
 		            "type": "quickjs",
 		            "request": "launch",
 		            "program": "${workspaceFolder}",
-		            "runtimeExecutable": soui4js_host,
+		            "runtimeExecutable": g_appFile,
 		            "address": "localhost",
 		            "port": 58585
 		        }
@@ -81,8 +82,13 @@ class MainDialog extends soui4.JsHostWnd{
 			f.puts(taskStr);
 			f.close();
 		}
+		soui4.SMessageBox(this.GetHwnd(),"创建成功!","提示",soui4.MB_OK|soui4.MB_ICONINFORMATION);
 		//luanch vscode
 		soui4.ShellExecute(this.GetHwnd(),"open","code.cmd", "-n --new-window "+strDest,strDest,soui4.SW_SHOWNORMAL);
+		}
+		catch(e){
+			console.log(e);
+		}
 	}
 
 	onBtnPickFolder(e){
@@ -118,6 +124,8 @@ class MainDialog extends soui4.JsHostWnd{
 
 function main(inst,workDir,args)
 {
+	g_appFile = utiles.GetModuleFileName(inst);
+
 	workDir.replaceAll("\\","/");
 	if(workDir.endsWith("/"))
 	{
