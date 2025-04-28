@@ -4,5 +4,6 @@ namespace sysapi
 {
 	BOOL JsPlaySound(LPCSTR filename,BOOL purge);
 	std::string JsGetModuleFileName(HMODULE hModule);
+	std::string JsGetEnv(LPCSTR envKey);
 };
 

@@ -37,6 +37,7 @@ void Exp_Utils(qjsbind::Module* module)
 
 	module->ExportFunc("PlaySound", &sysapi::JsPlaySound);
 	module->ExportFunc("GetModuleFileName", &sysapi::JsGetModuleFileName);
+	module->ExportFunc("GetEnv",&sysapi::JsGetEnv);
 	module->ExportFunc("WString2String", &WString2String);
 	module->ExportFunc("String2WString", &String2WString);
 	module->ExportFunc("Buffer2String", &Buffer2String);

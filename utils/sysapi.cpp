@@ -70,4 +70,14 @@ namespace sysapi {
         return S_CW2A(szPath,CP_UTF8).c_str();
     }
     
+    std::string JsGetEnv(LPCSTR envKey){
+        DWORD len = GetEnvironmentVariableA(envKey,NULL,0);
+        if(len == 0)
+            return "";
+        char * buf = (char*)malloc(len);
+        GetEnvironmentVariableA(envKey,buf,len);
+        std::string ret(buf,len);
+        free(buf);
+        return ret;
+    }
 }
