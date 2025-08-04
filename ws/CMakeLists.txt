@@ -14,8 +14,19 @@ set(SOURCES
 )
 
 set(LIBS ${WS_LWS_LIB})
-if (NOT CMAKE_SYSTEM_NAME MATCHES Windows)
+if (CMAKE_SYSTEM_NAME MATCHES Linux)
 link_directories(${CMAKE_SOURCE_DIR}/depends/soui4/lib_deb/x64)
+set(LIBS ${LIBS} swinx)
+elseif(CMAKE_SYSTEM_NAME MATCHES Darwin)
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
+message(STATUS "build soui4js macos arm64")
+link_directories(${CMAKE_SOURCE_DIR}/depends/soui4/lib_mac/arm64)
+
+else()
+message(STATUS "build soui4js macos x64")
+link_directories(${CMAKE_SOURCE_DIR}/depends/soui4/lib_mac/x64)
+
+endif()
 set(LIBS ${LIBS} swinx)
 endif()
 

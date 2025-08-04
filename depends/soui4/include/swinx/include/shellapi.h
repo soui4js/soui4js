@@ -1,7 +1,9 @@
 #ifndef _SHELL_API_H_
 #define _SHELL_API_H_
 
-#include <windows.h>
+//#include <windows.h>
+#include <ctypes.h>
+#include <winuser.h>
 #include <guiddef.h>
 
 #ifdef __cplusplus

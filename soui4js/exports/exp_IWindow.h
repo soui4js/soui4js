@@ -6,12 +6,8 @@
 Value IWindow_GetWindowText(Context* ctx, IWindow* _this, ArgList& args) {
 	bool bRawText = FALSE;
 	if (args.size() >= 1) bRawText = args[0].ToBool();
-	SStringT str;
-	int bufLen = _this->GetWindowText(NULL, 0, bRawText);
-	TCHAR* buf = str.GetBufferSetLength(bufLen);
-	_this->GetWindowText(buf, bufLen, bRawText);
-	str.ReleaseBuffer();
-	SStringA strU8 = S_CT2A(str, CP_UTF8);
+	SStringA strU8;
+	_this->GetWindowTextU8(&strU8, bRawText);
 	return ctx->NewString(strU8.c_str(), strU8.GetLength());
 }
 

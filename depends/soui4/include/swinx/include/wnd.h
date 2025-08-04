@@ -1,5 +1,9 @@
 #ifndef _WND_H__
 #define _WND_H__
+
+#include <ctypes.h>
+#include <ctrl_types.h>
+#include <winuser.h>
 #ifdef __cplusplus
 extern "C"
 {
@@ -340,7 +344,7 @@ extern "C"
 
     BOOL WINAPI IsWindowUnicode(HWND hWnd);
 
-    typedef BOOL(CALLBACK *WNDENUMPROC)(HWND hwnd, LPARAM lParam);
+    typedef int (CALLBACK *WNDENUMPROC)(HWND hwnd, LPARAM lParam);
 
     BOOL WINAPI EnumWindows(WNDENUMPROC lpEnumFunc, LPARAM lParam);
 

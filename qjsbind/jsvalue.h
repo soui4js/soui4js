@@ -186,8 +186,12 @@ namespace qjsbind {
 			}
 			else
 			{
-				assert(false);
-				return *(T*)(void*)ToInt64();
+				//assert(false);
+#if defined(__arm64__)
+				return *(T*)(void*)JS_VALUE_GET_PTR(value_);
+#else
+				return *(T*)(void*)ToUint64();
+#endif
 			}
 		}
 
@@ -202,7 +206,7 @@ namespace qjsbind {
 			}
 		}
 
-#ifdef _WIN64
+#if defined(_WIN64) || defined(__arm64__)
 		operator uint64_t() const {
 			return ToUint64();
 		}
@@ -221,10 +225,10 @@ namespace qjsbind {
 			}
 			else
 			{
-#ifdef _WIN64
-				return (T*)(void*)ToInt64();
+#if defined(__arm64__)
+				return (T*)(void*)JS_VALUE_GET_PTR(value_);
 #else
-				return (T*)(void*)ToUint32();
+				return (T*)(void*)ToUint64();
 #endif
 			}
 		}
@@ -253,6 +257,19 @@ namespace qjsbind {
 			return ToInt32();
 		}
 #endif//_WIN32
+
+#ifdef __APPLE__
+		operator unsigned long() const {
+			return ToUint64(); 
+		}
+		operator long() const {
+			return ToInt64(); 
+		}
+
+		operator BOOL() const {
+			return ToUint32();
+		}
+#endif//__APPLE__
 		operator int64_t() const {
 			return ToInt64();
 		}

@@ -5,6 +5,9 @@
 #include <set>
 #include "exp_MsgHandlerProxy.h"
 
+#define ANY_CTRL_ID -1
+#define ANY_CTRL_NAME "*"
+
 template<class T>
 class JsHostWnd : public T, public JsThisOwner ,public SDpiHandler< JsHostWnd<T> >
 {
@@ -19,53 +22,103 @@ public:
 		return T::GetScale();
 	}
 
-	void SetEventMask(int evt,bool bSet) {
+	void RequireEventForCtrlID(int evt,int nCtrlId, bool bSet) {
+		std::pair<int,int> data = std::make_pair(evt, nCtrlId);
 		if (bSet)
-			m_cbEvts.insert(evt);
+			m_cbEvt4Ids.insert(data);
 		else
-			m_cbEvts.erase(evt);
+			m_cbEvt4Ids.erase(data);
+	}
+
+	void RequireEventForCtrlName(int evt, LPCSTR pszCtrlName, bool bSet) {
+		std::pair<int,std::string> data = std::make_pair(evt, std::string(pszCtrlName));
+		if (bSet)
+			m_cbEvt4Names.insert(data);
+		else
+			m_cbEvt4Names.erase(data);
+	}
+
+	void RequireMessage(UINT msg, bool bSet) {
+		if (bSet)
+			m_cbMsgs.insert(msg);
+		else
+			m_cbMsgs.erase(msg);
 	}
 protected:
 	BOOL _HandleEvent(IEvtArgs* pEvt) override {
-		if (!m_cbEvts.empty()) {
-			if (m_cbEvts.find(pEvt->GetID())== m_cbEvts.end())
-				return FALSE;
-		}
-		if (!m_onEvent.IsFunction()) {
+		if(!pEvt || !pEvt->Sender() || !m_onEvent.IsFunction()) {
 			return T::_HandleEvent(pEvt);
 		}
-		Context* ctx = m_onEvent.context();
-		Value args[] = { NewValue(*ctx,pEvt) };
-		Value ret = ctx->Call(GetJsThis(), m_onEvent, 1, args);
-		if (ret.ToBool())
-			return TRUE;
+		BOOL bJsEvt = m_cbEvt4Names.empty() && m_cbEvt4Ids.empty();
+		if(pEvt->GetID() == EventInit::EventID || pEvt->GetID()==EventExit::EventID){
+			// 处理初始化和退出事件
+			bJsEvt = TRUE;
+		}
+		if(!bJsEvt && pEvt->Sender()->GetName()) {
+			auto it = m_cbEvt4Names.find(std::make_pair(pEvt->GetID(), std::string(S_CW2A(pEvt->Sender()->GetName(),CP_UTF8))));
+			if (it != m_cbEvt4Names.end()) {
+				bJsEvt = TRUE;
+			}else{
+				it = m_cbEvt4Names.find(std::make_pair(pEvt->GetID(), std::string(ANY_CTRL_NAME)));
+				if (it != m_cbEvt4Names.end()) {
+					bJsEvt = TRUE;
+				}
+			}
+		}
+		if (!bJsEvt) {
+			auto it = m_cbEvt4Ids.find(std::make_pair(pEvt->GetID(), pEvt->Sender()->GetID()));
+			if (it != m_cbEvt4Ids.end()) {
+				bJsEvt = TRUE;
+			}
+			else
+			{
+				it = m_cbEvt4Ids.find(std::make_pair(pEvt->GetID(), ANY_CTRL_ID));
+				if (it != m_cbEvt4Ids.end()) {
+					bJsEvt = TRUE;
+				}
+			}
+		}
+		if (bJsEvt) {
+			Context* ctx = m_onEvent.context();
+			Value args[] = { NewValue(*ctx,pEvt) };
+			Value ret = ctx->Call(GetJsThis(), m_onEvent, 1, args);
+			if (ret.ToBool())
+				return TRUE;
+		}
 		return T::_HandleEvent(pEvt);
 	}
 
 	BOOL ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lResult, DWORD dwMsgMapID) override {
 		DpiHandler::ProcessWindowMessage(hWnd, uMsg, wParam, lParam, lResult, dwMsgMapID);
-		if (!m_onMsg.IsObject())
-			return T::ProcessWindowMessage(hWnd, uMsg, wParam, lParam, lResult, dwMsgMapID);
-		qjsbind::Context& ctx = *m_onMsg.context();
-		MsgHandle msgHandle = { TRUE };
-		qjsbind::Value args[] = {
-			NewValue(ctx, hWnd),
-			NewValue(ctx, uMsg),
-			NewValue(ctx, wParam),
-			NewValue(ctx, lParam),
-			NewValue(ctx, &msgHandle)
-		};
-		Value ret = ctx.Call(GetJsThis(), m_onMsg, 5, args);
-		if (ret.IsNumber()) {
-			lResult = ret.ToInt32();
-		}
-		else {
-			if (ret.IsException())
-				ctx.DumpError();
-			msgHandle.msgHandled = FALSE;
-		}
-		if (msgHandle.msgHandled)
+		BOOL bHandled = FALSE;
+		do {
+			if (!m_onMsg.IsObject())
+				break;
+			if (!m_cbMsgs.empty() && m_cbMsgs.find(uMsg) == m_cbMsgs.end())
+				break;
+			qjsbind::Context& ctx = *m_onMsg.context();
+			MsgHandle msgHandle = { TRUE };
+			qjsbind::Value args[] = {
+				NewValue(ctx, hWnd),
+				NewValue(ctx, uMsg),
+				NewValue(ctx, wParam),
+				NewValue(ctx, lParam),
+				NewValue(ctx, &msgHandle)
+			};
+			Value ret = ctx.Call(GetJsThis(), m_onMsg, 5, args);
+			if (ret.IsNumber()) {
+				lResult = ret.ToInt32();
+			}
+			else {
+				if (ret.IsException())
+					ctx.DumpError();
+				msgHandle.msgHandled = FALSE;
+			}
+			bHandled = msgHandle.msgHandled;
+		} while (FALSE);
+		if (bHandled) {
 			return TRUE;
+		}
 		return T::ProcessWindowMessage(hWnd, uMsg, wParam, lParam, lResult, dwMsgMapID);
 	}
 
@@ -86,14 +139,18 @@ public:
 	Value m_cbHandler;
 	Value m_onMsg;
 	Value m_onEvent;
-	std::set<int> m_cbEvts;
+	std::set<std::pair<int,int>> m_cbEvt4Ids;
+	std::set<std::pair<int, std::string>> m_cbEvt4Names;
+	std::set<int> m_cbMsgs;
 };
 
 void Exp_JsHostWnd(qjsbind::Module* module) {
 	JsClass<JsHostWnd<SHostWnd> > jsCls = module->ExportClass<JsHostWnd<SHostWnd>>("JsHostWnd");
 	jsCls.Init<JsHostWnd<SHostWnd>::Mark>(JsClass<IHostWnd>::class_id());
 	jsCls.AddCtor<qjsbind::constructor<JsHostWnd<SHostWnd>, LPCSTR>>(TRUE);
-	jsCls.AddFunc("SetEventMask", &JsHostWnd<SHostWnd>::SetEventMask);
+	jsCls.AddFunc("RequireEventForCtrlID", &JsHostWnd<SHostWnd>::RequireEventForCtrlID);
+	jsCls.AddFunc("RequireEventForCtrlName", &JsHostWnd<SHostWnd>::RequireEventForCtrlName);
+	jsCls.AddFunc("RequireMessage", &JsHostWnd<SHostWnd>::RequireMessage);
 	jsCls.AddFunc("SetPresenter", &JsHostWnd<SHostWnd>::SetPresenter);
 	jsCls.AddFunc("GetScale", &JsHostWnd<SHostWnd>::GetScale);
 	jsCls.AddGetSet("cbHandler", &JsHostWnd<SHostWnd>::m_cbHandler);
@@ -105,7 +162,9 @@ void Exp_JsHostDialog(qjsbind::Module* module) {
 	JsClass<JsHostWnd<SHostDialog> > jsCls = module->ExportClass<JsHostWnd<SHostDialog>>("JsHostDialog");
 	jsCls.Init<JsHostWnd<SHostDialog>::Mark>(JsClass<IHostDialog>::class_id());
 	jsCls.AddCtor<qjsbind::constructor<JsHostWnd<SHostDialog>, LPCSTR>>(TRUE);
-	jsCls.AddFunc("SetEventMask", &JsHostWnd<SHostDialog>::SetEventMask);
+	jsCls.AddFunc("RequireEventForCtrlID", &JsHostWnd<SHostDialog>::RequireEventForCtrlID);
+	jsCls.AddFunc("RequireEventForCtrlName", &JsHostWnd<SHostDialog>::RequireEventForCtrlName);
+	jsCls.AddFunc("RequireMessage", &JsHostWnd<SHostDialog>::RequireMessage);
 	jsCls.AddFunc("SetPresenter", &JsHostWnd<SHostDialog>::SetPresenter);
 	jsCls.AddFunc("GetScale", &JsHostWnd<SHostDialog>::GetScale);
 	jsCls.AddGetSet("cbHandler", &JsHostWnd<SHostDialog>::m_cbHandler);

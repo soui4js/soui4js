@@ -27,6 +27,7 @@ int SvrConnection::send(const std::string &text, bool bBinary)
         lws_callback_on_writable(m_socket);
     MsgData msgData = { text, bBinary, genMsgId() };
     sendingBuf.push_back(msgData);
+    lws_cancel_service(m_context); // Cancel any pending service calls to ensure we send immediately
     return msgData.msgId;
 }
 

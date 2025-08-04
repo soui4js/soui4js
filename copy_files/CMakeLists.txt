@@ -39,7 +39,22 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
         message(WARNING "Unknown architecture. Pointer size is ${CMAKE_SIZEOF_VOID_P}")
     endif()
 else()
-    message(WARNING "Unsupported system: ${CMAKE_SYSTEM_NAME}")
+    set(TARGET_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        message(STATUS "Copying prebuild files for x64 on Macos platform")
+        set(SOURCE_DIRS
+            ${CMAKE_SOURCE_DIR}/depends/quickjs/lib_mac/x64
+            ${CMAKE_SOURCE_DIR}/depends/soui4/lib_mac/x64
+        )
+    elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+        message(STATUS "Copying prebuild files for x86 on Macos platform")
+        set(SOURCE_DIRS
+            ${CMAKE_SOURCE_DIR}/depends/quickjs/lib_mac/x86
+            ${CMAKE_SOURCE_DIR}/depends/soui4/lib_mac/x86
+        )
+    else()
+        message(WARNING "Unknown architecture. Pointer size is ${CMAKE_SIZEOF_VOID_P}")
+    endif()
 endif()
 
 # 添加自定义目标
@@ -50,6 +65,7 @@ add_custom_target(copy_files ALL
 add_custom_command(TARGET copy_files PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
             ${CMAKE_SOURCE_DIR}/copy_files/soui-sys-resource.zip
+            ${CMAKE_SOURCE_DIR}/copy_files/simsun.ttc
             ${TARGET_DIR}
     COMMENT "Copying soui-sys-resource.zip to ${TARGET_DIR}"
 )

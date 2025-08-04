@@ -91,7 +91,7 @@ class SOUI_EXP SDateTimePicker
      * @param bRawText Whether to get raw text
      * @return Window text
      */
-    SStringT GetWindowText(BOOL bRawText = FALSE);
+    SStringT GetWindowText(BOOL bRawText = FALSE) SCONST OVERRIDE;
 
     /**
      * @brief Set the time using SYSTEMTIME structure
@@ -138,6 +138,12 @@ class SOUI_EXP SDateTimePicker
      * @return TRUE if successful, FALSE otherwise
      */
     virtual BOOL CreateChildren(SXmlNode xmlNode);
+
+    /**
+     * @brief Called when the scale of the window changes.
+     * @param scale The new scale value.
+     */
+    virtual void OnScaleChanged(int scale);
 
     /**
      * @brief Handle date change event

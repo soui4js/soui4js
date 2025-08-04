@@ -88,12 +88,28 @@ ${CMAKE_SOURCE_DIR}/depends/quickjs/lib_win/$(Platform)
 ${CMAKE_SOURCE_DIR}/depends/soui4/lib_win/$(Platform)
 )
 target_link_libraries(${PROJECT_NAME} qjsbind libquickjs soui4 utilities4)
-else()
+elseif(CMAKE_SYSTEM_NAME MATCHES Linux)
 target_link_directories(${PROJECT_NAME} PRIVATE
 ${CMAKE_SOURCE_DIR}/depends/quickjs/lib_deb/x64
 ${CMAKE_SOURCE_DIR}/depends/soui4/lib_deb/x64
 )
-target_link_libraries(${PROJECT_NAME} qjsbind quickjs soui4 utilities4)
+target_link_libraries(${PROJECT_NAME} qjsbind swinx quickjs soui4 utilities4)
+elseif(CMAKE_SYSTEM_NAME MATCHES Darwin)
+#message(STATUS "processor is ${CMAKE_SYSTEM_PROCESSOR}")
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
+message(STATUS "build soui4js macos arm64")
+target_link_directories(${PROJECT_NAME} PRIVATE
+${CMAKE_SOURCE_DIR}/depends/quickjs/lib_mac/arm64
+${CMAKE_SOURCE_DIR}/depends/soui4/lib_mac/arm64
+)
+else()
+message(STATUS "build soui4js macos x64")
+target_link_directories(${PROJECT_NAME} PRIVATE
+${CMAKE_SOURCE_DIR}/depends/quickjs/lib_mac/x64
+${CMAKE_SOURCE_DIR}/depends/soui4/lib_mac/x64
+)
+endif()
+target_link_libraries(${PROJECT_NAME} qjsbind swinx quickjs soui4 utilities4)
 endif()
 
 ################################################################################

@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <UIDEF>
-  <font face="宋体" size="15"/>
+  <deffont value="face:宋体,size:16">
+    <macos value="face:simsun,size:16"/>
+  </deffont>
   <caret color="rgb(255,0,0)" animate="true" fadeTime="20" showTime="10" interpolator="Accelerate"/>
   <unit defUnit="dp"/>
 

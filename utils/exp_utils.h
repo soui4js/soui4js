@@ -9,7 +9,7 @@
 using namespace qjsbind;
 
 /*
- 手动实现输入输出参数转换时使用下面形式
+ to explain params manually, you should implement a function like this:
  */
 //Value Test(qjsbind::Context *ctx, ArgList& args) {
 //	SLOGI2("test") << args.size();
