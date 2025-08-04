@@ -7,7 +7,7 @@ namespace qjsbind {
 	template<>
 	inline Value NewValue(Context& context, ILvAdapter* v)
 	{
-#ifdef _WIN64
+#if defined(_WIN64) || defined (__arm64__)
 		return Value(context.context(), JS_NewInt64(context.context(), (uint64_t)v));
 #else
 		return Value(context.context(), JS_NewUint32(context.context(), (uint32_t)v));
@@ -17,7 +17,7 @@ namespace qjsbind {
 	template<>
 	inline Value NewValue(Context& context, IMcAdapter* v)
 	{
-#ifdef _WIN64
+#if defined(_WIN64) || defined (__arm64__)
 		return Value(context.context(), JS_NewInt64(context.context(), (uint64_t)v));
 #else
 		return Value(context.context(), JS_NewUint32(context.context(), (uint32_t)v));
@@ -27,7 +27,7 @@ namespace qjsbind {
 	template<>
 	inline Value NewValue(Context& context, ITvAdapter* v)
 	{
-#ifdef _WIN64
+#if defined(_WIN64) || defined (__arm64__)
 		return Value(context.context(), JS_NewInt64(context.context(), (uint64_t)v));
 #else
 		return Value(context.context(), JS_NewUint32(context.context(), (uint32_t)v));

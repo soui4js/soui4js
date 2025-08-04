@@ -53,7 +53,7 @@ namespace fileop {
     BOOL SelectFile(LPCSTR pszFile) {
         SStringT strFile = S_CA2T(pszFile, CP_UTF8);
         SStringT strCmd = SStringT().Format(_T("/select,%s"), strFile.c_str());
-        return (int)ShellExecute(NULL, _T("open"), _T("explorer.exe"), strCmd.c_str(), NULL, SW_SHOWNORMAL) > 32;
+        return (int)(INT_PTR)ShellExecute(NULL, _T("open"), _T("explorer.exe"), strCmd.c_str(), NULL, SW_SHOWNORMAL) > 32;
     }
 
     BOOL JsCopyFile(LPCSTR pszFrom, LPCSTR pszTo, BOOL bReplace) {

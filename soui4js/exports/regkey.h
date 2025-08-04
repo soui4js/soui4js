@@ -16,7 +16,7 @@ do {                                           \
 	int __atl_condVal=!!(expr);                \
 	assert(__atl_condVal);                  \
 	if(!(__atl_condVal)) return val;           \
-} __pragma(warning(suppress:4127)) while (0) 
+} while (0) 
 #endif // ATLENSURE_RETURN_VAL
 
 
@@ -261,7 +261,7 @@ inline LONG CRegKey::Open(HKEY hKeyParent, LPCTSTR lpszKeyName, REGSAM samDesire
 #pragma warning(disable: 4996)
 inline LONG CRegKey::QueryValue(DWORD& dwValue, LPCTSTR lpszValueName)
 {
-	DWORD dwType = NULL;
+	DWORD dwType = 0;
 	DWORD dwCount = sizeof(DWORD);
 	LONG lRes = RegQueryValueEx(m_hKey, lpszValueName, NULL, &dwType,
 		(LPBYTE)&dwValue, &dwCount);
@@ -457,7 +457,7 @@ inline LONG CRegKey::SetValue(LPCTSTR lpszValue, LPCTSTR lpszValueName, bool bMu
 
 	DWORD dwType = bMulti ? REG_MULTI_SZ : REG_SZ;
 
-	return ::RegSetValueEx(m_hKey, lpszValueName, NULL, dwType,
+	return ::RegSetValueEx(m_hKey, lpszValueName, 0, dwType,
 		reinterpret_cast<const BYTE*>(lpszValue), nValueLen * sizeof(TCHAR));
 }
 #pragma warning(pop)
@@ -465,25 +465,25 @@ inline LONG CRegKey::SetValue(LPCTSTR lpszValue, LPCTSTR lpszValueName, bool bMu
 inline LONG CRegKey::SetValue(LPCTSTR pszValueName, DWORD dwType, const void* pValue, ULONG nBytes) throw()
 {
 	ATLASSUME(m_hKey != NULL);
-	return ::RegSetValueEx(m_hKey, pszValueName, NULL, dwType, static_cast<const BYTE*>(pValue), nBytes);
+	return ::RegSetValueEx(m_hKey, pszValueName, 0, dwType, static_cast<const BYTE*>(pValue), nBytes);
 }
 
 inline LONG CRegKey::SetBinaryValue(LPCTSTR pszValueName, const void* pData, ULONG nBytes) throw()
 {
 	ATLASSUME(m_hKey != NULL);
-	return ::RegSetValueEx(m_hKey, pszValueName, NULL, REG_BINARY, reinterpret_cast<const BYTE*>(pData), nBytes);
+	return ::RegSetValueEx(m_hKey, pszValueName, 0, REG_BINARY, reinterpret_cast<const BYTE*>(pData), nBytes);
 }
 
 inline LONG CRegKey::SetDWORDValue(LPCTSTR pszValueName, DWORD dwValue) throw()
 {
 	ATLASSUME(m_hKey != NULL);
-	return ::RegSetValueEx(m_hKey, pszValueName, NULL, REG_DWORD, reinterpret_cast<const BYTE*>(&dwValue), sizeof(DWORD));
+	return ::RegSetValueEx(m_hKey, pszValueName, 0, REG_DWORD, reinterpret_cast<const BYTE*>(&dwValue), sizeof(DWORD));
 }
 
 inline LONG CRegKey::SetQWORDValue(LPCTSTR pszValueName, ULONGLONG qwValue) throw()
 {
 	ATLASSUME(m_hKey != NULL);
-	return ::RegSetValueEx(m_hKey, pszValueName, NULL, REG_QWORD, reinterpret_cast<const BYTE*>(&qwValue), sizeof(ULONGLONG));
+	return ::RegSetValueEx(m_hKey, pszValueName, 0, REG_QWORD, reinterpret_cast<const BYTE*>(&qwValue), sizeof(ULONGLONG));
 }
 
 inline LONG CRegKey::SetStringValue(_In_opt_z_ LPCTSTR pszValueName, _In_opt_z_ LPCTSTR pszValue, _In_ DWORD dwType) throw()
@@ -492,7 +492,7 @@ inline LONG CRegKey::SetStringValue(_In_opt_z_ LPCTSTR pszValueName, _In_opt_z_ 
 	ATLENSURE_RETURN_VAL(pszValue != NULL, ERROR_INVALID_DATA);
 	ATLASSERT((dwType == REG_SZ) || (dwType == REG_EXPAND_SZ));
 
-	return ::RegSetValueEx(m_hKey, pszValueName, NULL, dwType, reinterpret_cast<const BYTE*>(pszValue), (lstrlen(pszValue) + 1) * sizeof(TCHAR));
+	return ::RegSetValueEx(m_hKey, pszValueName, 0, dwType, reinterpret_cast<const BYTE*>(pszValue), (lstrlen(pszValue) + 1) * sizeof(TCHAR));
 }
 
 inline LONG CRegKey::SetMultiStringValue(LPCTSTR pszValueName, LPCTSTR pszValue) throw()
@@ -516,7 +516,7 @@ inline LONG CRegKey::SetMultiStringValue(LPCTSTR pszValueName, LPCTSTR pszValue)
 		nBytes += nLength * sizeof(TCHAR);
 	} while (nLength != 1);
 
-	return ::RegSetValueEx(m_hKey, pszValueName, NULL, REG_MULTI_SZ, reinterpret_cast<const BYTE*>(pszValue),
+	return ::RegSetValueEx(m_hKey, pszValueName, 0, REG_MULTI_SZ, reinterpret_cast<const BYTE*>(pszValue),
 		nBytes);
 }
 

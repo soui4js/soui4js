@@ -1,6 +1,8 @@
 ﻿#ifndef _HOOK_H_
 #define _HOOK_H_
 
+#include <ctypes.h>
+
 #ifdef __cplusplus
 extern "C"
 {

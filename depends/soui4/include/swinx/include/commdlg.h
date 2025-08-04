@@ -7,6 +7,12 @@ extern "C"
 {
 #endif //__cplusplus
 
+typedef enum _DlgMode{
+    OPEN=0,
+    SAVE,
+    FOLDER,
+}DlgMode;
+
 #define OFN_READONLY             0x00000001
 #define OFN_OVERWRITEPROMPT      0x00000002
 #define OFN_HIDEREADONLY         0x00000004

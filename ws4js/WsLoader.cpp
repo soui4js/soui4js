@@ -3,6 +3,8 @@
 
 #ifdef WIN32
 #define WS_DLL_NAME "ws.dll"
+#elif defined(__APPLE__)
+#define WS_DLL_NAME "libws.dylib"
 #else
 #define WS_DLL_NAME "libws.so"
 #endif

@@ -39,7 +39,7 @@ namespace qjsbind {
 	template<>
 	inline Value NewValue(Context& context, void* v)
 	{
-#ifdef _WIN64
+#if defined(_WIN64) || defined(__arm64__)
 		return Value(context.context(), JS_NewBigUint64(context.context(), (uint64_t)v));
 #else
 		return Value(context.context(), JS_NewUint32(context.context(), (uint32_t)(uintptr_t)v));
@@ -78,6 +78,25 @@ namespace qjsbind {
 	}
 	#endif//_WIN32
 	
+	#ifdef __APPLE__
+	template<>
+	inline Value NewValue(Context& context, long v)
+	{
+		return Value(context.context(), JS_NewBigInt64(context.context(), v));
+	}
+
+	template<>
+	inline Value NewValue(Context& context, unsigned long v)
+	{
+		return Value(context.context(), JS_NewBigUint64(context.context(), v));
+	}
+
+	template<>
+	inline Value NewValue(Context& context, BOOL v)
+	{
+		return Value(context.context(), JS_NewUint32(context.context(), v));
+	}
+	#endif//__APPLE__
 	template<>
 	inline Value NewValue(Context& context, bool v) {
 		return Value(context.context(), JS_NewBool(context.context(), v));

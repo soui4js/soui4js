@@ -2868,8 +2868,6 @@ extern "C"
 
     typedef /* [unique] */ __RPC_unique_pointer IDropTarget *LPDROPTARGET;
 
-#define MK_ALT (0x20)
-
 #define DROPEFFECT_NONE (0)
 
 #define DROPEFFECT_COPY (1)

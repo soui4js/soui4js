@@ -2,8 +2,10 @@
 #define _SYS_API_H
 #include <ctypes.h>
 #include <unistd.h>
-#include <malloc.h>
-
+#include <guiddef.h>
+#include <stdio.h>
+#include <dlfcn.h>
+#include <strapi.h>
 #ifdef __cplusplus
 extern "C"
 {
@@ -189,10 +191,18 @@ extern "C"
     pid_t WINAPI GetCurrentProcessId();
 
     pid_t WINAPI GetProcessId(HANDLE Process);
-    HANDLE WINAPI GetCurrentProcess(void);
-
-    void GetLocalTime(SYSTEMTIME *pSysTime);
-    void GetSystemTime(SYSTEMTIME *lpSystemTime);
+    
+    HANDLE WINAPI GetCurrentProcess_Priv(void);
+    #ifndef __APPLE__
+    #define GetCurrentProcess GetCurrentProcess_Priv
+    #endif
+    void WINAPI GetLocalTime(SYSTEMTIME *pSysTime);
+    void WINAPI GetSystemTime(SYSTEMTIME *lpSystemTime);
+    BOOL WINAPI LocalFileTimeToFileTime(
+                  const FILETIME* lpLocalFileTime,
+                 LPFILETIME lpFileTime
+      );
+    BOOL WINAPI FileTimeToLocalFileTime(const FILETIME *lpFileTime, LPFILETIME lpLocalFileTime);
 
     time_t _mkgmtime(struct tm *_Tm);
     int _localtime64_s(struct tm *ptm, const __time64_t *ptime);
@@ -226,8 +236,13 @@ extern "C"
 
     __time64_t _time64(__time64_t *_Time);
 
-    HCURSOR
-    LoadCursor(HINSTANCE hInstance, LPCSTR lpCursorName);
+    HCURSOR LoadCursorA(HINSTANCE hInstance, LPCSTR lpCursorName);
+    HCURSOR LoadCursorW(HINSTANCE hInstance, LPCWSTR lpCursorName);
+#ifdef UNICODE
+#define LoadCursor LoadCursorW
+#else
+#define LoadCursor LoadCursorA
+#endif // UNICODE
 
     BOOL DestroyCursor(HCURSOR hCursor);
 
@@ -343,10 +358,6 @@ extern "C"
     BOOL WINAPI LocalUnlock(HLOCAL hmem);
     UINT WINAPI LocalFlags(_In_ HLOCAL hMem);
     HLOCAL WINAPI LocalHandle(_In_ LPCVOID pMem);
-
-    HANDLE
-    WINAPI
-    GetCurrentProcess(VOID);
 
     DWORD WINAPI GetModuleFileNameA(HMODULE hModule, LPSTR lpFilename, DWORD nSize);
     DWORD WINAPI GetModuleFileNameW(HMODULE hModule, LPWSTR lpFilename, DWORD nSize);
@@ -716,6 +727,9 @@ typedef int(WINAPI *PROC)();
     // only support resume thread that was created with flag CREATE_SUSPENDED
     DWORD WINAPI ResumeThread(HANDLE hThread);
 
+    #ifdef __APPLE__
+    BOOL WINAPI GetAppleBundlePath(char *path, int maxLen);
+    #endif//__APPLE__
 #ifdef __cplusplus
 }
 #endif //__cplusplus

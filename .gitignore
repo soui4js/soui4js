@@ -1,4 +1,9 @@
-build
+.DS_Store
 .vs
 build_rel
 out
+.cache
+build
+build_x32
+build_x64
+xcode

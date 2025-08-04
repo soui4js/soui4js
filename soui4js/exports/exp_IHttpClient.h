@@ -2,11 +2,12 @@
 #define __EXP_IHTTPCLIENT__H__
 #include <interface/SHttpClient-i.h>
 #include <helper/SFunctor.hpp>
-
+#include <helper/slog.h>
 #include <map>
 #include <string>
 #include <atomic>
 using namespace std;
+#define kLogTag "HttpRequest"
 
 IHttpClient* CreateHttpClient();
 class HttpRequest : public TObjRefImpl< IHttpCallback>{
@@ -172,10 +173,12 @@ private:
 		if (strFileName.empty()) {
 			SStringA ret;
 			BOOL bRet = m_http->Request(&ret, m_url.c_str(), m_method.compare("get") == 0 ? Hr_Get : Hr_Post);
+//			SLOGFMTI("download %s %s", m_url.c_str(), bRet?"succeed":"failed");
 			STaskHelper::post(m_msgLoop, this, &HttpRequest::_OnResult, bRet, string(ret.c_str(), ret.GetLength()));//switch to main thread
 		}
 		else {
 			BOOL bRet = m_http->DownloadFile(m_url.c_str(), strFileName.c_str());
+//			SLOGFMTI("download %s %s", m_url.c_str(), bRet?"succeed":"failed");
 			STaskHelper::post(m_msgLoop, this, &HttpRequest::_OnResult, bRet, "");//switch to main thread
 		}
 		m_bRunning = false;
@@ -187,6 +190,7 @@ private:
 	}
 
 	void _OnResult(BOOL bSucceed, const string& resp) {
+//		SLOGFMTI("_OnResult %s %s",  bSucceed?"succeed":"failed",resp.c_str());
 		if (bSucceed) {
 			OnSucceed(m_http->GetHttpCode(), resp);
 		}

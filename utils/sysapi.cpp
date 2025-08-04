@@ -29,34 +29,27 @@ namespace sysapi {
 
 namespace sysapi {
 
-    // ���ڼ�¼��һ���������ӽ��� ID
     static pid_t g_lastSoundPid = 0;
 
     BOOL JsPlaySound(LPCSTR filename, BOOL purge) {
-        // ���ָ�� purge ���� filename Ϊ�գ�����ֹ֮ͣǰ���ŵ�����
         if (purge || filename == NULL || filename[0] == '\0') {
             if (g_lastSoundPid != 0) {
                 kill(g_lastSoundPid, SIGTERM);
                 waitpid(g_lastSoundPid, NULL, WNOHANG);
                 g_lastSoundPid = 0;
             }
-            // ��� filename Ϊ�գ��򷵻� TRUE ��ʾ����ִ�гɹ�
             if (filename == NULL || filename[0] == '\0')
                 return TRUE;
         }
 
-        // �� Linux ��ʹ�� aplay ���������ļ���Ҫ�������ļ�Ϊ WAV ��ʽ��
         pid_t pid = fork();
-        if (pid < 0) {  // fork ʧ��
+        if (pid < 0) { 
             return FALSE;
         }
-        if (pid == 0) { // �ӽ�����
-            // execlp �滻��ǰ����ӳ������������
+        if (pid == 0) { 
             execlp("aplay", "aplay", filename, (char*)NULL);
-            // ��� execlp ִ��ʧ�ܣ����˳��ӽ���
             _exit(127);
         }
-        // �������б����ӽ��� ID �Ա�������� purge ��ֹ����
         g_lastSoundPid = pid;
         return TRUE;
     }

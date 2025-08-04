@@ -27,7 +27,7 @@
 #include <tchar.h>
 #include <strapi.h>
 #include <commctrl.h>
-#include <error.h>
+//#include <error.h>
 #include <sysapi.h>
 #include <fileapi.h>
 #include <menu.h>

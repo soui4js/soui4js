@@ -5,7 +5,7 @@
 #include <config.h>
 #include <string/tstring.h>
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__MINGW32__)
 #define COM_IMGDECODER  _T("imgdecoder-gdip")
 #define COM_RENDER_GDI  _T("render-gdi")
 #define COM_RENDER_SKIA _T("render-skia")
@@ -54,8 +54,7 @@
 #pragma comment(lib,"log4z")
 #pragma comment(lib,"taskloop")
 
-namespace SOUI
-{
+SNSBEGIN
 	namespace IMGDECODOR_WIC
 	{
 		BOOL SCreateInstance(IObjRef **);
@@ -182,13 +181,13 @@ namespace SOUI
 		SStringT    m_strImgDecoder;
 	};
 
-}//end of soui
+SNSEND
 
 #else
 
 #include <com-loader.hpp>
 
-namespace SOUI {
+SNSBEGIN
 	class SComMgr
 	{
 	public:
@@ -224,7 +223,7 @@ namespace SOUI {
 		{
 			return renderLoader.CreateInstance(m_strDllPath + COM_RENDER_SKIA, ppObj);
 		}
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__MINGW32__)
 		BOOL CreateRender_D2D(IObjRef **ppObj)
 		{
 			return renderLoader.CreateInstance(m_strDllPath + COM_RENDER_D2D, ppObj);
@@ -277,7 +276,7 @@ namespace SOUI {
 		SStringT m_strDllPath;
 	};
 
-}//end of soui
+SNSEND
 #endif
 
 #endif//_SOUI_COM_CFG_H_

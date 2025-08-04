@@ -185,6 +185,8 @@ extern "C"
     WINUSERAPI
     BOOL WINAPI CheckMenuRadioItem(HMENU hmenu, UINT first, UINT last, UINT check, UINT flags);
 
+    BOOL WINAPI EndMenu();
+
 #ifdef __cplusplus
 }
 #endif //__cplusplus

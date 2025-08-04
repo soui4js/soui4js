@@ -184,7 +184,7 @@ UINT SFork(LPCSTR pszParam) {
 	TCHAR szHostPath[MAX_PATH];
 	::GetModuleFileName(NULL, szHostPath, MAX_PATH);
 	SStringT strParam = S_CA2T(pszParam, CP_UTF8);
-	return (UINT)::ShellExecute((HWND)0,_T("open"),szHostPath, strParam.c_str(),NULL,SW_SHOWNORMAL);
+	return (UINT)(UINT_PTR)::ShellExecute((HWND)0,_T("open"),szHostPath, strParam.c_str(),NULL,SW_SHOWNORMAL);
 }
 
 UINT SShellExecute(HWND hWnd,LPCSTR pszOp,LPCSTR pszFile,LPCSTR pszParam,LPCSTR pszDir,int show) {
@@ -192,7 +192,7 @@ UINT SShellExecute(HWND hWnd,LPCSTR pszOp,LPCSTR pszFile,LPCSTR pszParam,LPCSTR 
 	SStringT strFile = S_CA2T(pszFile, CP_UTF8);
 	SStringT strParam = S_CA2T(pszParam, CP_UTF8);
 	SStringT strDir = S_CA2T(pszDir, CP_UTF8);
-	return (UINT)::ShellExecute(hWnd, strOp, strFile, strParam, strDir, show);
+	return (UINT)(UINT_PTR)::ShellExecute(hWnd, strOp, strFile, strParam, strDir, show);
 }
 
 typedef HRESULT(WINAPI* FunSHCreateItemFromParsingName)(PCWSTR, IBindCtx*, REFIID, void**);

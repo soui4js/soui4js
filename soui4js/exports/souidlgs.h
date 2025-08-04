@@ -86,7 +86,15 @@
 // Global functions:
 //   AtlTaskDialog()
 
-
+namespace SecureHelper{
+	static void strcat_x(LPTSTR pszDest, size_t cchDest, LPCTSTR pszSrc){
+		#ifdef _UNICODE
+			wcscat_s(pszDest, cchDest, pszSrc);
+		#else
+			strcat_s(pszDest, cchDest, pszSrc);
+		#endif
+	}
+}
 SNSBEGIN
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -130,7 +138,7 @@ SNSBEGIN
 		return (!bRet || !((ovi.dwMajorVersion >= 5) || (ovi.dwMajorVersion == 4 && ovi.dwMinorVersion >= 90)));
 #endif // _versionhelpers_H_INCLUDED_
 	}
-#define ATLTRYALLOC(x) __pragma(warning(push)) __pragma(warning(disable: 4571)) try{x;} catch(...) {} __pragma(warning(pop))
+#define ATLTRYALLOC(x)   try{x;} catch(...) {} 
 #ifndef ATLTRY
 #define ATLTRY(x) ATLTRYALLOC(x)
 #endif	//ATLTRY
@@ -145,6 +153,7 @@ public: \
 #else
 #define _ATL_DECLSPEC_ALLOCATOR
 #endif
+#define ATLVERIFY(x)
 
 #define ATL_NOINLINE __declspec( noinline )
 	class CCRTAllocator
@@ -177,8 +186,8 @@ public: \
 		{
 		}
 
-#pragma warning(suppress: 4987)  // nonstandard extension used: 'throw(...)'
-		CTempBuffer(_In_ size_t nElements) throw(...) :
+#pragma warning(suppress: 4987)  // nonstandard extension used: ''
+		CTempBuffer(_In_ size_t nElements)  :
 			m_p(NULL)
 		{
 			Allocate(nElements);
@@ -202,14 +211,14 @@ public: \
 			return(m_p);
 		}
 
-#pragma warning(suppress: 4987)  // nonstandard extension used: 'throw(...)'
-		_Ret_maybenull_ _Post_writable_byte_size_(nElements * sizeof(T)) T* Allocate(_In_ size_t nElements) throw(...)
+#pragma warning(suppress: 4987)  // nonstandard extension used: ''
+		_Ret_maybenull_ _Post_writable_byte_size_(nElements * sizeof(T)) T* Allocate(_In_ size_t nElements) 
 		{
-			return(AllocateBytes(::ATL::AtlMultiplyThrow(nElements, sizeof(T))));
+			return(AllocateBytes(nElements *sizeof(T)));
 		}
 
-#pragma warning(suppress: 4987)  // nonstandard extension used: 'throw(...)'
-		_Ret_maybenull_ _Post_writable_byte_size_(nElements * sizeof(T)) T* Reallocate(_In_ size_t nElements) throw(...)
+#pragma warning(suppress: 4987)  // nonstandard extension used: ''
+		_Ret_maybenull_ _Post_writable_byte_size_(nElements * sizeof(T)) T* Reallocate(_In_ size_t nElements) 
 		{
 			ATLENSURE(nElements < size_t(-1) / sizeof(T));
 			size_t nNewSize = nElements * sizeof(T);
@@ -223,7 +232,7 @@ public: \
 				{
 					// We have to allocate from the heap and copy the contents into the new buffer
 					AllocateHeap(nNewSize);
-					Checked::memcpy_s(m_p, nNewSize, m_abFixedBuffer, t_nFixedBytes);
+					memcpy_s(m_p, nNewSize, m_abFixedBuffer, t_nFixedBytes);
 				}
 				else
 				{
@@ -234,7 +243,7 @@ public: \
 			{
 				if (m_p != reinterpret_cast<T*>(m_abFixedBuffer))
 				{
-					Checked::memcpy_s(m_abFixedBuffer, t_nFixedBytes, m_p, nNewSize);
+					memcpy_s(m_abFixedBuffer, t_nFixedBytes, m_p, nNewSize);
 					FreeHeap();
 				}
 				m_p = reinterpret_cast<T*>(m_abFixedBuffer);
@@ -272,10 +281,6 @@ public: \
 		ATL_NOINLINE void ReAllocateHeap(_In_ size_t nNewSize)
 		{
 			T* p = static_cast<T*>(Allocator::Reallocate(m_p, nNewSize));
-			if (p == NULL)
-			{
-				AtlThrow(E_OUTOFMEMORY);
-			}
 			m_p = p;
 		}
 
@@ -614,7 +619,7 @@ public: \
 			: CFileDialogImpl<T>(TRUE, lpszDefExt, lpszFileName, dwFlags, lpszFilter, hWndParent),
 			m_pNextFile(NULL)
 		{
-			m_ofn.Flags |= OFN_ALLOWMULTISELECT;   // Force multiple selection mode
+			CFileDialogImpl< T >::m_ofn.Flags |= OFN_ALLOWMULTISELECT;   // Force multiple selection mode
 
 #ifndef _UNICODE
 #ifdef _versionhelpers_H_INCLUDED_
@@ -638,8 +643,8 @@ public: \
 
 		~CMultiFileDialogImpl()
 		{
-			if (m_ofn.lpstrFile != m_szFileName)   // Free the buffer if we allocated it
-				delete[] m_ofn.lpstrFile;
+			if (CFileDialogImpl< T >::m_ofn.lpstrFile != CFileDialogImpl< T >::m_szFileName)   // Free the buffer if we allocated it
+				delete[] CFileDialogImpl< T >::m_ofn.lpstrFile;
 		}
 
 		// Operations
@@ -649,10 +654,10 @@ public: \
 			// If the function fails, the return value is zero.
 		int GetDirectory(LPTSTR pBuffer, int nBufLen) const
 		{
-			if (m_ofn.lpstrFile == NULL)
+			if (CFileDialogImpl< T >::m_ofn.lpstrFile == NULL)
 				return 0;
 
-			LPCTSTR pStr = m_ofn.lpstrFile;
+			LPCTSTR pStr = CFileDialogImpl< T >::m_ofn.lpstrFile;
 			int nLength = lstrlen(pStr);
 			if (pStr[nLength + 1] == 0)
 			{
@@ -694,12 +699,12 @@ public: \
 		// Get the first filename as a pointer into the buffer.
 		LPCTSTR GetFirstFileName() const
 		{
-			if (m_ofn.lpstrFile == NULL)
+			if (CFileDialogImpl< T >::m_ofn.lpstrFile == NULL)
 				return NULL;
 
 			m_pNextFile = NULL;   // Reset internal buffer pointer
 
-			LPCTSTR pStr = m_ofn.lpstrFile;
+			LPCTSTR pStr = CFileDialogImpl< T >::m_ofn.lpstrFile;
 			int nLength = lstrlen(pStr);
 			if (pStr[nLength + 1] != 0)
 			{
@@ -853,14 +858,14 @@ public: \
 		// Implementation
 		bool ResizeFilenameBuffer(DWORD dwLength)
 		{
-			if (dwLength > m_ofn.nMaxFile)
+			if (dwLength > CFileDialogImpl< T >::m_ofn.nMaxFile)
 			{
 				// Free the old buffer.
-				if (m_ofn.lpstrFile != m_szFileName)
+				if (CFileDialogImpl< T >::m_ofn.lpstrFile != CFileDialogImpl< T >::m_szFileName)
 				{
-					delete[] m_ofn.lpstrFile;
-					m_ofn.lpstrFile = NULL;
-					m_ofn.nMaxFile = 0;
+					delete[] CFileDialogImpl< T >::m_ofn.lpstrFile;
+					CFileDialogImpl< T >::m_ofn.lpstrFile = NULL;
+					CFileDialogImpl< T >::m_ofn.nMaxFile = 0;
 				}
 
 				// Allocate the new buffer.
@@ -868,13 +873,13 @@ public: \
 				ATLTRY(lpstrBuff = new TCHAR[dwLength]);
 				if (lpstrBuff != NULL)
 				{
-					m_ofn.lpstrFile = lpstrBuff;
-					m_ofn.lpstrFile[0] = 0;
-					m_ofn.nMaxFile = dwLength;
+					CFileDialogImpl< T >::m_ofn.lpstrFile = lpstrBuff;
+					CFileDialogImpl< T >::m_ofn.lpstrFile[0] = 0;
+					CFileDialogImpl< T >::m_ofn.nMaxFile = dwLength;
 				}
 			}
 
-			return (m_ofn.lpstrFile != NULL);
+			return (CFileDialogImpl< T >::m_ofn.lpstrFile != NULL);
 		}
 
 		void OnSelChange(LPOFNOTIFY /*lpon*/)
@@ -886,12 +891,12 @@ public: \
 #endif
 
 			// Get the buffer length required to hold the spec.
-			int nLength = GetSpec(NULL, 0);
+			int nLength = CFileDialogImpl< T >::GetSpec(NULL, 0);
 			if (nLength <= 1)
 				return; // no files are selected, presumably
 
 			// Add room for the directory, and an extra terminating zero.
-			nLength += GetFolderPath(NULL, 0) + 1;
+			nLength += CFileDialogImpl< T >::GetFolderPath(NULL, 0) + 1;
 
 			if (!ResizeFilenameBuffer(nLength))
 			{
@@ -900,22 +905,22 @@ public: \
 			}
 
 			// If we are not following links then our work is done.
-			if ((m_ofn.Flags & OFN_NODEREFERENCELINKS) != 0)
+			if ((CFileDialogImpl< T >::m_ofn.Flags & OFN_NODEREFERENCELINKS) != 0)
 				return;
 
 			// Get the file spec, which is the text in the edit control.
-			if (GetSpec(m_ofn.lpstrFile, m_ofn.nMaxFile) <= 0)
+			if (CFileDialogImpl< T >::GetSpec(CFileDialogImpl< T >::m_ofn.lpstrFile, CFileDialogImpl< T >::m_ofn.nMaxFile) <= 0)
 				return;
 
 			// Get the ID-list of the current folder.
-			int nBytes = GetFolderIDList(NULL, 0);
+			int nBytes = CFileDialogImpl< T >::GetFolderIDList(NULL, 0);
 #ifdef STRICT_TYPED_ITEMIDS
 			CTempBuffer<ITEMIDLIST_RELATIVE> idlist;
 #else
 			CTempBuffer<ITEMIDLIST> idlist;
 #endif
 			idlist.AllocateBytes(nBytes);
-			if ((nBytes <= 0) || (GetFolderIDList(idlist, nBytes) <= 0))
+			if ((nBytes <= 0) || (CFileDialogImpl< T >::GetFolderIDList(idlist, nBytes) <= 0))
 				return;
 
 			// First bind to the desktop folder, then to the current folder.
@@ -929,8 +934,8 @@ public: \
 			// we need to add enough extra buffer space to hold its target path.
 			DWORD nExtraChars = 0;
 			bool bInsideQuotes = false;
-			LPCTSTR pAnchor = m_ofn.lpstrFile;
-			LPCTSTR pChar = m_ofn.lpstrFile;
+			LPCTSTR pAnchor = CFileDialogImpl< T >::m_ofn.lpstrFile;
+			LPCTSTR pChar = CFileDialogImpl< T >::m_ofn.lpstrFile;
 			for (; *pChar; ++pChar)
 			{
 				// Look for quotation marks.
@@ -994,7 +999,7 @@ public: \
 
 			// If we need more space for shortcut targets, then reallocate.
 			if (nExtraChars > 0)
-				SASSERT(ResizeFilenameBuffer(m_ofn.nMaxFile + nExtraChars));
+				SASSERT(ResizeFilenameBuffer(CFileDialogImpl< T >::m_ofn.nMaxFile + nExtraChars));
 		}
 	};
 
@@ -1073,7 +1078,7 @@ public: \
 			T* pT = static_cast<T*>(this);
 			ATLASSERT(pT->m_spFileDlg != NULL);
 
-			ATL::CComPtr<IShellItem> spItem;
+			SComPtr<IShellItem> spItem;
 			HRESULT hRet = pT->m_spFileDlg->GetResult(&spItem);
 
 			if (SUCCEEDED(hRet))
@@ -1087,7 +1092,7 @@ public: \
 			T* pT = static_cast<T*>(this);
 			ATLASSERT(pT->m_spFileDlg != NULL);
 
-			ATL::CComPtr<IShellItem> spItem;
+			SComPtr<IShellItem> spItem;
 			HRESULT hRet = pT->m_spFileDlg->GetResult(&spItem);
 
 			if (SUCCEEDED(hRet))
@@ -1242,7 +1247,7 @@ public: \
 		}
 
 		// Implementation - IFileDialogEvents interface
-		virtual HRESULT STDMETHODCALLTYPE IFileDialogEvents::OnFileOk(IFileDialog* pfd)
+		virtual HRESULT STDMETHODCALLTYPE OnFileOk(IFileDialog* pfd)
 		{
 			T* pT = static_cast<T*>(this);
 			ATLASSERT(pT->m_spFileDlg.IsEqualObject(pfd));
@@ -1250,7 +1255,7 @@ public: \
 			return pT->OnFileOk();
 		}
 
-		virtual HRESULT STDMETHODCALLTYPE IFileDialogEvents::OnFolderChanging(IFileDialog* pfd, IShellItem* psiFolder)
+		virtual HRESULT STDMETHODCALLTYPE OnFolderChanging(IFileDialog* pfd, IShellItem* psiFolder)
 		{
 			T* pT = static_cast<T*>(this);
 			ATLASSERT(pT->m_spFileDlg.IsEqualObject(pfd));
@@ -1258,7 +1263,7 @@ public: \
 			return pT->OnFolderChanging(psiFolder);
 		}
 
-		virtual HRESULT STDMETHODCALLTYPE IFileDialogEvents::OnFolderChange(IFileDialog* pfd)
+		virtual HRESULT STDMETHODCALLTYPE OnFolderChange(IFileDialog* pfd)
 		{
 			T* pT = static_cast<T*>(this);
 			ATLASSERT(pT->m_spFileDlg.IsEqualObject(pfd));
@@ -1266,7 +1271,7 @@ public: \
 			return pT->OnFolderChange();
 		}
 
-		virtual HRESULT STDMETHODCALLTYPE IFileDialogEvents::OnSelectionChange(IFileDialog* pfd)
+		virtual HRESULT STDMETHODCALLTYPE OnSelectionChange(IFileDialog* pfd)
 		{
 			T* pT = static_cast<T*>(this);
 			ATLASSERT(pT->m_spFileDlg.IsEqualObject(pfd));
@@ -1274,7 +1279,7 @@ public: \
 			return pT->OnSelectionChange();
 		}
 
-		virtual HRESULT STDMETHODCALLTYPE IFileDialogEvents::OnShareViolation(IFileDialog* pfd, IShellItem* psi, FDE_SHAREVIOLATION_RESPONSE* pResponse)
+		virtual HRESULT STDMETHODCALLTYPE OnShareViolation(IFileDialog* pfd, IShellItem* psi, FDE_SHAREVIOLATION_RESPONSE* pResponse)
 		{
 			T* pT = static_cast<T*>(this);
 			ATLASSERT(pT->m_spFileDlg.IsEqualObject(pfd));
@@ -1282,7 +1287,7 @@ public: \
 			return pT->OnShareViolation(psi, pResponse);
 		}
 
-		virtual HRESULT STDMETHODCALLTYPE IFileDialogEvents::OnTypeChange(IFileDialog* pfd)
+		virtual HRESULT STDMETHODCALLTYPE OnTypeChange(IFileDialog* pfd)
 		{
 			T* pT = static_cast<T*>(this);
 			ATLASSERT(pT->m_spFileDlg.IsEqualObject(pfd));
@@ -1290,7 +1295,7 @@ public: \
 			return pT->OnTypeChange();
 		}
 
-		virtual HRESULT STDMETHODCALLTYPE IFileDialogEvents::OnOverwrite(IFileDialog* pfd, IShellItem* psi, FDE_OVERWRITE_RESPONSE* pResponse)
+		virtual HRESULT STDMETHODCALLTYPE OnOverwrite(IFileDialog* pfd, IShellItem* psi, FDE_OVERWRITE_RESPONSE* pResponse)
 		{
 			T* pT = static_cast<T*>(this);
 			ATLASSERT(pT->m_spFileDlg.IsEqualObject(pfd));
@@ -1353,7 +1358,7 @@ public: \
 				hRet = m_spFileDlg.CoCreateInstance(CLSID_FileOpenDialog);
 			}
 			if (SUCCEEDED(hRet)) {
-				_Init(lpszFileName, dwOptions, lpszDefExt, arrFilterSpec, uFilterSpecCount);
+				CShellFileDialogImpl< CShellFileDialog>::_Init(lpszFileName, dwOptions, lpszDefExt, arrFilterSpec, uFilterSpecCount);
 			}
 		}
 	public:
@@ -1386,7 +1391,7 @@ public: \
 			HRESULT hRet = m_spFileDlg.CoCreateInstance(CLSID_FileOpenDialog);
 
 			if (SUCCEEDED(hRet))
-				_Init(lpszFileName, dwOptions, lpszDefExt, arrFilterSpec, uFilterSpecCount);
+				CShellFileDialogImpl<T>::_Init(lpszFileName, dwOptions, lpszDefExt, arrFilterSpec, uFilterSpecCount);
 		}
 
 		IFileOpenDialog* GetPtr()
@@ -1436,7 +1441,7 @@ public: \
 			HRESULT hRet = m_spFileDlg.CoCreateInstance(CLSID_FileSaveDialog);
 
 			if (SUCCEEDED(hRet))
-				_Init(lpszFileName, dwOptions, lpszDefExt, arrFilterSpec, uFilterSpecCount);
+				CShellFileDialogImpl< T >::_Init(lpszFileName, dwOptions, lpszDefExt, arrFilterSpec, uFilterSpecCount);
 		}
 
 		IFileSaveDialog* GetPtr()
@@ -1710,9 +1715,8 @@ public: \
 			const UINT BFFM_SETOKTEXT = WM_USER + 105;
 #endif
 			ATLASSERT(m_hWnd != NULL);
-			USES_CONVERSION;
-			LPCWSTR lpstr = T2CW(lpstrOKText);
-			::SendMessage(m_hWnd, BFFM_SETOKTEXT, 0, (LPARAM)lpstr);
+			SStringW str = S_CT2W(lpstrOKText);
+			::SendMessage(m_hWnd, BFFM_SETOKTEXT, 0, (LPARAM)str.c_str());
 		}
 
 		void SetExpanded(LPCITEMIDLIST pItemIDList)
@@ -1979,52 +1983,51 @@ public: \
 			HWND hWndParent = NULL)
 			: CFontDialogImpl< T >(NULL, dwFlags, hDCPrinter, hWndParent)
 		{
-			m_cf.Flags |= CF_INITTOLOGFONTSTRUCT;
-			m_cf.Flags |= FillInLogFont(charformat);
-			m_cf.lpLogFont = &m_lf;
+			CFontDialogImpl< T >::m_cf.Flags |= CF_INITTOLOGFONTSTRUCT;
+			CFontDialogImpl< T >::m_cf.Flags |= FillInLogFont(charformat);
 
 			if ((charformat.dwMask & CFM_COLOR) != 0)
-				m_cf.rgbColors = charformat.crTextColor;
+				CFontDialogImpl< T >::m_cf.rgbColors = charformat.crTextColor;
 		}
 
 		void GetCharFormat(CHARFORMAT& cf) const
 		{
 			cf.dwEffects = 0;
 			cf.dwMask = 0;
-			if ((m_cf.Flags & CF_NOSTYLESEL) == 0)
+			if ((CFontDialogImpl< T >::m_cf.Flags & CF_NOSTYLESEL) == 0)
 			{
 				cf.dwMask |= CFM_BOLD | CFM_ITALIC;
-				cf.dwEffects |= IsBold() ? CFE_BOLD : 0;
-				cf.dwEffects |= IsItalic() ? CFE_ITALIC : 0;
+				cf.dwEffects |= CFontDialogImpl< T >::IsBold() ? CFE_BOLD : 0;
+				cf.dwEffects |= CFontDialogImpl< T >::IsItalic() ? CFE_ITALIC : 0;
 			}
-			if ((m_cf.Flags & CF_NOSIZESEL) == 0)
+			if ((CFontDialogImpl< T >::m_cf.Flags & CF_NOSIZESEL) == 0)
 			{
 				cf.dwMask |= CFM_SIZE;
 				// GetSize() returns in tenths of points so mulitply by 2 to get twips
-				cf.yHeight = GetSize() * 2;
+				cf.yHeight = CFontDialogImpl< T >::GetSize() * 2;
 			}
 
-			if ((m_cf.Flags & CF_NOFACESEL) == 0)
+			if ((CFontDialogImpl< T >::m_cf.Flags & CF_NOFACESEL) == 0)
 			{
 				cf.dwMask |= CFM_FACE;
-				cf.bPitchAndFamily = m_cf.lpLogFont->lfPitchAndFamily;
+				cf.bPitchAndFamily = CFontDialogImpl< T >::m_cf.lpLogFont->lfPitchAndFamily;
 #if (_RICHEDIT_VER >= 0x0200)
-				_tcscpy_s(cf.szFaceName, _countof(cf.szFaceName), GetFaceName());
+				_tcscpy_s(cf.szFaceName, _countof(cf.szFaceName), CFontDialogImpl< T >::GetFaceName());
 #else // !(_RICHEDIT_VER >= 0x0200)
 #error  不支持richedit2.0之前的版本
 #endif // !(_RICHEDIT_VER >= 0x0200)
 			}
 
-			if ((m_cf.Flags & CF_EFFECTS) != 0)
+			if ((CFontDialogImpl< T >::m_cf.Flags & CF_EFFECTS) != 0)
 			{
 				cf.dwMask |= CFM_UNDERLINE | CFM_STRIKEOUT | CFM_COLOR;
-				cf.dwEffects |= IsUnderline() ? CFE_UNDERLINE : 0;
-				cf.dwEffects |= IsStrikeOut() ? CFE_STRIKEOUT : 0;
-				cf.crTextColor = GetColor();
+				cf.dwEffects |= CFontDialogImpl< T >::IsUnderline() ? CFE_UNDERLINE : 0;
+				cf.dwEffects |= CFontDialogImpl< T >::IsStrikeOut() ? CFE_STRIKEOUT : 0;
+				cf.crTextColor = CFontDialogImpl< T >::GetColor();
 			}
-			if ((m_cf.Flags & CF_NOSCRIPTSEL) == 0)
+			if ((CFontDialogImpl< T >::m_cf.Flags & CF_NOSCRIPTSEL) == 0)
 			{
-				cf.bCharSet = m_cf.lpLogFont->lfCharSet;
+				cf.bCharSet = CFontDialogImpl< T >::m_cf.lpLogFont->lfCharSet;
 				cf.dwMask |= CFM_CHARSET;
 			}
 			cf.yOffset = 0;
@@ -2037,59 +2040,59 @@ public: \
 			{
 				HDC hDC = ::CreateDC(_T("DISPLAY"), NULL, NULL, NULL);
 				LONG yPerInch = ::GetDeviceCaps(hDC, LOGPIXELSY);
-				m_lf.lfHeight = -(int)((cf.yHeight * yPerInch) / 1440);
+				CFontDialogImpl< T >::m_lf.lfHeight = -(int)((cf.yHeight * yPerInch) / 1440);
 			}
 			else
-				m_lf.lfHeight = 0;
+				CFontDialogImpl< T >::m_lf.lfHeight = 0;
 
-			m_lf.lfWidth = 0;
-			m_lf.lfEscapement = 0;
-			m_lf.lfOrientation = 0;
+			CFontDialogImpl< T >::m_lf.lfWidth = 0;
+			CFontDialogImpl< T >::m_lf.lfEscapement = 0;
+			CFontDialogImpl< T >::m_lf.lfOrientation = 0;
 
 			if ((cf.dwMask & (CFM_ITALIC | CFM_BOLD)) == (CFM_ITALIC | CFM_BOLD))
 			{
-				m_lf.lfWeight = ((cf.dwEffects & CFE_BOLD) != 0) ? FW_BOLD : FW_NORMAL;
-				m_lf.lfItalic = (BYTE)(((cf.dwEffects & CFE_ITALIC) != 0) ? TRUE : FALSE);
+				CFontDialogImpl< T >::m_lf.lfWeight = ((cf.dwEffects & CFE_BOLD) != 0) ? FW_BOLD : FW_NORMAL;
+				CFontDialogImpl< T >::m_lf.lfItalic = (BYTE)(((cf.dwEffects & CFE_ITALIC) != 0) ? TRUE : FALSE);
 			}
 			else
 			{
 				dwFlags |= CF_NOSTYLESEL;
-				m_lf.lfWeight = FW_DONTCARE;
-				m_lf.lfItalic = FALSE;
+				CFontDialogImpl< T >::m_lf.lfWeight = FW_DONTCARE;
+				CFontDialogImpl< T >::m_lf.lfItalic = FALSE;
 			}
 
 			if ((cf.dwMask & (CFM_UNDERLINE | CFM_STRIKEOUT | CFM_COLOR)) == (CFM_UNDERLINE | CFM_STRIKEOUT | CFM_COLOR))
 			{
 				dwFlags |= CF_EFFECTS;
-				m_lf.lfUnderline = (BYTE)(((cf.dwEffects & CFE_UNDERLINE) != 0) ? TRUE : FALSE);
-				m_lf.lfStrikeOut = (BYTE)(((cf.dwEffects & CFE_STRIKEOUT) != 0) ? TRUE : FALSE);
+				CFontDialogImpl< T >::m_lf.lfUnderline = (BYTE)(((cf.dwEffects & CFE_UNDERLINE) != 0) ? TRUE : FALSE);
+				CFontDialogImpl< T >::m_lf.lfStrikeOut = (BYTE)(((cf.dwEffects & CFE_STRIKEOUT) != 0) ? TRUE : FALSE);
 			}
 			else
 			{
-				m_lf.lfUnderline = (BYTE)FALSE;
-				m_lf.lfStrikeOut = (BYTE)FALSE;
+				CFontDialogImpl< T >::m_lf.lfUnderline = (BYTE)FALSE;
+				CFontDialogImpl< T >::m_lf.lfStrikeOut = (BYTE)FALSE;
 			}
 
 			if ((cf.dwMask & CFM_CHARSET) != 0)
-				m_lf.lfCharSet = cf.bCharSet;
+				CFontDialogImpl< T >::m_lf.lfCharSet = cf.bCharSet;
 			else
 				dwFlags |= CF_NOSCRIPTSEL;
-			m_lf.lfOutPrecision = OUT_DEFAULT_PRECIS;
-			m_lf.lfClipPrecision = CLIP_DEFAULT_PRECIS;
-			m_lf.lfQuality = DEFAULT_QUALITY;
+			CFontDialogImpl< T >::m_lf.lfOutPrecision = OUT_DEFAULT_PRECIS;
+			CFontDialogImpl< T >::m_lf.lfClipPrecision = CLIP_DEFAULT_PRECIS;
+			CFontDialogImpl< T >::m_lf.lfQuality = DEFAULT_QUALITY;
 			if ((cf.dwMask & CFM_FACE) != 0)
 			{
-				m_lf.lfPitchAndFamily = cf.bPitchAndFamily;
+				CFontDialogImpl< T >::m_lf.lfPitchAndFamily = cf.bPitchAndFamily;
 #if (_RICHEDIT_VER >= 0x0200)
-				_tcscpy_s(m_lf.lfFaceName, _countof(m_lf.lfFaceName), cf.szFaceName);
+				_tcscpy_s(CFontDialogImpl< T >::m_lf.lfFaceName, _countof(CFontDialogImpl< T >::m_lf.lfFaceName), cf.szFaceName);
 #else // !(_RICHEDIT_VER >= 0x0200)
 				_tcscpy_s(m_lf.lfFaceName, _countof(m_lf.lfFaceName), A2T((LPSTR)cf.szFaceName));
 #endif // !(_RICHEDIT_VER >= 0x0200)
 			}
 			else
 			{
-				m_lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
-				m_lf.lfFaceName[0] = (TCHAR)0;
+				CFontDialogImpl< T >::m_lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+				CFontDialogImpl< T >::m_lf.lfFaceName[0] = (TCHAR)0;
 			}
 			return dwFlags;
 		}

@@ -58,7 +58,7 @@ extern "C" {
 #define __js_printf_like(a, b)
 #endif
 
-#define JS_BOOL int
+#define JS_BOOL BOOL
 
 typedef struct JSRuntime JSRuntime;
 typedef struct JSContext JSContext;
@@ -538,7 +538,7 @@ typedef struct JSClassDef {
 
 QJS_API JSClassID JS_NewClassID(JSClassID *pclass_id);
 QJS_API int JS_NewClass(JSRuntime *rt, JSClassID class_id, const JSClassDef *class_def);
-QJS_API int JS_IsRegisteredClass(JSRuntime *rt, JSClassID class_id);
+QJS_API BOOL JS_IsRegisteredClass(JSRuntime *rt, JSClassID class_id);
 
 /* value handling */
 
@@ -949,7 +949,7 @@ typedef union JSCFunctionType {
     JSValue (*getter_magic)(JSContext *ctx, JSValueConst this_val, int magic);
     JSValue (*setter_magic)(JSContext *ctx, JSValueConst this_val, JSValueConst val, int magic);
     JSValue (*iterator_next)(JSContext *ctx, JSValueConst this_val,
-                             int argc, JSValueConst *argv, int *pdone, int magic);
+                             int argc, JSValueConst *argv, BOOL *pdone, int magic);
 } JSCFunctionType;
 
 QJS_API JSValue JS_NewCFunction2(JSContext *ctx, JSCFunction *func,

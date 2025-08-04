@@ -737,13 +737,6 @@ typedef enum tagSTREAM_SEEK
     STREAM_SEEK_END = 2
 } STREAM_SEEK;
 
-typedef enum tagLOCKTYPE
-{
-    LOCK_WRITE = 1,
-    LOCK_EXCLUSIVE = 2,
-    LOCK_ONLYONCE = 4
-} LOCKTYPE;
-
 #define _Out_opt_
 #define _COM_Outptr_
 

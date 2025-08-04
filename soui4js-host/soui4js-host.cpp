@@ -18,18 +18,36 @@ using namespace SOUI;
 
 #define kLogTag "soui4js-host"
 
-SStringT GetAppDir()
+SStringT GetDataDir()
 {
+	#ifdef __APPLE__
+	char szBundle[MAX_PATH] = { 0 };
+	GetAppleBundlePath(szBundle, MAX_PATH);
+	return SStringA().Format(_T("%s/Contents/Resources/data"),szBundle);
+	#else
 	TCHAR szCurrentDir[MAX_PATH] = { 0 };
 	GetModuleFileName(NULL, szCurrentDir, sizeof(szCurrentDir));
-#ifdef _WIN32
-	LPTSTR lpInsertPos = _tcsrchr(szCurrentDir, _T('\\'));
-#else
-	LPTSTR lpInsertPos = _tcsrchr(szCurrentDir, _T('/'));
-#endif//_WIN32
+	LPTSTR lpInsertPos = _tcsrchr(szCurrentDir, _T(PATH_SLASH));
 	_tcscpy(lpInsertPos, _T("\0"));
 	return szCurrentDir;
+	#endif
 }
+
+#if !defined(_WIN32) || defined(__MINGW32__)
+SStringT GetFontPath(){
+	#ifdef __APPLE__
+	char szBundle[MAX_PATH] = { 0 };
+	GetAppleBundlePath(szBundle, MAX_PATH);
+	return SStringA().Format(_T("%s/Contents/Resources/fonts/simsun.ttc"),szBundle);
+	#else
+	TCHAR szCurrentDir[MAX_PATH] = { 0 };
+	GetModuleFileName(NULL, szCurrentDir, sizeof(szCurrentDir));
+	LPTSTR lpInsertPos = _tcsrchr(szCurrentDir, _T(PATH_SLASH));
+	_tcscpy(lpInsertPos, _T("/simsun.ttc"));
+	return szCurrentDir;
+	#endif	
+}
+#endif // _WIN32
 
 BOOL InitApp(SComMgr2 & comMgr,IApplication *theApp){
 	SAutoRefPtr<IRenderFactory> pRenderFactory;
@@ -98,16 +116,11 @@ BOOL LoadSystemRes(IApplication *theApp,SouiFactory & souiFac,SComMgr2 & comMgr)
 	FreeLibrary(hModSysResource);	
 	return TRUE;
 	#else
-	TCHAR szAppDir[MAX_PATH] = { 0 };
-	GetModuleFileName(NULL, szAppDir, sizeof(szAppDir));
-	LPTSTR lpInsertPos = _tcsrchr(szAppDir, _T('/'));
-	_tcscpy(lpInsertPos + 1, _T("\0"));
-
+	SStringT strDataDir = GetDataDir();
 	IResProvider* sysResProvider;
 	BOOL bLoaded = comMgr.CreateResProvider_ZIP((IObjRef**)&sysResProvider);
 	SASSERT_FMT(bLoaded, _T("load interface [%s] failed!"), _T("resprovider_zip"));
-
-	SStringA strPath=SStringA().Format("%ssoui-sys-resource.zip",szAppDir);
+	SStringA strPath=SStringA().Format("%s/soui-sys-resource.zip",strDataDir.c_str());
 	ZIPRES_PARAM param;
 	ZipFile(&param,theApp->GetRenderFactory(),strPath);
 	bLoaded = sysResProvider->Init((WPARAM)&param, 0);
@@ -162,7 +175,7 @@ int Run(HINSTANCE hInstance, const SStringA &strDir ,const SStringA& jsfile)
 	return nRet;
 }
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__MINGW32__)
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpstrCmdLine, int nCmdShow)
 {
 	WSADATA wsaData;
@@ -171,7 +184,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpstrC
 	int argc = 0;
 	LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
 	SStringA jsfile = "main.js";//default to run main.js
-	SStringW appDir = S_CT2W(GetAppDir());
+	SStringW appDir = S_CT2W(GetDataDir());
 	SStringW strDir = appDir;
 	if (argc > 1)
 	{
@@ -196,7 +209,9 @@ int main(int argc, char** argv) {
 		printf("arg %d=%s\n",i,argv[i]);
 	}
 	SStringA jsfile = "main.js";//default to run main.js
-	SStringA appDir = S_CT2A(GetAppDir());
+	SStringA appDir = S_CT2A(GetDataDir());
+	SStringT fontPath = GetFontPath();
+	AddFontResource(fontPath);
 	SStringA strDir = appDir;
 	if (argc > 1)
 	{
@@ -204,13 +219,11 @@ int main(int argc, char** argv) {
 		if (argc > 2)
 		 	jsfile = argv[2];
 	}
-	//strDir = "/home/flyhigh/work/soui4js/build/bin/ws_client";
 	if(strDir != appDir && strDir[0]!='/'){
 		//receive relative app path.
 		strDir.Format("%s/%s",appDir.c_str(),strDir.c_str());
 	}
 	SetCurrentDirectoryA(strDir);
-	//AddFontResource("/home/flyhigh/work/soui4/simsun.ttc");
 	HINSTANCE hInst = GetModuleHandle(NULL);
 	return Run(hInst,strDir,jsfile);
 }

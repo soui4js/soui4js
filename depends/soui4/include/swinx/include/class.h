@@ -96,8 +96,8 @@ ATOM WINAPI RegisterClassExW(const WNDCLASSEXW *wc);
 BOOL WINAPI UnregisterClassA(LPCSTR className, HINSTANCE instance);
 BOOL WINAPI UnregisterClassW(LPCWSTR className, HINSTANCE instance);
 
-BOOL WINAPI GetClassInfoExA(HINSTANCE hInstance, LPCSTR name, WNDCLASSEXA *wc);
-BOOL WINAPI GetClassInfoExW(HINSTANCE hInstance, LPCWSTR name, WNDCLASSEXW *wc);
+ATOM WINAPI GetClassInfoExA(HINSTANCE hInstance, LPCSTR name, WNDCLASSEXA *wc);
+ATOM WINAPI GetClassInfoExW(HINSTANCE hInstance, LPCWSTR name, WNDCLASSEXW *wc);
 
 UINT WINAPI GetAtomNameA(ATOM atomName, LPSTR name, int cchLen);
 UINT WINAPI GetAtomNameW(ATOM atomName, LPWSTR name, int cchLen);

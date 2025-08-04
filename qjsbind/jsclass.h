@@ -71,13 +71,24 @@ namespace qjsbind {
 	{
 		FUN fun = 0;
 		Value data(ctx, func_data[0]);
-		if (sizeof(fun) < sizeof(int64_t)) {
-			int32_t addr = data.ToInt32();
+		if(sizeof(fun)==sizeof(uint32_t)) {
+			uint32_t addr = data.ToUint32();
 			memcpy(&fun, &addr, sizeof(addr));
 		}
-		else {
-			int64_t addr = data.ToInt64();
+		else if (sizeof(fun) == sizeof(uint64_t)) {
+			uint64_t addr = data.ToUint64();
 			memcpy(&fun, &addr, sizeof(addr));
+		}
+		else if (sizeof(fun) == 2 * sizeof(uint64_t)) {
+			uint64_t* buf = (uint64_t*)&fun;
+			assert(data.IsArray());
+			Value lowValue = data.GetProperty(0U);
+			buf[0] = lowValue.ToUint64();
+			Value highValue = data.GetProperty(1U);
+			buf[1] = highValue.ToUint64();
+		}
+		else {
+			assert(false && "function pointer size not match");
 		}
 		JsProxy<T>* pThis;
 		if (!GetSafeThis(this_val, &pThis)) {
@@ -145,7 +156,7 @@ namespace qjsbind {
 	template<class T, void Mark(T*, JS_MarkFunc*)>
 	void ObjMark(JSRuntime* rt, JSValueConst val, JS_MarkFunc* mark_func) {
 		JsProxy<T>* pThis;
-		if (Mark && GetSafeThis(val, &pThis) && pThis->IsOwner()) {
+		if (Mark!= nullptr && GetSafeThis(val, &pThis) && pThis->IsOwner()) {
 			Mark(pThis->GetObj(), mark_func);
 		}
 	}
@@ -233,16 +244,26 @@ namespace qjsbind {
 
 		template<typename MemFunc>
 		void AddFunc(const char* name, MemFunc fun) {
-			uint64_t magic = 0;
-#ifdef _WIN64
-			memcpy(&magic, &fun, sizeof(uint64_t));
-#else
-			memcpy(&magic, &fun, sizeof(fun));
-#endif
+			JSValue data;
+			int szMemFunc = sizeof(MemFunc);
+			if (szMemFunc == sizeof(uint32_t)) {
+				data = JS_NewUint32(context_, *(uint32_t*)&fun);
+			}
+			else if (szMemFunc == sizeof(uint64_t)) {
+				data = JS_NewBigUint64(context_, *(uint64_t*)&fun);
+			}
+			else if (szMemFunc == 2 * sizeof(uint64_t)) {
+				const uint64_t *buf = (const uint64_t*)&fun;
+				data =JS_NewArray(context_);
+				JS_SetPropertyUint32(context_, data, 0, JS_NewBigUint64(context_, buf[0]));
+				JS_SetPropertyUint32(context_, data, 1, JS_NewBigUint64(context_, buf[1]));
+			}
+			else {
+				assert(false && "function pointer size not match");
+				return;
+			}
 			JSCFunctionData* mem_func = &MemFun<T, MemFunc>;
-			JSValue data = JS_NewInt64(context_, magic);
 			JSValue func_value = JS_NewCFunctionData(context_, mem_func, 0, 0, 1, &data);
-
 			JS_DefinePropertyValueStr(context_, prototype_, name, func_value, 0);
 			JS_FreeValue(context_, data);
 		}
@@ -251,7 +272,7 @@ namespace qjsbind {
 		void AddCFunc(const char* name, Fun fun) {
 			uint64_t magic = 0;
 			memcpy(&magic, &fun, sizeof(fun));
-			JSValue data = JS_NewInt64(context_, magic);
+			JSValue data = JS_NewBigUint64(context_, magic);
 			JSCFunctionData* cfunc = &CallCFun2<T, Fun>;
 			JSValue func_value = JS_NewCFunctionData(context_, cfunc, 0, 0, 1, &data);
 			JS_DefinePropertyValueStr(context_, prototype_, name, func_value, 0);

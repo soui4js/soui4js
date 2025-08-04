@@ -728,7 +728,7 @@ namespace qjsbind {
 
 
 namespace qjsbind {
-#ifndef _WIN64
+#if !defined(_WIN64) && !defined(__arm64__)
 	//10 params
 	template<typename T, typename Ret,
 		typename T1,

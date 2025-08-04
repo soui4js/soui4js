@@ -1,6 +1,8 @@
 ﻿#ifndef __EXP_SFILEOPENDLG__H__
 #define __EXP_SFILEOPENDLG__H__
 #include "souidlgs.h"
+#include <list>
+#include <vector>
 
 typedef HRESULT (WINAPI * FunSHCreateItemFromParsingName)(PCWSTR, IBindCtx*, REFIID, void**);
 
