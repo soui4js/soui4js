@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "sysapi.h"
+#include <mmsystem.h>
 using namespace SOUI;
 
 #ifdef WIN32
-#include <Mmsystem.h>
 #pragma comment(lib,"Winmm.lib")
-
+#endif
 
 namespace sysapi {
 	BOOL JsPlaySound(LPCSTR filename, BOOL purge) {
@@ -20,43 +20,6 @@ namespace sysapi {
 			return ::PlaySound(str, NULL, flag);
 		}
 	}
-}
-#else
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
-
-namespace sysapi {
-
-    static pid_t g_lastSoundPid = 0;
-
-    BOOL JsPlaySound(LPCSTR filename, BOOL purge) {
-        if (purge || filename == NULL || filename[0] == '\0') {
-            if (g_lastSoundPid != 0) {
-                kill(g_lastSoundPid, SIGTERM);
-                waitpid(g_lastSoundPid, NULL, WNOHANG);
-                g_lastSoundPid = 0;
-            }
-            if (filename == NULL || filename[0] == '\0')
-                return TRUE;
-        }
-
-        pid_t pid = fork();
-        if (pid < 0) { 
-            return FALSE;
-        }
-        if (pid == 0) { 
-            execlp("aplay", "aplay", filename, (char*)NULL);
-            _exit(127);
-        }
-        g_lastSoundPid = pid;
-        return TRUE;
-    }
-}
-#endif // WIN32
-
-namespace sysapi {
     std::string JsGetModuleFileName(HMODULE hModule){
         WCHAR szPath[MAX_PATH] = { 0 };
         GetModuleFileNameW(hModule, szPath, MAX_PATH);
