@@ -111,7 +111,7 @@ typedef int BOOL;
 #else
 #ifndef OBJC_BOOL_DEFINED
 typedef signed char BOOL;
-#endif//OBJC_BOOL_DEFINED
+#endif // OBJC_BOOL_DEFINED
 #endif
 
 #define FALSE 0

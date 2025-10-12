@@ -16,7 +16,14 @@ extern "C"
 #define GET_Y_LPARAM(lParam) ((int)(short)HIWORD(lParam))
 #endif
 
-#define CLS_WINDOW "window"
+#define CLS_WINDOWA "window"
+#define CLS_WINDOWW L"window"
+
+#ifdef _UNICODE
+#define CLS_WINDOW CLS_WINDOWW
+#else
+#define CLS_WINDOW CLS_WINDOWA
+#endif
 
     /***********************************************************************
      *		CreateWindowExW (USER32.@)
@@ -344,7 +351,7 @@ extern "C"
 
     BOOL WINAPI IsWindowUnicode(HWND hWnd);
 
-    typedef int (CALLBACK *WNDENUMPROC)(HWND hwnd, LPARAM lParam);
+    typedef int(CALLBACK *WNDENUMPROC)(HWND hwnd, LPARAM lParam);
 
     BOOL WINAPI EnumWindows(WNDENUMPROC lpEnumFunc, LPARAM lParam);
 
@@ -380,6 +387,8 @@ extern "C"
 #define FindWindow   FindWindowA
 #define FindWindowEx FindWindowExA
 #endif // UNICODE
+
+    HMENU WINAPI GetSystemMenu(HWND hWnd, BOOL bRevert);
 
 #ifdef __cplusplus
 }

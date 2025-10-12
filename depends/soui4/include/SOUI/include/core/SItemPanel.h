@@ -10,7 +10,7 @@
 
 #include "SWndContainerImpl.h"
 #include <proxy/SWindowProxy.h>
-#include <interface/SCtrl-i.h>
+#include <interface/SCtrls-i.h>
 
 SNSBEGIN
 
@@ -22,6 +22,7 @@ struct IItemContainer
     virtual BOOL OnItemGetRect(const SOsrPanel *pItem,
                                CRect &rcItem) const = 0; //获得表项的显示位置
     virtual BOOL IsItemRedrawDelay() const = 0;          //指示表项的更新方式
+    virtual BOOL IsTimelineEnabled() const = 0;
 };
 
 struct IHostProxy
@@ -116,7 +117,7 @@ class SOUI_EXP SOsrPanel
     STDMETHOD_(BOOL, OnReleaseSwndCapture)() OVERRIDE;
 
     STDMETHOD_(SWND, OnSetSwndCapture)(SWND swnd) OVERRIDE;
-    STDMETHOD_(HWND, GetHostHwnd)() OVERRIDE;
+    STDMETHOD_(HWND, GetHostHwnd)() SCONST OVERRIDE;
     STDMETHOD_(LPCWSTR, GetTranslatorContext)() const OVERRIDE;
     STDMETHOD_(void, FrameToHost)(RECT *rc) const OVERRIDE;
     STDMETHOD_(BOOL, IsTranslucent)() const OVERRIDE;
@@ -141,7 +142,7 @@ class SOUI_EXP SOsrPanel
 
     STDMETHOD_(BOOL, PostTask)(THIS_ IRunnable *runable, BOOL bAsync DEF_VAL(TRUE)) OVERRIDE;
     STDMETHOD_(int, RemoveTasksForObject)(THIS_ void *pObj) OVERRIDE;
-
+    STDMETHOD_(BOOL, IsTimelineEnabled)(CTHIS) SCONST OVERRIDE;
   public: // SWindow
     virtual LRESULT DoFrameEvent(UINT uMsg, WPARAM wParam, LPARAM lParam);
     virtual void ModifyItemState(DWORD dwStateAdd, DWORD dwStateRemove);

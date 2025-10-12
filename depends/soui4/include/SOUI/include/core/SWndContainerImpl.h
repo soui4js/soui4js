@@ -18,7 +18,7 @@
 #include <core/SDropTargetDispatcher.h>
 #include <core/SFocusManager.h>
 #include <core/STimerlineHandlerMgr.h>
-
+#include <helper/SwndFinder.h>
 SNSBEGIN
 
 /**
@@ -142,6 +142,11 @@ class SOUI_EXP SwndContainerImpl
         return &m_focusMgr;
     }
 
+    STDMETHOD_(ISwndFinder *, GetSwndFinder)(THIS) OVERRIDE
+    {
+        return m_swndFinder;
+    }
+
     /**
      * @brief Registers a timeline handler.
      * @param pHandler Pointer to the timeline handler.
@@ -194,6 +199,11 @@ class SOUI_EXP SwndContainerImpl
      */
     STDMETHOD_(BOOL, UnregisterVideoCanvas)(THIS_ SWND swnd) OVERRIDE;
 
+    /**
+     * @brief Checks if the timeline is enabled.
+     * @return TRUE if timeline is enabled, FALSE otherwise.
+     */
+    STDMETHOD_(BOOL, IsTimelineEnabled)(CTHIS) SCONST OVERRIDE;
   public: // ITimelineHandler
     /**
      * @brief Called when the next frame is ready.
@@ -286,6 +296,7 @@ class SOUI_EXP SwndContainerImpl
     SList<SWND> m_lstVideoCanvas;              /**< List of video canvas windows */
     SAutoRefPtr<ICaret> m_caret;               /**< Caret */
     STimerlineHandlerMgr m_timelineHandlerMgr; /**< Timeline handler manager */
+    SAutoRefPtr<ISwndFinder> m_swndFinder;     /**< Swnd finder */
 };
 
 SNSEND

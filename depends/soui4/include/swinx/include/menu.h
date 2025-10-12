@@ -10,7 +10,7 @@ extern "C"
 #define WINUSERAPI
 #endif
 
-    typedef struct tagMENUITEMINFO
+    typedef struct tagMENUITEMINFOA
     {
         UINT cbSize;
         UINT fMask;
@@ -24,7 +24,33 @@ extern "C"
         LPSTR dwTypeData;
         UINT cch;
         HBITMAP hbmpItem;
-    } MENUITEMINFO, *LPMENUITEMINFO, *const LPCMENUITEMINFO;
+    } MENUITEMINFOA, *LPMENUITEMINFOA, *const LPCMENUITEMINFOA;
+
+    typedef struct tagMENUITEMINFOW
+    {
+        UINT cbSize;
+        UINT fMask;
+        UINT fType;
+        UINT fState;
+        UINT wID;
+        HMENU hSubMenu;
+        HBITMAP hbmpChecked;
+        HBITMAP hbmpUnchecked;
+        ULONG_PTR dwItemData;
+        LPWSTR dwTypeData;
+        UINT cch;
+        HBITMAP hbmpItem;
+    } MENUITEMINFOW, *LPMENUITEMINFOW, *const LPCMENUITEMINFOW;
+
+#ifdef _UNICODE
+#define MENUITEMINFO    MENUITEMINFOW
+#define LPMENUITEMINFO  LPMENUITEMINFOW
+#define LPCMENUITEMINFO LPCMENUITEMINFOW
+#else
+#define MENUITEMINFO    MENUITEMINFOA
+#define LPMENUITEMINFO  LPMENUITEMINFOA
+#define LPCMENUITEMINFO LPCMENUITEMINFOA
+#endif
 
 #define MIIM_BITMAP     0x00000080  // 检索或设置 hbmpItem 成员。
 #define MIIM_CHECKMARKS 0x00000008  // 检索或设置 hbmpChecked 和 hbmpUnchecked 成员。
@@ -71,13 +97,22 @@ extern "C"
     UINT WINAPI GetMenuItemID(HMENU hMenu, int nPos);
 
     WINUSERAPI
-    BOOL WINAPI InsertMenuItem(HMENU hmenu, UINT item, BOOL fByPosition, LPCMENUITEMINFO lpmi);
+    BOOL WINAPI InsertMenuItemA(HMENU hmenu, UINT item, BOOL fByPosition, LPCMENUITEMINFOA lpmi);
 
     WINUSERAPI
-    BOOL WINAPI SetMenuItemInfo(HMENU hmenu, UINT item, BOOL fByPosition, LPCMENUITEMINFO lpmi);
+    BOOL WINAPI SetMenuItemInfoA(HMENU hmenu, UINT item, BOOL fByPosition, LPCMENUITEMINFOA lpmi);
 
     WINUSERAPI
-    BOOL WINAPI GetMenuItemInfo(HMENU hmenu, UINT item, BOOL fByPosition, LPCMENUITEMINFO lpmi);
+    BOOL WINAPI GetMenuItemInfoA(HMENU hmenu, UINT item, BOOL fByPosition, LPCMENUITEMINFOA lpmi);
+
+    WINUSERAPI
+    BOOL WINAPI InsertMenuItemW(HMENU hmenu, UINT item, BOOL fByPosition, LPCMENUITEMINFOW lpmi);
+
+    WINUSERAPI
+    BOOL WINAPI SetMenuItemInfoW(HMENU hmenu, UINT item, BOOL fByPosition, LPCMENUITEMINFOW lpmi);
+
+    WINUSERAPI
+    BOOL WINAPI GetMenuItemInfoW(HMENU hmenu, UINT item, BOOL fByPosition, LPCMENUITEMINFOW lpmi);
 
     WINUSERAPI
     int WINAPI GetMenuItemCount(HMENU hMenu);
@@ -101,13 +136,19 @@ extern "C"
     BOOL WINAPI ModifyMenuW(HMENU hMnu, UINT uPosition, UINT uFlags, UINT_PTR uIDNewItem, LPCWSTR lpNewItem);
 
 #ifdef UNICODE
-#define InsertMenu InsertMenuW
-#define AppendMenu AppendMenuW
-#define ModifyMenu ModifyMenuW
+#define InsertMenuItem  InsertMenuItemW
+#define SetMenuItemInfo SetMenuItemInfoW
+#define GetMenuItemInfo GetMenuItemInfoW
+#define InsertMenu      InsertMenuW
+#define AppendMenu      AppendMenuW
+#define ModifyMenu      ModifyMenuW
 #else
-#define InsertMenu InsertMenuA
-#define AppendMenu AppendMenuA
-#define ModifyMenu ModifyMenuA
+#define InsertMenuItem  InsertMenuItemA
+#define SetMenuItemInfo SetMenuItemInfoA
+#define GetMenuItemInfo GetMenuItemInfoA
+#define InsertMenu      InsertMenuA
+#define AppendMenu      AppendMenuA
+#define ModifyMenu      ModifyMenuA
 #endif // UNICDOE
 
     WINUSERAPI

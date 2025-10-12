@@ -743,14 +743,14 @@ typedef struct _charformat2a
 
     typedef DWORD(CALLBACK *EDITSTREAMCALLBACK)(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb);
 
-    #pragma pack(push,8)
+#pragma pack(push, 8)
     typedef struct _editstream
     {
         DWORD_PTR dwCookie; // User value passed to callback as first parameter
         DWORD dwError;      // Last error
         EDITSTREAMCALLBACK pfnCallback;
     } EDITSTREAM;
-    #pragma pack(pop)
+#pragma pack(pop)
 // Stream formats. Flags are all in low word, since high word
 // gives possible codepage choice.
 #define SF_TEXT      0x0001

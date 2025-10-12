@@ -641,6 +641,12 @@ typedef LPENUMLOGFONTA LPENUMLOGFONT;
 
     BOOL WINAPI Polyline(HDC hdc, CONST POINT *apt, int cpt);
 
+    BOOL WINAPI PolyBezier(HDC hdc, const POINT *apt, DWORD cpt);
+
+    BOOL WINAPI PolyBezierTo(HDC hdc, const POINT *apt, DWORD cpt);
+
+    int WINAPI SetPolyFillMode(HDC hdc, int mode);
+
     BOOL WINAPI AlphaBlend(HDC hdcDest, int xoriginDest, int yoriginDest, int wDest, int hDest, HDC hdcSrc, int xoriginSrc, int yoriginSrc, int wSrc, int hSrc, BLENDFUNCTION ftn);
 
 #define EXPEND_MODE_NONE    0
@@ -719,6 +725,7 @@ typedef LPENUMLOGFONTA LPENUMLOGFONT;
     BOOL WINAPI InvertRect(HDC hDC, CONST RECT *lprc);
 
     BOOL WINAPI MoveToEx(HDC hdc, int x, int y, LPPOINT lpPoint);
+    BOOL WINAPI GetCurrentPositionEx(HDC hdc, LPPOINT lpPoint);
     BOOL WINAPI LineTo(HDC hdc,   // device context handle
                        int nXEnd, // x-coordinate of ending point
                        int nYEnd  // y-coordinate of ending point
@@ -729,6 +736,8 @@ typedef LPENUMLOGFONTA LPENUMLOGFONT;
     BOOL WINAPI Pie(HDC hdc, int left, int top, int right, int bottom, int xr1, int yr1, int xr2, int yr2);
 
     BOOL WINAPI Arc(HDC hdc, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4);
+
+    BOOL WINAPI Chord(HDC hdc, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4);
 
     BOOL WINAPI GetWorldTransform(HDC hdc, LPXFORM lpxf);
     BOOL WINAPI SetWorldTransform(HDC hdc, CONST XFORM *lpxf);
@@ -1001,13 +1010,12 @@ typedef LPENUMLOGFONTA LPENUMLOGFONT;
         BYTE bXHeight;
     } PANOSE, *LPPANOSE;
 
-
     BOOL WINAPI Polygon_Priv(HDC hdc, const POINT *apt, int cpt);
 
-    #ifndef MacPolygon
-    #define Polygon Polygon_Priv
-    #endif//MacPolygon
-    
+#ifndef MacPolygon
+#define Polygon Polygon_Priv
+#endif // MacPolygon
+
 #define TA_NOUPDATECP 0
 #define TA_UPDATECP   1
 
@@ -1207,11 +1215,137 @@ typedef LPENUMLOGFONTA LPENUMLOGFONT;
 
     BOOL WINAPI DrawEdge(HDC hdc, LPRECT rc, UINT edge, UINT flags);
 
-    int WINAPI AddFontResource(LPCSTR lpszFilename);
-    int WINAPI AddFontResourceEx(LPCSTR lpszFilename, // font file name
-                                 DWORD fl,            // font characteristics
-                                 PVOID pdv            // reserved
+    int WINAPI AddFontResourceA(LPCSTR lpszFilename);
+    int WINAPI AddFontResourceExA(LPCSTR lpszFilename, // font file name
+                                  DWORD fl,            // font characteristics
+                                  PVOID pdv            // reserved
     );
+
+    int WINAPI AddFontResourceW(LPCWSTR lpszFilename);
+    int WINAPI AddFontResourceExW(LPCWSTR lpszFilename, // font file name
+                                  DWORD fl,             // font characteristics
+                                  PVOID pdv             // reserved
+    );
+
+#ifdef UNICODE
+#define AddFontResource   AddFontResourceW
+#define AddFontResourceEx AddFontResourceExW
+#else
+#define AddFontResource   AddFontResourceA
+#define AddFontResourceEx AddFontResourceExA
+#endif // !UNICODE
+
+// Path API constants
+#define PT_CLOSEFIGURE 0x01
+#define PT_LINETO      0x02
+#define PT_BEZIERTO    0x04
+#define PT_MOVETO      0x06
+
+// Region combine modes for SelectClipPath
+#define RGN_AND  1
+#define RGN_OR   2
+#define RGN_XOR  3
+#define RGN_DIFF 4
+#define RGN_COPY 5
+
+    // Path API functions
+    BOOL WINAPI BeginPath(HDC hdc);
+    BOOL WINAPI EndPath(HDC hdc);
+    BOOL WINAPI AbortPath(HDC hdc);
+    BOOL WINAPI CloseFigure(HDC hdc);
+    BOOL WINAPI StrokePath(HDC hdc);
+    BOOL WINAPI FillPath(HDC hdc);
+    BOOL WINAPI StrokeAndFillPath(HDC hdc);
+    HRGN WINAPI PathToRegion(HDC hdc);
+    BOOL WINAPI SelectClipPath(HDC hdc, int mode);
+    int WINAPI GetPath(HDC hdc, LPPOINT lpPoints, LPBYTE lpTypes, int nSize);
+    BOOL WINAPI SetMiterLimit(HDC hdc, FLOAT eNewLimit, PFLOAT peOldLimit);
+    BOOL WINAPI GetMiterLimit(HDC hdc, PFLOAT peLimit);
+
+    typedef UINT_PTR(CALLBACK *LPCFHOOKPROC)(HWND, UINT, WPARAM, LPARAM);
+
+// ChooseFont flags
+#define CF_SCREENFONTS          0x00000001L
+#define CF_PRINTERFONTS         0x00000002L
+#define CF_BOTH                 (CF_SCREENFONTS | CF_PRINTERFONTS)
+#define CF_SHOWHELP             0x00000004L
+#define CF_ENABLEHOOK           0x00000008L
+#define CF_ENABLETEMPLATE       0x00000010L
+#define CF_ENABLETEMPLATEHANDLE 0x00000020L
+#define CF_INITTOLOGFONTSTRUCT  0x00000040L
+#define CF_USESTYLE             0x00000080L
+#define CF_EFFECTS              0x00000100L
+#define CF_APPLY                0x00000200L
+#define CF_ANSIONLY             0x00000400L
+#define CF_SCRIPTSONLY          CF_ANSIONLY
+#define CF_NOVECTORFONTS        0x00000800L
+#define CF_NOOEMFONTS           CF_NOVECTORFONTS
+#define CF_NOSIMULATIONS        0x00001000L
+#define CF_LIMITSIZE            0x00002000L
+#define CF_FIXEDPITCHONLY       0x00004000L
+#define CF_WYSIWYG              0x00008000L
+#define CF_FORCEFONTEXIST       0x00010000L
+#define CF_SCALABLEONLY         0x00020000L
+#define CF_TTONLY               0x00040000L
+#define CF_NOFACESEL            0x00080000L
+#define CF_NOSTYLESEL           0x00100000L
+#define CF_NOSIZESEL            0x00200000L
+#define CF_SELECTSCRIPT         0x00400000L
+#define CF_NOSCRIPTSEL          0x00800000L
+#define CF_NOVERTFONTS          0x01000000L
+
+    typedef struct tagCHOOSEFONTA
+    {
+        DWORD lStructSize;
+        HWND hwndOwner;        // caller's window handle
+        HDC hDC;               // printer DC/IC or NULL
+        LPLOGFONTA lpLogFont;  // ptr. to a LOGFONT struct
+        INT iPointSize;        // 10 * size in points of selected font
+        DWORD Flags;           // enum. type flags
+        COLORREF rgbColors;    // returned text color
+        LPARAM lCustData;      // data passed to hook fn.
+        LPCFHOOKPROC lpfnHook; // ptr. to hook function
+        LPCSTR lpTemplateName; // custom template name
+        HINSTANCE hInstance;   // instance handle of.EXE that
+        //   contains cust. dlg. template
+        LPSTR lpszStyle; // return the style field here
+        // must be LF_FACESIZE or bigger
+        WORD nFontType; // same value reported to the
+        WORD ___MISSING_ALIGNMENT__;
+        INT nSizeMin; // minimum pt size allowed &
+        INT nSizeMax; // max pt size allowed if
+    } CHOOSEFONTA, *PCHOOSEFONTA, *LPCHOOSEFONTA;
+    typedef struct tagCHOOSEFONTW
+    {
+        DWORD lStructSize;
+        HWND hwndOwner;         // caller's window handle
+        HDC hDC;                // printer DC/IC or NULL
+        LPLOGFONTW lpLogFont;   // ptr. to a LOGFONT struct
+        INT iPointSize;         // 10 * size in points of selected font
+        DWORD Flags;            // enum. type flags
+        COLORREF rgbColors;     // returned text color
+        LPARAM lCustData;       // data passed to hook fn.
+        LPCFHOOKPROC lpfnHook;  // ptr. to hook function
+        LPCWSTR lpTemplateName; // custom template name
+        HINSTANCE hInstance;    // instance handle of.EXE that
+        //   contains cust. dlg. template
+        LPWSTR lpszStyle; // return the style field here
+        // must be LF_FACESIZE or bigger
+        WORD nFontType; // same value reported to the
+        WORD ___MISSING_ALIGNMENT__;
+        INT nSizeMin; // minimum pt size allowed &
+        INT nSizeMax; // max pt size allowed if
+    } CHOOSEFONTW, *PCHOOSEFONTW, *LPCHOOSEFONTW;
+
+#ifdef UNICODE
+#define CHOOSEFONT   CHOOSEFONTW
+#define PCHOOSEFONT  PCHOOSEFONTW
+#define LPCHOOSEFONT LPCHOOSEFONTW
+#else
+#define CHOOSEFONT   CHOOSEFONTA
+#define PCHOOSEFONT  PCHOOSEFONTA
+#define LPCHOOSEFONT LPCHOOSEFONTA
+#endif // !UNICODE
 
 #ifdef __cplusplus
 }

@@ -21,6 +21,7 @@
 #include <interface/scaret-i.h>
 #include <interface/STimelineHandler-i.h>
 #include <interface/SAccelerator-i.h>
+#include <interface/SWndFinder-i.h>
 
 SNSBEGIN
 
@@ -102,7 +103,7 @@ DECLARE_INTERFACE_(ISwndContainer, ITimelineHandlersMgr)
      * @brief Retrieves the handle to the host window.
      * @return Handle to the host window (HWND).
      */
-    STDMETHOD_(HWND, GetHostHwnd)(THIS) PURE;
+    STDMETHOD_(HWND, GetHostHwnd)(CTHIS) SCONST PURE;
 
     /**
      * @brief Checks if the host window is translucent.
@@ -299,6 +300,18 @@ DECLARE_INTERFACE_(ISwndContainer, ITimelineHandlersMgr)
      * @return The number of tasks removed.
      */
     STDMETHOD_(int, RemoveTasksForObject)(THIS_ void *pObj) PURE;
+
+    /**
+     * @brief Gets the window finder object.
+     * @return Pointer to the window finder object.
+     */
+    STDMETHOD_(ISwndFinder *, GetSwndFinder)(THIS) PURE;
+
+    /**
+     * @brief Checks if the timeline is enabled.
+     * @return TRUE if timeline is enabled, FALSE otherwise.
+     */
+    STDMETHOD_(BOOL, IsTimelineEnabled)(CTHIS) SCONST PURE;
 };
 
 SNSEND

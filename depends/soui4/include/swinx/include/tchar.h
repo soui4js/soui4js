@@ -2,6 +2,7 @@
 #define __TCHAR_H_
 
 #include <ctypes.h>
+#include <wchar.h>
 
 #ifndef _UNICODE
 #define TCHAR                char
@@ -13,6 +14,7 @@
 #define _T(x)                x
 #define _tcsftime            strftime
 #define _tfopen              fopen
+#define _tprintf             printf
 #else
 #define TCHAR                wchar_t
 #define LPCTSTR              LPCWSTR
@@ -23,19 +25,25 @@
 #define _T(x)                L##x
 #define _tcsftime            wcsftime
 #define _tfopen              _wfopen
+#define _tprintf             wprintf
 #endif
 
 #ifdef _UNICODE
-#define lstrlen    lstrlenW
-#define lstrcpy    lstrcpyW
-#define _tcsncmp   wcsncmp
-#define _tcslen    wcslen
-#define _ttoi      wcstol
-#define _tcsdup    wcsdup
-#define _tcsicmp   _wcsicmp
-#define _tcsnicmp  _wcsnicmp
-#define _tcscpy    wcscpy
-#define _tcstok    wcstok
+#define lstrlen   lstrlenW
+#define lstrcpy   lstrcpyW
+#define _tcsncmp  wcsncmp
+#define _tcslen   wcslen
+#define _ttoi     _wtoi
+#define _tcsdup   wcsdup
+#define _tcsicmp  _wcsicmp
+#define _tcsnicmp _wcsnicmp
+#define _tcscpy   wcscpy
+inline wchar_t *_wcsstok(wchar_t *strToken, const wchar_t *strDelimit)
+{
+    wchar_t *saveptr = NULL;
+    return wcstok(strToken, strDelimit, &saveptr);
+}
+#define _tcstok    _wcsstok
 #define _tcsncpy   wcsncpy
 #define _tcsrchr   wcsrchr
 #define _tcsstr    wcsstr
@@ -43,17 +51,17 @@
 #define _stprintf  wprintf
 #define lstrcpyn   lstrcpynW
 #define _tcstol    wcstol
-#define _stscanf   wcscanf
-#define _sntprintf wsnprintf
+#define _stscanf   swscanf
+#define _sntprintf swprintf
 #define _tcschr    wcschr
 #define _tcscat    wcscat
 #define _tstoi     _wtoi
+#define _tstof     _wtof
 #define _istdigit  iswdigit
 #define _istspace  iswspace
 #define _istalnum  iswalnum
 #define _istprint  iswprint
 #define _istalpha  iswalpha
-
 #else
 #define lstrlen    lstrlenA
 #define lstrcpy    lstrcpyA
@@ -77,12 +85,13 @@
 #define _tcschr    strchr
 #define _tcscat    strcat
 #define _tstoi     atoi
+#define _tstof     atof
 #define _istdigit  isdigit
 #define _istspace  isspace
 #define _istalnum  isalnum
 #define _istprint  isprint
 #define _istalpha  isalpha
-
+#define _trename   rename
 #endif
 
 #endif //__TCHAR_H_

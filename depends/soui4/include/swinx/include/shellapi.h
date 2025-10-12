@@ -121,54 +121,44 @@ extern "C"
 #define PathMatchSpecEx PathMatchSpecExA
 #endif
 
-BOOL WINAPI PathIsRelativeA(const char *path);
-BOOL WINAPI PathIsRelativeW(const WCHAR *path);
-char * WINAPI PathFindFileNameA(const char *path);
-wchar_t * WINAPI PathFindFileNameW(const wchar_t *path);
-char * WINAPI PathFindExtensionA(const char *path);
-wchar_t * WINAPI PathFindExtensionW(const wchar_t *path);
-BOOL WINAPI PathFileExistsA(const char *path);
-BOOL WINAPI PathFileExistsW(const wchar_t *path);
-BOOL WINAPI PathCanonicalizeA(char *buffer, const char *path);
-BOOL WINAPI PathCanonicalizeW(wchar_t *buffer, const wchar_t *path);
-BOOL WINAPI PathIsValidCharA(char c, DWORD _class);
-BOOL WINAPI PathIsValidCharW(wchar_t c, DWORD _class);
-int WINAPI PathCommonPrefixA(const char *file1, const char *file2, char *path);
-int WINAPI PathCommonPrefixW(const wchar_t *file1, const wchar_t *file2, wchar_t *path);
-BOOL WINAPI PathIsPrefixA(const char *prefix, const char *path);
-BOOL WINAPI PathIsPrefixW(const wchar_t *prefix, const wchar_t *path);
-DWORD WINAPI GetFullPathNameW(
-    LPCWSTR lpFileName,
-    DWORD nBufferLength,
-    LPWSTR lpBuffer,
-    LPWSTR* lpFilePart
-  );
-  DWORD WINAPI GetFullPathNameA(
-    LPCSTR lpFileName,
-    DWORD nBufferLength,
-    LPSTR lpBuffer,
-    LPSTR* lpFilePart
-  );
+    BOOL WINAPI PathIsRelativeA(const char *path);
+    BOOL WINAPI PathIsRelativeW(const WCHAR *path);
+    char *WINAPI PathFindFileNameA(const char *path);
+    wchar_t *WINAPI PathFindFileNameW(const wchar_t *path);
+    char *WINAPI PathFindExtensionA(const char *path);
+    wchar_t *WINAPI PathFindExtensionW(const wchar_t *path);
+    BOOL WINAPI PathFileExistsA(const char *path);
+    BOOL WINAPI PathFileExistsW(const wchar_t *path);
+    BOOL WINAPI PathCanonicalizeA(char *buffer, const char *path);
+    BOOL WINAPI PathCanonicalizeW(wchar_t *buffer, const wchar_t *path);
+    BOOL WINAPI PathIsValidCharA(char c, DWORD _class);
+    BOOL WINAPI PathIsValidCharW(wchar_t c, DWORD _class);
+    int WINAPI PathCommonPrefixA(const char *file1, const char *file2, char *path);
+    int WINAPI PathCommonPrefixW(const wchar_t *file1, const wchar_t *file2, wchar_t *path);
+    BOOL WINAPI PathIsPrefixA(const char *prefix, const char *path);
+    BOOL WINAPI PathIsPrefixW(const wchar_t *prefix, const wchar_t *path);
+    DWORD WINAPI GetFullPathNameW(LPCWSTR lpFileName, DWORD nBufferLength, LPWSTR lpBuffer, LPWSTR *lpFilePart);
+    DWORD WINAPI GetFullPathNameA(LPCSTR lpFileName, DWORD nBufferLength, LPSTR lpBuffer, LPSTR *lpFilePart);
 #ifdef UNICODE
-#define PathIsRelative PathIsRelativeW
-#define PathFindFileName    PathFindFileNameW
+#define PathIsRelative    PathIsRelativeW
+#define PathFindFileName  PathFindFileNameW
 #define PathFindExtension PathFindExtensionW
-#define PathFileExists PathFileExistsW
-#define PathCanonicalize    PathCanonicalizeW
-#define PathIsValidChar PathIsValidCharW
-#define PathCommonPrefix PathCommonPrefixW
-#define PathIsPrefix PathIsPrefixW
-#define GetFullPathName GetFullPathNameW
+#define PathFileExists    PathFileExistsW
+#define PathCanonicalize  PathCanonicalizeW
+#define PathIsValidChar   PathIsValidCharW
+#define PathCommonPrefix  PathCommonPrefixW
+#define PathIsPrefix      PathIsPrefixW
+#define GetFullPathName   GetFullPathNameW
 #else
-#define PathIsRelative PathIsRelativeA
-#define PathFindFileName    PathFindFileNameA
+#define PathIsRelative    PathIsRelativeA
+#define PathFindFileName  PathFindFileNameA
 #define PathFindExtension PathFindExtensionA
-#define PathFileExists PathFileExistsA
-#define PathCanonicalize    PathCanonicalizeA
-#define PathIsValidChar PathIsValidCharA
-#define PathCommonPrefix PathCommonPrefixA
-#define PathIsPrefix PathIsPrefixA
-#define GetFullPathName GetFullPathNameA
+#define PathFileExists    PathFileExistsA
+#define PathCanonicalize  PathCanonicalizeA
+#define PathIsValidChar   PathIsValidCharA
+#define PathCommonPrefix  PathCommonPrefixA
+#define PathIsPrefix      PathIsPrefixA
+#define GetFullPathName   GetFullPathNameA
 #endif // !UNICODE
 
 // Note CLASSKEY overrides CLASSNAME

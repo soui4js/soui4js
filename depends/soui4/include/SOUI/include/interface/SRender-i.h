@@ -1756,6 +1756,52 @@ DECLARE_INTERFACE_(IRenderTarget, IObjRef)
     STDMETHOD_(HRESULT, DrawLines)(THIS_ LPPOINT pPt, size_t nCount) PURE;
 
     /**
+     * @brief Draw a single line.
+     * @param pt1 Starting point of the line.
+     * @param pt2 Ending point of the line.
+     * @return HRESULT indicating success or failure.
+     */
+    STDMETHOD_(HRESULT, DrawLine)(THIS_ POINT pt1, POINT pt2) PURE;
+
+    /**
+     * @brief Move the current position to a new point.
+     * @param pt New position.
+     * @param lpPoint Optional pointer to a point that receives the previous position.
+     * @return HRESULT indicating success or failure.
+     */
+    STDMETHOD_(HRESULT, MoveToEx)(THIS_ POINT pt, LPPOINT lpPoint) PURE;
+
+    /**
+     * @brief Draw a line from the current position to a new position.
+     * @param pt New position.
+     * @return HRESULT indicating success or failure.
+     */
+    STDMETHOD_(HRESULT, LineTo)(THIS_ POINT pt) PURE;
+
+    /**
+     * @brief Get the current position.
+     * @param lpPoint Pointer to receive the current position.
+     * @return HRESULT indicating success or failure.
+     */
+    STDMETHOD_(HRESULT, GetCurrentPositionEx)(THIS_ LPPOINT lpPoint) PURE;
+
+    /**
+     * @brief Draw a polygon.
+     * @param pPt Array of points that define the polygon.
+     * @param nCount Number of points in the array.
+     * @return HRESULT indicating success or failure.
+     */
+    STDMETHOD_(HRESULT, DrawPolygon)(THIS_ LPPOINT pPt, size_t nCount) PURE;
+
+    /**
+     * @brief Fill a polygon.
+     * @param pPt Array of points that define the polygon.
+     * @param nCount Number of points in the array.
+     * @return HRESULT indicating success or failure.
+     */
+    STDMETHOD_(HRESULT, FillPolygon)(THIS_ LPPOINT pPt, size_t nCount) PURE;
+
+    /**
      * @brief Draw a gradient-filled rectangle.
      * @param pRect Rectangle to fill.
      * @param bVert Vertical gradient flag.

@@ -238,9 +238,9 @@ extern "C"
 #define WHEEL_PAGESCROLL (UINT_MAX)
 
 /* XButton values are WORD flags */
-#define XBUTTON1      0x0001
-#define XBUTTON2      0x0002
-/* Were there to be an XBUTTON3, its value would be 0x0004 */
+#define XBUTTON1 0x0001
+#define XBUTTON2 0x0002
+    /* Were there to be an XBUTTON3, its value would be 0x0004 */
 
 #define WM_PARENTNOTIFY  0x0210
 #define WM_ENTERMENULOOP 0x0211
@@ -271,7 +271,7 @@ extern "C"
 #define WM_NCMOUSELEAVE 0x02A2
 
 #ifndef WM_DPICHANGED
-#define WM_DPICHANGED   0x02E0
+#define WM_DPICHANGED 0x02E0
 #endif
 
 #define WM_CUT               0x0300
@@ -452,7 +452,7 @@ extern "C"
 #endif /* _WIN32_WINNT >= 0x0500 */
 
 #endif /* !NOKEYSTATES */
-#define MK_ALT (0x20)
+#define MK_ALT    (0x20)
 #define MK_WINDOW (0x40)
 
 #ifndef NOTRACKMOUSEEVENT

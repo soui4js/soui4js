@@ -7309,8 +7309,6 @@ extern "C"
 
 #ifndef NOBUTTON
 
-#ifdef _WIN32
-
 // Button Class Name
 #define WC_BUTTONA "Button"
 #define WC_BUTTONW L"Button"
@@ -7319,10 +7317,6 @@ extern "C"
 #define WC_BUTTON WC_BUTTONW
 #else
 #define WC_BUTTON WC_BUTTONA
-#endif
-
-#else
-#define WC_BUTTON "Button"
 #endif
 
 #if (_WIN32_WINNT >= 0x0501)
@@ -7449,8 +7443,6 @@ extern "C"
 
 #ifndef NOSTATIC
 
-#ifdef _WIN32
-
 // Static Class Name
 #define WC_STATICA "Static"
 #define WC_STATICW L"Static"
@@ -7459,10 +7451,6 @@ extern "C"
 #define WC_STATIC WC_STATICW
 #else
 #define WC_STATIC WC_STATICA
-#endif
-
-#else
-#define WC_STATIC "Static"
 #endif
 
 #endif // NOSTATIC

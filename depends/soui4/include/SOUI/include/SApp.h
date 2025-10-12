@@ -159,10 +159,16 @@ class SOUI_EXP SObjectDefaultRegister : public ISystemObjectRegister {
       */
      SApplication(IRenderFactory *pRendFactory,
                   HINSTANCE hInst,
-                  LPCTSTR pszHostClassName = _T("SOUIHOST"),
+                  LPCTSTR pszHostClassName = _T("SOUI4HOST"),
                   const ISystemObjectRegister &sysObjRegister = SObjectDefaultRegister(),
                   BOOL bImeApp = FALSE);
  
+     SApplication(HINSTANCE hInst,
+        LPCTSTR pszHostClassName = _T("SOUI4HOST"),
+        const ISystemObjectRegister &sysObjRegister = SObjectDefaultRegister(),
+        BOOL bImeApp = FALSE);
+
+
      /**
       * @brief Destructor for SApplication
       */
@@ -730,6 +736,7 @@ class SOUI_EXP SObjectDefaultRegister : public ISystemObjectRegister {
     virtual IAccessible *CreateAccessible(IWindow *pWnd) const;
 #endif
   protected:
+    void _InitApp(const ISystemObjectRegister &sysObjRegister);
     /**
      * @brief Creates and initializes all singletons required by the application.
      */
