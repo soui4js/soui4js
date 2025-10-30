@@ -353,7 +353,7 @@ class UTILITIES_API SXmlNode : public IXmlNode
     friend class SXmlDoc;
 
 private:
-    pugi::xml_node _node;
+    mutable pugi::xml_node _node;
 
 private:
     /**
@@ -436,6 +436,12 @@ public:
      */
     STDMETHOD_(const wchar_t*, Text)(THIS) SCONST OVERRIDE;
 
+    /**
+     * @brief Sets the node text.
+     * 
+     * @return true if successful, false otherwise.
+     */
+    STDMETHOD_(BOOL, SetText)(THIS_ const wchar_t* text) OVERRIDE;
     /**
      * @brief Sets user data for the node.
      * 
@@ -693,17 +699,29 @@ public:
     /// @return The root node.
     SXmlNode root() const;
 
-    /// @brief Gets the child node, attribute, or next/previous sibling with the specified name.
+    /// @brief Gets the child node with the specified name.
     /// @param name The name of the child node, attribute, or sibling.
     /// @param bCaseSensitive Whether the search should be case-sensitive.
     /// @return The requested node or attribute.
     SXmlNode child(const wchar_t* name,bool bCaseSensitive=false) const;
+
+    /// @brief Gets the child node with the specified name, if it does not exist, create it.
+    /// @param name The name of the child node, attribute, or sibling.
+    /// @param bCaseSensitive Whether the search should be case-sensitive.
+    /// @return The requested node or attribute.
+    SXmlNode child2(const wchar_t* name,bool bCaseSensitive=false);
 
     /// @brief Gets the attribute with the specified name.
     /// @param name The name of the attribute.
     /// @param bCaseSensitive Whether the search should be case-sensitive.
     /// @return The requested attribute.
     SXmlAttr attribute(const wchar_t* name,bool bCaseSensitive=false) const;
+
+    /// @brief Gets the attribute with the specified name, if not exist, create it.
+    /// @param name The name of the attribute.
+    /// @param bCaseSensitive Whether the search should be case-sensitive.
+    /// @return The requested attribute.
+    SXmlAttr attribute2(const wchar_t* name,bool bCaseSensitive=false);
 
     /// @brief Gets the next sibling node with the specified name.
     /// @param name The name of the sibling node.
@@ -903,6 +921,8 @@ public:
     /// @brief Removes all child nodes from the node.
     /// @return TRUE if all child nodes were successfully removed, FALSE otherwise.
     bool remove_children();
+
+    SStringW toString() const;
 };
 
 /**

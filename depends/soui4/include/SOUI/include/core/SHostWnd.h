@@ -237,10 +237,9 @@ class SOUI_EXP SRootWindow : public SWindow {
     /**
      * @brief Called when an animation is invalidated.
      *
-     * @param pAni Pointer to the animation object.
      * @param bErase Flag indicating whether to erase the animation.
      */
-    virtual void OnAnimationInvalidate(IAnimation *pAni, bool bErase);
+    virtual void OnAnimationInvalidate(bool bErase);
 
   protected: // SWindow virtual methods
     /**
@@ -347,10 +346,10 @@ class SOUI_EXP SHostWnd
     BOOL m_bResizing;    /**< Indicates if resizing is in progress. */
 
     SAutoRefPtr<IAnimation> m_hostAnimation; /**< Host animation object. */
-    DWORD m_AniState; /**< Animation state. */
-    BOOL m_bFirstShow; /**< Indicates if it's the first time the window is shown. */
-    tid_t m_dwThreadID; /**< Thread ID. */
-    SRootWindow *m_pRoot; /**< Pointer to the root window. */
+    DWORD m_AniState;                        /**< Animation state. */
+    BOOL m_bFirstShow;                       /**< Indicates if it's the first time the window is shown. */
+    tid_t m_dwThreadID;                      /**< Thread ID. */
+    SRootWindow *m_pRoot;                    /**< Pointer to the root window. */
 
     EventHandlerInfo m_evtHandler;           /**< Event handler information. */
     SAutoRefPtr<IHostPresenter> m_presenter; /**< Presenter for rendering. */
@@ -397,7 +396,6 @@ class SOUI_EXP SHostWnd
     enum
     {
         kPulseTimer = 4321,    /**< SOUI timer ID (do not use in applications). */
-        kPulseInterval = 10,   /**< Pulse interval in milliseconds. */
         kNcCheckTimer = 4322,  /**< Timer ID for non-client area checks. */
         kNcCheckInterval = 50, /**< Interval for non-client area checks in milliseconds. */
         kTaskTimer = 4323,     /**< Timer ID for task execution. */
@@ -1221,6 +1219,22 @@ class SOUI_EXP SHostWnd
     STDMETHOD_(BOOL, UnregisterTimelineHandler)(THIS_ ITimelineHandler *pHandler) OVERRIDE;
 
     /**
+     * @brief Registers a value animator.
+     *
+     * @param pAnimator Pointer to the value animator.
+     * @return TRUE if the animator was registered, FALSE otherwise.
+     */
+    STDMETHOD_(BOOL, RegisterValueAnimator)(THIS_ IValueAnimator *pAnimator) OVERRIDE;
+
+    /**
+     * @brief Unregisters a value animator.
+     *
+     * @param pAnimator Pointer to the value animator.
+     * @return TRUE if the animator was unregistered, FALSE otherwise.
+     */
+    STDMETHOD_(BOOL, UnregisterValueAnimator)(THIS_ IValueAnimator *pAnimator) OVERRIDE;
+
+    /**
      * @brief Enables or disables host private UI definitions.
      *
      * @param bEnable TRUE to enable, FALSE to disable.
@@ -1315,6 +1329,11 @@ class SOUI_EXP SHostWnd
      * @return Pointer to the created root window.
      */
     virtual SRootWindow *CreateRoot();
+
+    /**
+     * @brief Called when the scale of the window changes.
+     * */
+    virtual void OnScaleChanged(int nScale);
 
   public:
     /**

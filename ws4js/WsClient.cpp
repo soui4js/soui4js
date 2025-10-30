@@ -27,7 +27,7 @@ void WsConnListener::onDataSent(int nMsgId)
 	m_pOwner->onDataSent(nMsgId);
 }
 
-void WsConnListener::onDataRecv(const void* data, int len, bool bBinary)
+void WsConnListener::onDataRecv(const void* data, int len, BOOL bBinary)
 {
 	m_pOwner->onDataRecv(data, len, bBinary);
 }

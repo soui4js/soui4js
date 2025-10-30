@@ -8,7 +8,7 @@ SvrListener::SvrListener(WsServer* pOwner) :m_pOwner(pOwner)
 {
 }
 
-bool SvrListener::onConnected(ISvrConnection* pConn, const char* uriPath, const char* uriArgs)
+BOOL SvrListener::onConnected(ISvrConnection* pConn, const char* uriPath, const char* uriArgs)
 {
 	return m_pOwner->onConnected(pConn,uriPath,uriArgs);
 }
@@ -28,7 +28,7 @@ void SvrListener::onDataSent(ISvrConnection* pConn, int nMsgId)
 	m_pOwner->onDataSent(pConn, nMsgId);
 }
 
-void SvrListener::onDataRecv(ISvrConnection* pConn, const void* data, int len, bool bBinary)
+void SvrListener::onDataRecv(ISvrConnection* pConn, const void* data, int len, BOOL bBinary)
 {
 	m_pOwner->onDataRecv(pConn, data,len,bBinary);
 }
@@ -49,7 +49,8 @@ WsServer::~WsServer()
 int WsServer::start(LPCSTR protocol, int port, bool bSecure, LPCSTR cert, LPCSTR priv_key)
 {
 	SvrOption option = { bSecure,cert,priv_key };
-	return m_wsServer->start(port, protocol, option);
+	SvrPingCfg pingCfg = { 30,90,3 };
+	return m_wsServer->start(port, protocol, option,pingCfg);
 }
 
 void WsServer::quit()

@@ -1,20 +1,4 @@
-﻿/*
- * Copyright (C) 2010 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-#ifndef __SVALUEANIMATOR__H__
+﻿#ifndef __SVALUEANIMATOR__H__
 #define __SVALUEANIMATOR__H__
 
 /**
@@ -43,8 +27,8 @@ SNSBEGIN
  * out of an animation. This behavior can be changed by calling setInterpolator(TimeInterpolator).
  */
 class SOUI_EXP SValueAnimator
-    : public TObjRefImpl<SObjectImpl<IValueAnimator> >
-    , ITimelineHandler {
+    : public TObjRefImpl<SObjectImpl<IValueAnimator>>
+    , public ITimelineHandler {
     DEF_SOBJECT(SObjectImpl<IValueAnimator>, L"valueAnimator")
 
   protected:
@@ -173,7 +157,14 @@ class SOUI_EXP SValueAnimator
      * @brief The container managing the timeline handlers.
      */
     ITimelineHandlersMgr *mContainer;
+    void *m_pUserData;
 
+    /**
+    * NOTE: Due to multiple inheritance paths to IValueAnimator in subclasses
+    * (e.g., TValueAnimatorProxy<T> inherits both T and SValueAnimator),
+    * we cache _this_for_callback to avoid pointer offset issues in listener callbacks.
+     */
+    IValueAnimator * _this_for_callback; 
   public:
     /**
      * @brief Creates a new SValueAnimator object.
@@ -343,6 +334,25 @@ class SOUI_EXP SValueAnimator
      */
     STDMETHOD_(void, removeListener)(THIS_ IAnimatorListener *p) OVERRIDE;
 
+    /**
+     * @brief Gets the timeline handler.
+     * @return The timeline handler.
+     */
+    STDMETHOD_(ITimelineHandler *, GetTimelineHandler)(CTHIS) SCONST OVERRIDE;
+
+    /**
+     * @brief 获取用户数据
+     * @return LPVOID - 用户数据指针
+     */
+    STDMETHOD_(LPVOID, GetUserData)(CTHIS) SCONST OVERRIDE;
+
+    /**
+     * @brief 设置用户数据
+     * @param pUserData - 用户数据指针
+     * @return void
+     */
+    STDMETHOD_(void, SetUserData)(THIS_ LPVOID pUserData) OVERRIDE;
+
   private:
     /**
      * @brief Notifies start listeners.
@@ -426,13 +436,6 @@ class SOUI_EXP SValueAnimator
      */
     bool isPulsingInternal();
 
-  public:
-    /**
-     * @brief Applies an adjustment to the animation to compensate for jank between when the animation first ran and when the frame was drawn.
-     * @param frameTime The current frame time.
-     */
-    STDMETHOD_(void, commitAnimationFrame)(THIS_ long frameTime) OVERRIDE;
-
   private:
     /**
      * @brief Processes a single animation frame for a given animation.
@@ -461,14 +464,13 @@ class SOUI_EXP SValueAnimator
      */
     bool isInitialized();
 
-    /**
-     * @brief Processes a frame of the animation, adjusting the start time if needed.
-     * @param frameTime The frame time.
-     * @return TRUE if the animation has ended.
-     */
-    bool doAnimationFrame(uint64_t frameTime);
-
   public:
+    /**
+     * @brief Commits a frame of animation.
+     * @param frameTime The current frame time.
+     * @return TRUE if the animation is finished, FALSE otherwise.
+     */
+    STDMETHOD_(BOOL, commitAnimationFrame)(THIS_ uint64_t frameTime) OVERRIDE;  public:
     /**
      * @brief Returns the current animation fraction.
      * @details This is the elapsed/interpolated fraction used in the most recent frame update on the animation.
@@ -527,6 +529,7 @@ class TValueAnimator : public SValueAnimator {
      */
     TValueAnimator(T from, T to)
         : mValueEvaluator(from, to)
+        , mValue(from)
     {
     }
 
@@ -782,7 +785,7 @@ class SOUI_EXP SAnimatorGroup
     /**
      * @brief Constructor.
      */
-    SAnimatorGroup();
+    SAnimatorGroup(int nID = 0);
 
     /**
      * @brief Destructor.
@@ -845,6 +848,11 @@ class SOUI_EXP SAnimatorGroup
      * @brief Listener for the animator group.
      */
     IAnimatorGroupListerer *m_listener;
+
+    /**
+     * @brief ID of the animator group.
+     */
+    int m_nID;
 };
 
 SNSEND

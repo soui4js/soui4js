@@ -1,35 +1,34 @@
 ﻿//
 // cmake config.h.in
 //
-/* #undef ENABLE_SOUI_COM_LIB */
-/* #undef ENABLE_SOUI_CORE_LIB */
-#define OUTPATH_WITHOUT_TYPE
-/* #undef ENABLE_SOUI_ACC */
-/* #undef ENABLE_SOUI_SPY */
+#ifndef _SOUI_CONFIG_H_
+#define _SOUI_CONFIG_H_
+
+/* #undef SOUI_ENABLE_COM_LIB */
+/* #undef SOUI_ENABLE_CORE_LIB */
+/* #undef SOUI_ENABLE_ACC */
+/* #undef SOUI_ENABLE_SPY */
 
 #ifdef _WIN32
-#ifdef ENABLE_SOUI_SPY
+#ifdef SOUI_ENABLE_SPY
 #define DISABLE_SWNDSPY 0
 #else
 #define DISABLE_SWNDSPY 1
 #endif//ENABLE_SOUI_SPY
-
-#ifdef ENABLE_SOUI_ACC
-#define SOUI_ENABLE_ACC
-#endif//ENABLE_SOUI_ACC
-#else
+#else //_WIN32
 #define DISABLE_SWNDSPY 1
-#endif
+#endif//_WIN32
 
-#ifdef ENABLE_SOUI_COM_LIB
+#ifdef SOUI_ENABLE_COM_LIB
     #define LIB_SOUI_COM		//SOUI组件编译为lib
 #else
     #define DLL_SOUI_COM	//SOUI组件编译为dll
 #endif
 
-#ifdef ENABLE_SOUI_CORE_LIB
+#ifdef SOUI_ENABLE_CORE_LIB
     #define LIB_CORE		//SOUI 内核编译为lib
 #else
     #define DLL_CORE		//SOUI 内核编译为dll
 #endif
 
+#endif//SOUI_ENABLE_ACC

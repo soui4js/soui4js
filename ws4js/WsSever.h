@@ -1,6 +1,6 @@
 #pragma once
 #include <qjsbind.h>
-#include <ws-i.h>
+#include <interface/ws-i.h>
 #include <helper/obj-ref-impl.hpp>
 
 using namespace qjsbind;
@@ -12,11 +12,11 @@ class SvrListener : public TObjRefImpl<ISvrListener> {
 public:
     SvrListener(WsServer* pOwner);
 public:
-    bool onConnected(ISvrConnection* pConn, const char* uriPath, const char* uriArgs) override;
-    void onConnError(ISvrConnection* pConn, const char* errStr) override;
-    void onDisconnect(ISvrConnection* pConn) override;
-    void onDataSent(ISvrConnection* pConn, int nMsgId) override;
-    void onDataRecv(ISvrConnection* pConn, const void* data, int len, bool bBinary) override;
+    BOOL WINAPI onConnected(ISvrConnection* pConn, const char* uriPath, const char* uriArgs) override;
+    void WINAPI onConnError(ISvrConnection* pConn, const char* errStr) override;
+    void WINAPI onDisconnect(ISvrConnection* pConn) override;
+    void WINAPI onDataSent(ISvrConnection* pConn, int nMsgId) override;
+    void WINAPI onDataRecv(ISvrConnection* pConn, const void* data, int len, BOOL bBinary) override;
 };
 
 class WsServer : public JsThisOwner

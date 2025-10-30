@@ -41,14 +41,9 @@ add_soui_exe(${PROJECT_NAME} ${HOST_HEADER} ${HOST_SRC})
 set(HOST_TARGET_LIST
     soui4js
     utils
-)
-if(BUILD_WS_MODULE)
-set(HOST_TARGET_LIST
-    ${HOST_TARGET_LIST}
     ws4js
-    ws
 )
-endif()
+
 add_dependencies(${PROJECT_NAME} ${HOST_TARGET_LIST})
 
 if(CMAKE_SYSTEM_NAME MATCHES Darwin)

@@ -416,7 +416,7 @@ class SOUI_EXP SImageWnd : public TWindowProxy<IImageWnd> {
      * @brief 获取资源
      * @return ISkinObj指针
      */
-    STDMETHOD_(ISkinObj *, GetSkin)(THIS) OVERRIDE;
+    STDMETHOD_(ISkinObj *, GetSkin)(CTHIS) SCONST OVERRIDE;
 
     /**
      * @brief 设置绘制图片
@@ -437,6 +437,14 @@ class SOUI_EXP SImageWnd : public TWindowProxy<IImageWnd> {
      * @return 成功--TRUE 失败--FALSE
      */
     STDMETHOD_(BOOL, SetIcon)(THIS_ int nSubID) OVERRIDE;
+
+    /**
+     * @brief 获取期望大小
+     * @param pSize 期望大小
+     * @param nParentWid 父容器宽度
+     * @param nParentHei 父容器高度
+     */
+    STDMETHOD_(void, GetDesiredSize)(THIS_ SIZE *pSize, int nParentWid, int nParentHei) OVERRIDE;
 
   protected:
     /**
@@ -493,13 +501,19 @@ class SOUI_EXP SImageWnd : public TWindowProxy<IImageWnd> {
     /**
      * @brief 保持纵横比
      */
-    bool m_bKeepAspect;
+    BOOL m_bKeepAspect;
+
+    /**
+     * @brief 适应图片大小
+     */
+    BOOL m_bFitImage;
 
     SOUI_ATTRS_BEGIN()
         ATTR_SKIN(L"skin", m_pSkin, TRUE)
         ATTR_INT(L"iconIndex", m_iIcon, FALSE)
         ATTR_INT(L"tile", m_iTile, TRUE)
         ATTR_BOOL(L"keepAspect", m_bKeepAspect, TRUE)
+        ATTR_BOOL(L"fitImage", m_bFitImage, TRUE)
     SOUI_ATTRS_END()
 
   protected:

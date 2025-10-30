@@ -35,6 +35,8 @@ using namespace qjsbind;
 #include "exports/exp_IEvt.h"
 #include "exports/exp_IAnimation.h"
 #include "exports/exp_IValueAnimator.h"
+#include "exports/exp_IPropertyAnimator.h"
+#include "exports/exp_IAnimatorSet.h"
 #include "exports/exp_IInterpolator.h"
 #include "exports/exp_IMenu.h"
 #include "exports/exp_IMenuEx.h"
@@ -57,6 +59,8 @@ using namespace qjsbind;
 #include "exports/exp_types.h"
 #include "exports/exp_SZipExtractor.h"
 #include "exports/exp_SDropTarget.h"
+#include "exports/exp_SPropertyAnimator.h"
+#include "exports/exp_SAnimatorSet.h"
 
 #ifdef WIN32
 #include "exports/exp_SFileOpenDlg.h"
@@ -93,6 +97,8 @@ namespace SOUI {
 		Exp_IEvtSlot(module);
 		Exp_IAnimation(module);
 		Exp_IValueAnimator(module);
+		Exp_IPropertyAnimator(module);
+		Exp_IAnimatorSet(module);
 		Exp_IInterpolator(module);
 		Exp_IMenu(module);
 		Exp_IMenuEx(module);
@@ -121,6 +127,8 @@ namespace SOUI {
 		Exp_SZipExtractor(module);
 		Exp_SDropTarget(module);
 		Exp_SValueAnimator(module);
+		Exp_SPropertyAnimator(module);
+		Exp_SAnimatorSet(module);
 		Exp_SMatrix(module);
 #ifdef WIN32
 		Exp_FileOpenDlg(module);

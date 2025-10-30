@@ -12,8 +12,8 @@ SNSBEGIN
  * @brief 线性布局参数类
  */
 class SLinearLayoutParam
-    : public TObjRefImpl<SObjectImpl<ILayoutParam> >
-    , protected SLinearLayoutParamStruct {
+    : public TObjRefImpl<SObjectImpl<ILayoutParam>>
+    , public SLinearLayoutParamStruct {
     DEF_SOBJECT(SObjectImpl<ILayoutParam>, L"LinearLayoutParam")
 
     friend class SLinearLayout;
@@ -55,7 +55,7 @@ class SLinearLayoutParam
      * @param orientation 方向（水平或垂直）
      * @return 指定大小
      */
-    STDMETHOD_(SLayoutSize, GetSpecifiedSize)(THIS_ ORIENTATION orientation) SCONST OVERRIDE;
+    STDMETHOD_(BOOL, GetSpecifiedSize)(THIS_ ORIENTATION orientation, LAYOUTSIZE *pLayoutSize) SCONST OVERRIDE;
 
     /**
      * @brief 设置匹配父容器大小
@@ -74,8 +74,7 @@ class SLinearLayoutParam
      * @param orientation 方向（水平或垂直）
      * @param layoutSize 指定大小
      */
-    STDMETHOD_(void, SetSpecifiedSize)
-    (THIS_ ORIENTATION orientation, const SLayoutSize &layoutSize) OVERRIDE;
+    STDMETHOD_(void, SetSpecifiedSize)(THIS_ ORIENTATION orientation, const LAYOUTSIZE *pLayoutSize) OVERRIDE;
 
     /**
      * @brief 获取原始数据指针
@@ -88,6 +87,14 @@ class SLinearLayoutParam
      * @return 克隆的布局参数对象指针
      */
     STDMETHOD_(ILayoutParam *, Clone)(THIS) SCONST OVERRIDE;
+
+    /**
+     * @brief 更新属性动画器状态
+     * @param pHolder IPropertyValuesHolder*--属性值持有者
+     * @param fraction float--动画进度（0.0-1.0）
+     * @param state ANI_STATE--动画状态（ANI_START/ANI_PROGRESS/ANI_END）
+     */
+    STDMETHOD_(BOOL, SetAnimatorValue)(THIS_ IPropertyValuesHolder *pHolder, float fraction, ANI_STATE state) OVERRIDE;
 
   public:
     SOUI_ATTRS_BEGIN()
@@ -147,7 +154,7 @@ class SLinearLayoutParam
  * @class SLinearLayout
  * @brief 线性布局类
  */
-class SOUI_EXP SLinearLayout : public TObjRefImpl<SObjectImpl<ILayout> > {
+class SOUI_EXP SLinearLayout : public TObjRefImpl<SObjectImpl<ILayout>> {
     DEF_SOBJECT(SObjectImpl<ILayout>, L"linearLayout")
 
   public:
@@ -176,9 +183,10 @@ class SOUI_EXP SLinearLayout : public TObjRefImpl<SObjectImpl<ILayout> > {
 
     /**
      * @brief 创建布局参数对象
+     * @param pOwner IWindow*--布局参数的拥有者窗口对象
      * @return 布局参数对象指针
      */
-    STDMETHOD_(ILayoutParam *, CreateLayoutParam)(THIS) SCONST OVERRIDE;
+    STDMETHOD_(ILayoutParam *, CreateLayoutParam)(CTHIS) SCONST OVERRIDE;
 
     /**
      * @brief 测量子窗口大小

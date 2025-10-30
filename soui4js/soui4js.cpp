@@ -176,7 +176,7 @@ namespace SOUI
         SApplication* pApp = SApplication::getSingletonPtr();
         TCHAR szVscDebug[500];
         if(GetEnvironmentVariable(_T("QUICKJS_DEBUG_ADDRESS"),szVscDebug, 500)>0)
-            Log::setLogCallback(Soui4jsLog);
+            SLog::setLogCallback(Soui4jsLog);
         QjsMsgLoop* msgLoop = new QjsMsgLoop(m_context, NULL);
         pApp->AddMsgLoop(msgLoop, TRUE);
         msgLoop->Release();        

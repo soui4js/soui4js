@@ -1,6 +1,6 @@
 #pragma once
 #include <qjsbind.h>
-#include <ws-i.h>
+#include <interface/ws-i.h>
 
 using namespace qjsbind;
 using namespace SOUI;
@@ -12,11 +12,11 @@ public:
 	WsConnListener(WsClient* pOwner);
 
 protected:
-	void onConnected() override;
-	void onConnError(const char* errStr) override;
-	void onDisconnect() override;
-	void onDataSent(int nMsgId) override;
-	void onDataRecv(const void* data, int len, bool bBinary) override;
+	void WINAPI onConnected() override;
+	void WINAPI onConnError(const char* errStr) override;
+	void WINAPI onDisconnect() override;
+	void WINAPI onDataSent(int nMsgId) override;
+	void WINAPI onDataRecv(const void* data, int len, BOOL bBinary) override;
 };
 
 enum {

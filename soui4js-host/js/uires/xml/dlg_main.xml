@@ -3,7 +3,7 @@
 translucent="1"
 >
   <root skin="_skin.sys.wnd.bkgnd" cache="1"  width="400" height="420">
-    <caption layout="hbox" gravity="center" padding="10,0">
+    <caption pos="0,0" size="-2,30" layout="hbox" gravity="center" padding="10,0">
       <icon src="ICON_LOGO:16"/>
       <text >@string/title</text>
       <window size="0,0" weight="1"/>

@@ -20,6 +20,7 @@
 #include <interface/saccproxy-i.h>
 #include <interface/scaret-i.h>
 #include <helper/SwndMsgCracker.h>
+#include <helper/SplitString.h>
 #include <layout/SLayoutSize.h>
 #include <event/SEventSlot.h>
 #include <event/SEvents.h>
@@ -44,6 +45,56 @@
 #endif
 
 SNSBEGIN
+
+/**
+ * @brief 布局属性名称常量 - 参考Android属性动画设计
+ */
+namespace LayoutProperty
+{
+// 通用属性
+static const LPCWSTR WIDTH = L"width";
+static const LPCWSTR HEIGHT = L"height";
+
+// 位置属性（souilayout and anchorlayout）
+static const LPCWSTR OFFSET_X = L"offsetX";
+static const LPCWSTR OFFSET_Y = L"offsetY";
+
+// 线性布局属性
+static const LPCWSTR WEIGHT = L"weight";
+static const LPCWSTR EXTEND_LEFT = L"extendLeft";
+static const LPCWSTR EXTEND_RIGHT = L"extendRight";
+static const LPCWSTR EXTEND_TOP = L"extendTop";
+static const LPCWSTR EXTEND_BOTTOM = L"extendBottom";
+
+// 网格布局属性
+static const LPCWSTR COL_WEIGHT = L"colWeight";
+static const LPCWSTR ROW_WEIGHT = L"rowWeight";
+
+// Soui布局属性
+static const LPCWSTR LEFT = L"left";
+static const LPCWSTR TOP = L"top";
+static const LPCWSTR RIGHT = L"right";
+static const LPCWSTR BOTTOM = L"bottom";
+
+// AnchorLayout属性
+static const LPCWSTR POSITION = L"pos";    // 窗口位置
+static const LPCWSTR POSITION_X = L"posX"; // X坐标（相对于锚点）
+static const LPCWSTR POSITION_Y = L"posY"; // Y坐标（相对于锚点）
+} // namespace LayoutProperty
+
+namespace WindowProperty
+{
+static const LPCWSTR ALPHA = L"alpha";
+static const LPCWSTR COLOR_BKGND = L"colorBkgnd";
+static const LPCWSTR COLOR_TEXT = L"colorText";
+static const LPCWSTR SCALE = L"scale";
+static const LPCWSTR SCALE_X = L"scaleX";
+static const LPCWSTR SCALE_Y = L"scaleY";
+static const LPCWSTR ROTATE = L"rotate";
+static const LPCWSTR TRANSLATE = L"translate";
+static const LPCWSTR TRANSLATE_X = L"translateX";
+static const LPCWSTR TRANSLATE_Y = L"translateY";
+}; // namespace WindowProperty
 
 /**
  * @brief Flags for window show state.
@@ -271,6 +322,8 @@ class SOUI_EXP STrText {
     SStringT strTr;   /**< Translated text */
 };
 
+class SAnimatorHandler;
+class SAnimationHandler;
 /**
  * @class SWindow
  * @brief Base class for SOUI DUI windows.
@@ -279,7 +332,7 @@ class SOUI_EXP STrText {
  * event handling, and rendering.
  */
 class SOUI_EXP SWindow
-    : public TObjRefImpl<SObjectImpl<IWindow> >
+    : public TObjRefImpl<SObjectImpl<IWindow>>
     , protected IAnimationListener {
     DEF_SOBJECT(SObjectImpl<IWindow>, L"window")
 
@@ -288,58 +341,9 @@ class SOUI_EXP SWindow
     friend class SHostWnd;
     friend class SwndContainerImpl;
     friend class FocusSearch;
-    friend class SGridLayout;
-    friend class SLinearLayout;
-    friend class SouiLayout;
     friend class SHostProxy;
-
-    class SAnimationHandler : public ITimelineHandler {
-      private:
-        SWindow *m_pOwner;             /**< Owner window */
-        STransformation m_transform;   /**< Transformation */
-        bool m_bFillAfter;             /**< Fill after flag */
-        SWindow *m_pPrevSiblingBackup; /**< Previous sibling backup */
-
-      public:
-        /**
-         * @brief Constructor.
-         * @param pOwner Owner window.
-         */
-        SAnimationHandler(SWindow *pOwner);
-
-        /**
-         * @brief Called when animation starts.
-         */
-        void OnAnimationStart();
-
-        /**
-         * @brief Called when animation stops.
-         */
-        void OnAnimationStop();
-
-        /**
-         * @brief Gets the transformation.
-         * @return Transformation object.
-         */
-        const STransformation &GetTransformation() const;
-
-        /**
-         * @brief Gets the fill after flag.
-         * @return Fill after flag.
-         */
-        bool getFillAfter() const;
-
-      public:
-        STDMETHOD_(void, OnNextFrame)(THIS_) OVERRIDE;
-
-      protected:
-        /**
-         * @brief Called when the owner window is resized.
-         * @param e Event arguments.
-         * @return TRUE if handled, FALSE otherwise.
-         */
-        BOOL OnOwnerResize(IEvtArgs *e);
-    };
+    friend class SAnimatorHandler;
+    friend class SAnimationHandler;
 
   public:
     /**
@@ -741,7 +745,7 @@ class SOUI_EXP SWindow
      * @brief Sets the transformation matrix for the window.
      * @param mtx Pointer to the transformation matrix.
      */
-    STDMETHOD_(void, SetMatrix)(THIS_ const IMatrix *mtx) OVERRIDE;
+    STDMETHOD_(void, SetMatrix)(THIS_ const IMatrix *mtx, BOOL bInvalidate DEF_VAL(TRUE)) OVERRIDE;
 
     /**
      * @brief Retrieves the transformation matrix of the window.
@@ -1159,6 +1163,44 @@ class SOUI_EXP SWindow
      */
     STDMETHOD_(void, SetCaretPos)(THIS_ int x, int y) OVERRIDE;
 
+    /**
+     * @brief sets the layer of the window.
+     * @param nLayer Layer index.
+     */
+    STDMETHOD_(void, SetLayer)(THIS_ int nLayer) OVERRIDE;
+
+    /**
+     * @brief 获取窗口所在图层
+     * @return int--窗口所在图层
+     */
+    STDMETHOD_(int, GetLayer)(CTHIS) SCONST OVERRIDE;
+
+    /**
+     * @brief 更新属性动画器状态
+     * @param pHolder IPropertyValuesHolder*--属性值持有者
+     * @param fraction float--动画进度（0.0-1.0）
+     * @param state ANI_STATE--动画状态（ANI_START/ANI_PROGRESS/ANI_END）
+     */
+    STDMETHOD_(BOOL, SetAnimatorValue)(THIS_ IPropertyValuesHolder *pHolder, float fraction, ANI_STATE state) OVERRIDE;
+
+    /**
+     * @brief 设置窗口属性动画矩阵中心
+     * @param x float--中心X坐标, 0.5f表示窗口中心
+     * @param y float--中心Y坐标, 0.5f表示窗口中心
+     */
+    STDMETHOD_(void, SetPivot)(THIS_ float x, float y) OVERRIDE;
+
+    /**
+     * @brief 获取窗口属性动画矩阵中心
+     * @param x float*--中心X坐标, 0.5f表示窗口中心
+     * @param y float*--中心Y坐标, 0.5f表示窗口中心
+     */
+    STDMETHOD_(void, GetPivot)(CTHIS_ float *x, float *y) SCONST OVERRIDE
+    {
+        *x = m_pivotX;
+        *y = m_pivotY;
+    }
+
   public:
 #ifdef _WIN32
     /**
@@ -1178,6 +1220,8 @@ class SOUI_EXP SWindow
      * @param dwEvt Event ID.
      */
     void accNotifyEvent(DWORD dwEvt);
+
+    static BOOL GetAnimatedLayoutSize(IPropertyValuesHolder *pHolder, float fraction, SLayoutSize &ret);
 
   public:
     /**
@@ -1265,7 +1309,7 @@ class SOUI_EXP SWindow
      * @brief Sets the transformation matrix for the window.
      * @param mtx Reference to the transformation matrix.
      */
-    void SetMatrix(const SMatrix &mtx);
+    void SetMatrix(const SMatrix &mtx, BOOL bInvalidate = TRUE);
 
     /**
      * @brief Retrieves the text of the window.
@@ -1318,7 +1362,7 @@ class SOUI_EXP SWindow
      * @brief Retrieves the bounding rectangle of the window.
      * @return CRect Bounding rectangle of the window.
      */
-    CRect GetWindowRect() const;
+    virtual CRect GetWindowRect() const;
 
     /**
      * @brief Retrieves the client rectangle of the window.
@@ -1412,6 +1456,37 @@ class SOUI_EXP SWindow
     T *FindChildByName2(LPCSTR pszName, int nDeep = -1)
     {
         return FindChildByName2<T>(S_CA2W(pszName), nDeep);
+    }
+
+    /**
+     * @brief Finds a child window by name.
+     * @param pszName Name of the child window to find, support path like "A/B/C"
+     * @return T* Pointer to the found child window casted to type T.
+     */
+    SWindow *FindChildByNamePath(LPCSTR pszName)
+    {
+        return FindChildByNamePath(S_CA2W(pszName));
+    }
+
+    /**
+     * @brief Finds a child window by name.
+     * @param pszName Name of the child window to find, support path like "A/B/C"
+     * @return T* Pointer to the found child window casted to type T.
+     */
+    SWindow *FindChildByNamePath(LPCWSTR pszName)
+    {
+        SStringW strName(pszName);
+        SStringWList lstName;
+        UINT nCount = SplitString(strName, L'/', lstName);
+        SWindow *pRet = this;
+        for (UINT i = 0; i < nCount; i++)
+        {
+            SWindow *pFind = pRet->FindChildByName(lstName[i], -1);
+            if (pFind == NULL)
+                return NULL;
+            pRet = pFind;
+        }
+        return pRet;
     }
 
     /**
@@ -1514,10 +1589,9 @@ class SOUI_EXP SWindow
   protected:
     /**
      * @brief Called when an animation requires a redraw.
-     * @param pAni Pointer to the animation object.
      * @param bErase TRUE if the background should be erased; otherwise, FALSE.
      */
-    virtual void OnAnimationInvalidate(IAnimation *pAni, bool bErase);
+    virtual void OnAnimationInvalidate(bool bErase);
 
     /**
      * @brief Called when the content of the window changes.
@@ -1558,14 +1632,20 @@ class SOUI_EXP SWindow
     virtual void OnCaptureChanged(BOOL bCaptured);
 
     /**
+     * @brief Builds the window tree's z-order.
+     * @param uOrder The current z-order.
+     * @return UINT The updated z-order.
+     */
+    virtual UINT OnBuildTreeZorder(UINT uOrder);
+    // Public virtual functions
+  public:
+    /**
      * @brief Handles window position changes during layout updates.
      * @param rcWnd The new window rectangle.
      * @return BOOL TRUE if the relayout was handled successfully; otherwise, FALSE.
      */
     virtual BOOL OnRelayout(const CRect &rcWnd);
 
-    // Public virtual functions
-  public:
     /**
      * @brief Measures the size of the content within the window.
      * @param nParentWid The width of the parent window.
@@ -1942,6 +2022,8 @@ class SOUI_EXP SWindow
 
     // Protected helper functions
   protected:
+    void _RemoveChild(SWindow *pChild);
+    void _InsertChild(SWindow *pChild, SWindow *pInsertAfter);
     /**
      * @brief Renders the client area of the window onto the RenderTarget.
      * @param pRT Pointer to the RenderTarget.
@@ -2370,6 +2452,16 @@ class SOUI_EXP SWindow
     HRESULT OnAttrLayout(const SStringW &strValue, BOOL bLoading);
 
     /**
+     * OnAttrOwnerLayout
+     * @brief    Handles the 'ownerLayout' attribute.
+     * @param    const SStringW &strValue -- Attribute value.
+     * @param    BOOL bLoading -- TRUE during loading, FALSE otherwise.
+     * @return   HRESULT -- Result of attribute processing.
+     * Describe Set default owner layout parameter to contain the following parameters before insert the widget to parent.
+     */
+    HRESULT OnAttrOwnerLayout(const SStringW &strValue, BOOL bLoading);
+
+    /**
      * OnAttrClass
      * @brief    Handles the 'class' attribute.
      * @param    const SStringW &strValue -- Attribute value.
@@ -2447,6 +2539,17 @@ class SOUI_EXP SWindow
     HRESULT OnAttrText(const SStringW &strValue, BOOL bLoading);
 
     /**
+     * OnAttrLayer
+     * @brief    Handles the 'layer' attribute.
+     * @param    const SStringW &strValue -- Attribute value.
+     * @param    BOOL bLoading -- TRUE during loading, FALSE otherwise.
+     * @return   HRESULT -- Result of attribute processing.
+     *
+     * Describe  This method processes the 'layer' attribute.
+     */
+    HRESULT OnAttrLayer(const SStringW &strValue, BOOL bLoading);
+
+    /**
      * DefAttributeProc
      * @brief    Default attribute processing function.
      * @param    const SStringW &strAttribName -- Attribute name.
@@ -2472,6 +2575,7 @@ class SOUI_EXP SWindow
     virtual HRESULT AfterAttribute(const SStringW &strAttribName, const SStringW &strValue, BOOL bLoading, HRESULT hr);
     SOUI_ATTRS_BEGIN()
         ATTR_CUSTOM(L"layout", OnAttrLayout)
+        ATTR_CUSTOM(L"ownerLayout", OnAttrOwnerLayout)
         ATTR_CUSTOM(L"class", OnAttrClass)
         ATTR_CUSTOM(L"id", OnAttrID)
         ATTR_CUSTOM(L"name", OnAttrName)
@@ -2487,6 +2591,8 @@ class SOUI_EXP SWindow
         ATTR_CUSTOM(L"cache", OnAttrCache)
         ATTR_CUSTOM(L"alpha", OnAttrAlpha)
         ATTR_BOOL(L"layeredWindow", m_bLayeredWindow, TRUE)
+        ATTR_CUSTOM(L"layer", OnAttrLayer)
+        ATTR_BOOL(L"enableLayer", m_bEnableLayer, FALSE)
         ATTR_CUSTOM(L"trackMouseEvent", OnAttrTrackMouseEvent)
         ATTR_CUSTOM(L"videoCanvas", OnAttrVideoCanvas)
         ATTR_CUSTOM(L"tip", OnAttrTip)
@@ -2497,6 +2603,8 @@ class SOUI_EXP SWindow
         ATTR_BOOL(L"drawFocusRect", m_bDrawFocusRect, TRUE)
         ATTR_BOOL(L"hoverAware", m_bHoverAware, FALSE)
         ATTR_BOOL(L"float", m_bFloat, FALSE)
+        ATTR_FLOAT(L"pivotX", m_pivotX, FALSE)
+        ATTR_FLOAT(L"pivotY", m_pivotY, FALSE)
         ATTR_CHAIN(m_style, HRET_FLAG_STYLE)
         ATTR_CHAIN_PTR(m_pLayout, HRET_FLAG_LAYOUT)
         ATTR_CHAIN_PTR(m_pLayoutParam, HRET_FLAG_LAYOUT_PARAM)
@@ -2595,6 +2703,8 @@ class SOUI_EXP SWindow
     STrText m_strToolTipText; /**< Tooltip text for the window. */
     SStringW m_strTrCtx;      /**< Translation context. If empty, uses the container's translation context. */
     UINT m_uZorder;           /**< Z-order of the window. */
+    int m_nLayer;             /**< Layer of the window. */
+    BOOL m_bEnableLayer;      /**< Indicates if the layer is enabled. */
     int m_nUpdateLockCnt;     /**< Update lock count. Prevents Invalidate messages to the host when locked. */
 
     BOOL m_dwState;         /**< State of the window during rendering. */
@@ -2624,11 +2734,14 @@ class SOUI_EXP SWindow
 
     COLORREF m_crColorize; /**< Colorization value for the window. */
 
-    SAutoRefPtr<IAnimation> m_animation;  /**< Animation object. */
-    SAnimationHandler m_animationHandler; /**< Animation handler for the window.  */
-    STransformation m_transform;          /**< Transformation object. */
-    bool m_isAnimating;                   /**< Flag indicating if the window is currently animating. */
-    bool m_isDestroying;                  /**< Flag indicating if the window is being destroyed. */
+    SAutoRefPtr<IAnimation> m_animation;    /**< Animation object. */
+    SAnimationHandler *m_pAnimationHandler; /**< Animation handler for the window.  */
+    float m_pivotX;                         /**< Pivot X coordinate for transformations. default is 0.5f */
+    float m_pivotY;                         /**< Pivot Y coordinate for transformations. default is 0.5f */
+    SAnimatorHandler *m_pAnimatorHandler;   /**< Property animator handler for the window. */
+    STransformation m_transform;            /**< Transformation object. */
+    BOOL m_isAnimating;                     /**< Flag indicating if the window is currently animating. */
+    BOOL m_isDestroying;                    /**< Flag indicating if the window is being destroyed. */
 
     typedef struct GETRTDATA
     {
@@ -2644,7 +2757,6 @@ class SOUI_EXP SWindow
     SAutoRefPtr<ICaret> m_caret;             /**< Caret object. */
 
     FunSwndProc m_funSwndProc; /**< Custom window procedure. */
-
 #ifdef _WIN32
     SAutoRefPtr<IAccessible> m_pAcc;    /**< Accessibility object. */
     SAutoRefPtr<IAccProxy> m_pAccProxy; /**< Accessibility proxy object. */
@@ -2666,7 +2778,8 @@ class SOUI_EXP SAutoEnableHostPrivUiDef {
     SAutoEnableHostPrivUiDef(SWindow *pOwner)
         : m_pOwner(pOwner)
     {
-        m_pOwner->GetContainer()->EnableHostPrivateUiDef(TRUE);
+        if (m_pOwner->GetContainer())
+            m_pOwner->GetContainer()->EnableHostPrivateUiDef(TRUE);
     }
 
     /**
@@ -2674,7 +2787,8 @@ class SOUI_EXP SAutoEnableHostPrivUiDef {
      */
     ~SAutoEnableHostPrivUiDef()
     {
-        m_pOwner->GetContainer()->EnableHostPrivateUiDef(FALSE);
+        if (m_pOwner->GetContainer())
+            m_pOwner->GetContainer()->EnableHostPrivateUiDef(FALSE);
     }
 
   protected:

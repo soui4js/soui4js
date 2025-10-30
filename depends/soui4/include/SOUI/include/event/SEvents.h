@@ -50,6 +50,7 @@ typedef enum _SOUI_EVENTS
     EVT_ANIMATION_STOP,   ///< 动画停止事件
     EVT_ANIMATION_REPEAT, ///< 动画重复事件
     EVT_POS,              ///< 位置改变事件
+    EVT_ANIMATOR_FRACTOR, ///< 数值动画事件
 
     EVT_KEYDOWN = 8200, ///< 键盘按下事件
 
@@ -147,6 +148,10 @@ typedef enum _SOUI_EVENTS
     EVT_REALWND_INIT,           ///< 真实窗口初始化事件
     EVT_REALWND_POSITION,       ///< 真实窗口位置改变事件
 
+    EVT_DROPDOWN_LIST_FILL = 22170,
+    EVT_DROPDOWN_LIST_SELECTED,
+    EVT_DROPDOWN_LIST_GET_BUDDY_RECT,
+
     EVT_EXTERNAL_BEGIN = 10000000, ///< 外部事件开始ID
 } SOUI_EVENTS;
 
@@ -172,7 +177,7 @@ typedef enum _MouseClickId
  * @class SEvtArgs
  * @brief 事件参数基类
  */
-class SOUI_EXP SEvtArgs : public TObjRefImpl<SObjectImpl<IEvtArgs> > {
+class SOUI_EXP SEvtArgs : public TObjRefImpl<SObjectImpl<IEvtArgs>> {
     DEF_SOBJECT(SObjectImpl<IEvtArgs>, L"event")
 
   public:
@@ -382,6 +387,14 @@ DEF_EVT(EventSwndDestroy, EVT_DESTROY, on_destroy, { int fake; })
 
 DEF_EVT(EventSwndSize, EVT_SIZE, on_size, { SIZE szWnd; })
 DEF_EVT(EventSwndPos, EVT_POS, on_pos, { RECT rcWnd; })
+
+typedef struct IPropertyValuesHolder IPropertyValuesHolder;
+typedef enum _ANI_STATE ANI_STATE;
+DEF_EVT(EventSwndAnimatorFractor, EVT_ANIMATOR_FRACTOR, on_animator_fractor, {
+    IPropertyValuesHolder *pHolder;
+    float fraction;
+    ANI_STATE state;
+})
 
 DEF_EVT(EventSwndStateChanged, EVT_STATECHANGED, on_state_changed, {
     DWORD dwOldState; ///< 旧状态
@@ -698,6 +711,22 @@ DEF_EVT(EventRealWndPosition, EVT_REALWND_POSITION, on_real_wnd_position, {
     RECT rc;   ///< 窗口位置矩形
     BOOL bRet; ///< 返回值
 })
+
+typedef struct IListView IListView;
+
+DEF_EVT(EventDropdownListGetBuddyRect, EVT_DROPDOWN_LIST_GET_BUDDY_RECT, on_dropdown_list_get_buddy_rect, { RECT rcBuddy; })
+
+DEF_EVT(EventDropdownListFill, EVT_DROPDOWN_LIST_FILL, on_dropdown_list_fill, {
+    const IStringT *strKey;
+    IListView *pListView;
+    BOOL bPopup;
+})
+
+DEF_EVT(EventDropdownListSelected, EVT_DROPDOWN_LIST_SELECTED, on_dropdown_list_selected, {
+    IListView *pListView;
+    int nValue;
+})
+
 SNSEND
 
 #endif // __SEVENTS__H__

@@ -33,7 +33,7 @@ class SOUI_EXP SMatrix
      * @brief Constructor that initializes the matrix with the given data array.
      * @param data Array of 9 floats representing the matrix elements.
      */
-    SMatrix(const float data[9]);
+    SMatrix(const float data[9], int type = kUnknown_Mask);
 
   public:
     /**
@@ -56,25 +56,6 @@ class SOUI_EXP SMatrix
      * @return Reference to the modified matrix.
      */
     SMatrix &operator=(const SMatrix &src);
-
-    /**
-     * @brief Equality operator.
-     * @param a First matrix.
-     * @param b Second matrix.
-     * @return True if matrices are equal, false otherwise.
-     */
-    friend bool operator==(const SMatrix &a, const SMatrix &b);
-
-    /**
-     * @brief Inequality operator.
-     * @param a First matrix.
-     * @param b Second matrix.
-     * @return True if matrices are not equal, false otherwise.
-     */
-    friend bool operator!=(const SMatrix &a, const SMatrix &b)
-    {
-        return !(a == b);
-    }
 
   public:
     /**
@@ -280,6 +261,16 @@ class SOUI_EXP SMatrix
      * @return True if the matrix is a similarity transform, false otherwise.
      */
     bool isSimilarity(float tol = SK_ScalarNearlyZero) const;
+
+    bool operator==(const SMatrix &other) const
+    {
+        return SFloatsEqual(fMat, other.fMat,9);
+    }
+
+    bool operator!=(const SMatrix &other) const
+    {
+        return !(*this == other);
+    }
 
     /**
      * @brief Checks if the matrix contains only translation, rotation/reflection, or scale (non-uniform scale is allowed).

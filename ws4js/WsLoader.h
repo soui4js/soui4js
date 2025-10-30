@@ -1,5 +1,6 @@
 #pragma once
-#include <ws-i.h>
+#include <interface/ws-i.h>
+#include <com-loader.hpp>
 
 using namespace SOUI;
 
@@ -15,7 +16,6 @@ public:
 	IWsClient* CreateWsClient(IConnListener *pListener);
 	IWsServer* CreateWsServer(ISvrListener* pGroup);
 private:
-	HMODULE m_wsModule;
-	fun_Ws_CreateInstance m_funWsCreateInst;
+	SComLoader m_comLoader;
 };
 

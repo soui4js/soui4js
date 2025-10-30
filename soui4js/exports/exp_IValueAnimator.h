@@ -1,4 +1,6 @@
-#include <interface/SAnimation-i.h>
+#pragma once
+
+#include <interface/SValueAnimator-i.h>
 
 
 void Exp_IValueAnimator(qjsbind::Module* module)

@@ -12,8 +12,8 @@ SNSBEGIN
  * @brief Soui布局参数类
  */
 class SouiLayoutParam
-    : public TObjRefImpl<SObjectImpl<ILayoutParam> >
-    , protected SouiLayoutParamStruct {
+    : public TObjRefImpl<SObjectImpl<ILayoutParam>>
+    , public SouiLayoutParamStruct {
     DEF_SOBJECT(SObjectImpl<ILayoutParam>, L"SouiLayoutParam")
 
     friend class SouiLayout;
@@ -55,7 +55,7 @@ class SouiLayoutParam
      * @param orientation 方向（水平或垂直）
      * @return 指定大小
      */
-    STDMETHOD_(SLayoutSize, GetSpecifiedSize)(THIS_ ORIENTATION orientation) SCONST OVERRIDE;
+    STDMETHOD_(BOOL, GetSpecifiedSize)(THIS_ ORIENTATION orientation, LAYOUTSIZE *pLayoutSize) SCONST OVERRIDE;
 
     /**
      * @brief 设置匹配父容器大小
@@ -75,7 +75,7 @@ class SouiLayoutParam
      * @param layoutSize 指定大小
      */
     STDMETHOD_(void, SetSpecifiedSize)
-    (THIS_ ORIENTATION orientation, const SLayoutSize &layoutSize) OVERRIDE;
+    (THIS_ ORIENTATION orientation, const LAYOUTSIZE *layoutSize) OVERRIDE;
 
     /**
      * @brief 获取原始数据指针
@@ -88,6 +88,14 @@ class SouiLayoutParam
      * @return 克隆的布局参数对象指针
      */
     STDMETHOD_(ILayoutParam *, Clone)(THIS) SCONST OVERRIDE;
+
+    /**
+     * @brief 更新属性动画器状态
+     * @param pHolder IPropertyValuesHolder*--属性值持有者
+     * @param fraction float--动画进度（0.0-1.0）
+     * @param state ANI_STATE--动画状态（ANI_START/ANI_PROGRESS/ANI_END）
+     */
+    STDMETHOD_(BOOL, SetAnimatorValue)(THIS_ IPropertyValuesHolder *pHolder, float fraction, ANI_STATE state) OVERRIDE;
 
   public:
     /**
@@ -152,6 +160,8 @@ class SouiLayoutParam
         ATTR_CUSTOM(L"pos", OnAttrPos)       // 位置
         ATTR_CUSTOM(L"size", OnAttrSize)     // 大小
         ATTR_CUSTOM(L"offset", OnAttrOffset) // 偏移
+        ATTR_FLOAT(L"offsetX", fOffsetX, TRUE)
+        ATTR_FLOAT(L"offsetY", fOffsetY, TRUE)
     SOUI_ATTRS_BREAK()
 
   protected:
@@ -184,7 +194,7 @@ class SouiLayoutParam
  * @class SouiLayout
  * @brief Soui布局类
  */
-class SOUI_EXP SouiLayout : public TObjRefImpl<SObjectImpl<ILayout> > {
+class SOUI_EXP SouiLayout : public TObjRefImpl<SObjectImpl<ILayout>> {
     DEF_SOBJECT(SObjectImpl<ILayout>, L"SouiLayout")
 
   public:
@@ -213,9 +223,10 @@ class SOUI_EXP SouiLayout : public TObjRefImpl<SObjectImpl<ILayout> > {
 
     /**
      * @brief 创建布局参数对象
+     * @param pOwner IWindow*--布局参数的拥有者窗口对象
      * @return 布局参数对象指针
      */
-    STDMETHOD_(ILayoutParam *, CreateLayoutParam)(THIS) SCONST OVERRIDE;
+    STDMETHOD_(ILayoutParam *, CreateLayoutParam)(CTHIS) SCONST OVERRIDE;
 
     /**
      * @brief 测量子窗口大小

@@ -212,7 +212,7 @@ namespace qjsbind {
 		}
 #endif
 		template<typename T>
-		operator T*() const{
+		T * ToObject() const{
 			if (IsObject()) {
 				JSClassID id = JS_GetClassID(value_);
 				JsProxy<T>* pThis;
@@ -231,6 +231,11 @@ namespace qjsbind {
 				return (T*)(void*)ToUint64();
 #endif
 			}
+		}
+
+		template<typename T>
+		operator T*() const{
+			return ToObject<T>();
 		}
 
 		unsigned long ToULong() const {

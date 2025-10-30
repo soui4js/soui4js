@@ -36,7 +36,7 @@ public:
 		m_aniType = _GetAniType(m_animator);
 	}
 
-	bool CopyFrom(IValueAnimator* ani) {
+	virtual bool CopyFrom(IValueAnimator* ani) {
 		if (!ani)
 			return false;
 		IValueAnimator *ani2 =(ani->clone());
@@ -45,7 +45,7 @@ public:
 		return true;
 	}
 
-	bool LoadAniamtor(LPCSTR resId) {
+	virtual bool LoadAniamtor(LPCSTR resId) {
 		SStringT strId = S_CA2T(resId, CP_UTF8);
 		IValueAnimator* ani = SApplication::getSingleton().LoadValueAnimator(strId);
 		if (!ani) return FALSE;
@@ -309,12 +309,13 @@ public:
 	~JsAnimatorGroup() {
 	}
 
-	STDMETHOD_(void, OnAnimatorGroupEnd)(THIS_ IAnimatorGroup* pGroup) {
+	STDMETHOD_(void, OnAnimatorGroupEnd)(THIS_ IAnimatorGroup* pGroup, int nID) {
 		if (!m_onAnimatorGroupEnd.IsFunction())
 			return;
 		qjsbind::Context& ctx = *m_onAnimatorGroupEnd.context();
 		qjsbind::Value args[] = {
-			NewValue(ctx, JsThisOwner::GetJsThis())
+			NewValue(ctx, JsThisOwner::GetJsThis()),
+			NewValue(ctx,nID)
 		};
 		ctx.Call(GetJsThis(), m_onAnimatorGroupEnd, ARRAYSIZE(args), args);
 	}

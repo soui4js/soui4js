@@ -20,11 +20,11 @@ extern "C" void soui4js_printer(const char* szLog,int len) {
 	if (len < 0) len = (int)strlen(szLog);
 	SOUI::SStringA strA(szLog, len);
 	SOUI::SStringW str = SOUI::S_CA2W(strA, CP_UTF8);
-	if (str.GetLength() > SOUI::Log::MAX_LOGLEN) {
+	if (str.GetLength() > SOUI::SLog::MAX_LOGLEN) {
 		int pos = 0;
 		while (pos < str.GetLength()) {
-			SLOGI2("qjs") << (pos==0?"":"--continue")<<str.Mid(pos, SOUI::Log::MAX_LOGLEN - 50).c_str();
-			pos += SOUI::Log::MAX_LOGLEN;
+			SLOGI2("qjs") << (pos==0?"":"--continue")<<str.Mid(pos, SOUI::SLog::MAX_LOGLEN - 50).c_str();
+			pos += SOUI::SLog::MAX_LOGLEN;
 		}
 	}
 	else {
